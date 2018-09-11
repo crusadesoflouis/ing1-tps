@@ -86,18 +86,16 @@ II class
 
 	^self prev - unNumeroDePeano prev! !
 
-!II class methodsFor: 'as yet unclassified' stamp: 'a 9/10/2018 02:55:42'!
+!II class methodsFor: 'as yet unclassified' stamp: 'a 9/11/2018 05:27:49'!
 / unNumeroDePeano
 
 	self = unNumeroDePeano 
 	ifTrue:[^I]
-	ifFalse:[ self ]
-	"ifFalse:[
+	"ifFalse:[ self ]."
+	ifFalse:[
 		self < unNumeroDePeano 
 			ifTrue:[self error: 'descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor'].
-
-			^unNumeroDePeano vecesDivideA: self]
-"! !
+			^unNumeroDePeano vecesDivideA: self ]! !
 
 !II class methodsFor: 'as yet unclassified' stamp: 'a 9/10/2018 03:28:19'!
 < unNumeroDePeano
@@ -111,7 +109,7 @@ II class
 			ifFalse:[^ ((self-I) < (unNumeroDePeano - I))  ]
 						]! !
 
-!II class methodsFor: 'as yet unclassified' stamp: 'a 9/10/2018 03:30:09'!
+!II class methodsFor: 'as yet unclassified' stamp: 'a 9/11/2018 05:33:20'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -147,11 +145,15 @@ removeAllNext
 		next := nil.
 	]! !
 
-!II class methodsFor: 'as yet unclassified' stamp: 'a 9/10/2018 03:27:33'!
+!II class methodsFor: 'as yet unclassified' stamp: 'a 9/11/2018 05:30:02'!
 vecesDivideA: unNumeroDePeano
 
-	unNumeroDePeano < self
+	self = unNumeroDePeano 
 	ifTrue:[^I]
-	ifFalse:[^I]! !
+	ifFalse:[
+	self < unNumeroDePeano 
+		ifFalse:[self error: 'descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor'].
+		^I + ( self vecesDivideA: (unNumeroDePeano -self)) 
+		]! !
 
 II initializeAfterFileIn!
