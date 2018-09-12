@@ -80,14 +80,10 @@ DenotativeObject subclass: #II
 II class
 	instanceVariableNames: 'next prev'!
 
-!II class methodsFor: 'operaciones' stamp: 'luis 9/9/2018 20:34:59'!
+!II class methodsFor: 'operaciones' stamp: 'jml 9/12/2018 17:26:27'!
 * unNumeroDePeano
 
-	unNumeroDePeano  == I 
-	ifTrue: [^ self ]
-	ifFalse:[
-		^ self + (self * (unNumeroDePeano - I)).
-		]
+	^ (prev * unNumeroDePeano) + unNumeroDePeano.
 ! !
 
 !II class methodsFor: 'operaciones' stamp: 'jml 9/11/2018 04:03:23'!
@@ -173,7 +169,7 @@ descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor
 	^ 'No se puede dividir por un número mayor'! !
 
 
-!II class methodsFor: 'as yet unclassified' stamp: 'jml 9/11/2018 04:14:55'!
+!II class methodsFor: 'as yet unclassified' stamp: 'jml 9/12/2018 17:26:44'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
