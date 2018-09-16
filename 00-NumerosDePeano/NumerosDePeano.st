@@ -102,12 +102,11 @@ II class
 
 	^ unNumeroDePeano sustraerDe: self! !
 
-!II class methodsFor: 'operaciones' stamp: 'jml 9/11/2018 04:08:30'!
+!II class methodsFor: 'operaciones' stamp: 'asd 9/16/2018 20:14:12'!
 / unNumeroDePeano
 
 	self = unNumeroDePeano 
 	ifTrue:[^I]
-	"ifFalse:[ self ]."
 	ifFalse:[
 		self < unNumeroDePeano 
 			ifTrue:[self error: self descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor].
@@ -179,11 +178,239 @@ descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor
 	^ 'No se puede dividir por un número mayor'! !
 
 
-!II class methodsFor: 'as yet unclassified' stamp: 'jml 9/16/2018 19:34:55'!
+!II class methodsFor: 'as yet unclassified' stamp: 'asd 9/16/2018 20:17:07'!
+initializeCollaboratorsFromFile
+	"Auto generated method for loading purposes - Do not modify it"
+
+	next := III.
+	prev := I.! !
+
+
+!classDefinition: #III category: #'Quinta Actividad'!
+DenotativeObject subclass: #III
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Quinta Actividad'!
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'III class' category: #'Quinta Actividad'!
+III class
+	instanceVariableNames: 'next prev'!
+
+!III class methodsFor: 'operaciones' stamp: 'asd 9/16/2018 20:15:46'!
+* unNumeroDePeano
+
+	^ (prev * unNumeroDePeano) + unNumeroDePeano.
+! !
+
+!III class methodsFor: 'operaciones' stamp: 'asd 9/16/2018 20:15:46'!
++ unNumeroDePeano
+
+	^self previous + unNumeroDePeano next! !
+
+!III class methodsFor: 'operaciones' stamp: 'asd 9/16/2018 20:15:46'!
+- unNumeroDePeano
+
+	^ unNumeroDePeano sustraerDe: self! !
+
+!III class methodsFor: 'operaciones' stamp: 'asd 9/16/2018 20:15:46'!
+/ unNumeroDePeano
+
+	self = unNumeroDePeano 
+	ifTrue:[^I]
+	ifFalse:[
+		self < unNumeroDePeano 
+			ifTrue:[self error: self descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor].
+			^unNumeroDePeano vecesDivideA: self ]! !
+
+!III class methodsFor: 'operaciones' stamp: 'asd 9/16/2018 20:15:46'!
+< unNumeroDePeano
+	self == unNumeroDePeano 
+	ifTrue: [^false].
+	self  == I 
+	ifTrue: [^true]
+	ifFalse:[
+		(unNumeroDePeano == I)
+			ifTrue: [^false]
+			ifFalse:[^ ((self-I) < (unNumeroDePeano - I))  ]
+						]! !
+
+!III class methodsFor: 'operaciones' stamp: 'asd 9/16/2018 20:15:46'!
+next
+	
+	next ifNil:
+	[
+		next _ self cloneNamed: self name , 'I'.
+		next setPrevious: self.
+	].
+	^next! !
+
+!III class methodsFor: 'operaciones' stamp: 'asd 9/16/2018 20:15:46'!
+previous
+
+	^prev! !
+
+
+!III class methodsFor: 'auxiliar' stamp: 'asd 9/16/2018 20:15:46'!
+removeAllNext
+
+	next ifNotNil:  [
+		next removeAllNext.
+		next removeFromSystem.
+		next := nil.
+	]! !
+
+!III class methodsFor: 'auxiliar' stamp: 'asd 9/16/2018 20:15:46'!
+setPrevious: unNumeroDePeano
+
+	prev _ unNumeroDePeano! !
+
+!III class methodsFor: 'auxiliar' stamp: 'asd 9/16/2018 20:15:46'!
+sustraerDe: unNumeroDePeano
+	"devuelve el resultado de restar este número al especificado"
+	
+	^ unNumeroDePeano previous - self previous! !
+
+!III class methodsFor: 'auxiliar' stamp: 'asd 9/16/2018 20:15:46'!
+vecesDivideA: unNumeroDePeano
+
+	self = unNumeroDePeano 
+	ifTrue:[^I]
+	ifFalse:[
+	self < unNumeroDePeano 
+		ifFalse:[self error: 'descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor'].
+		^I + ( self vecesDivideA: (unNumeroDePeano -self)) 
+		]! !
+
+
+!III class methodsFor: 'mensajes de error' stamp: 'asd 9/16/2018 20:15:46'!
+descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor
+
+	^ 'No se puede dividir por un número mayor'! !
+
+
+!III class methodsFor: 'as yet unclassified' stamp: 'asd 9/16/2018 20:17:07'!
+initializeCollaboratorsFromFile
+	"Auto generated method for loading purposes - Do not modify it"
+
+	next := IIII.
+	prev := II.! !
+
+
+!classDefinition: #IIII category: #'Quinta Actividad'!
+DenotativeObject subclass: #IIII
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Quinta Actividad'!
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'IIII class' category: #'Quinta Actividad'!
+IIII class
+	instanceVariableNames: 'next prev'!
+
+!IIII class methodsFor: 'operaciones' stamp: 'asd 9/16/2018 20:15:46'!
+* unNumeroDePeano
+
+	^ (prev * unNumeroDePeano) + unNumeroDePeano.
+! !
+
+!IIII class methodsFor: 'operaciones' stamp: 'asd 9/16/2018 20:15:46'!
++ unNumeroDePeano
+
+	^self previous + unNumeroDePeano next! !
+
+!IIII class methodsFor: 'operaciones' stamp: 'asd 9/16/2018 20:15:46'!
+- unNumeroDePeano
+
+	^ unNumeroDePeano sustraerDe: self! !
+
+!IIII class methodsFor: 'operaciones' stamp: 'asd 9/16/2018 20:15:46'!
+/ unNumeroDePeano
+
+	self = unNumeroDePeano 
+	ifTrue:[^I]
+	ifFalse:[
+		self < unNumeroDePeano 
+			ifTrue:[self error: self descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor].
+			^unNumeroDePeano vecesDivideA: self ]! !
+
+!IIII class methodsFor: 'operaciones' stamp: 'asd 9/16/2018 20:15:46'!
+< unNumeroDePeano
+	self == unNumeroDePeano 
+	ifTrue: [^false].
+	self  == I 
+	ifTrue: [^true]
+	ifFalse:[
+		(unNumeroDePeano == I)
+			ifTrue: [^false]
+			ifFalse:[^ ((self-I) < (unNumeroDePeano - I))  ]
+						]! !
+
+!IIII class methodsFor: 'operaciones' stamp: 'asd 9/16/2018 20:15:46'!
+next
+	
+	next ifNil:
+	[
+		next _ self cloneNamed: self name , 'I'.
+		next setPrevious: self.
+	].
+	^next! !
+
+!IIII class methodsFor: 'operaciones' stamp: 'asd 9/16/2018 20:15:46'!
+previous
+
+	^prev! !
+
+
+!IIII class methodsFor: 'auxiliar' stamp: 'asd 9/16/2018 20:15:46'!
+removeAllNext
+
+	next ifNotNil:  [
+		next removeAllNext.
+		next removeFromSystem.
+		next := nil.
+	]! !
+
+!IIII class methodsFor: 'auxiliar' stamp: 'asd 9/16/2018 20:15:46'!
+setPrevious: unNumeroDePeano
+
+	prev _ unNumeroDePeano! !
+
+!IIII class methodsFor: 'auxiliar' stamp: 'asd 9/16/2018 20:15:46'!
+sustraerDe: unNumeroDePeano
+	"devuelve el resultado de restar este número al especificado"
+	
+	^ unNumeroDePeano previous - self previous! !
+
+!IIII class methodsFor: 'auxiliar' stamp: 'asd 9/16/2018 20:15:46'!
+vecesDivideA: unNumeroDePeano
+
+	self = unNumeroDePeano 
+	ifTrue:[^I]
+	ifFalse:[
+	self < unNumeroDePeano 
+		ifFalse:[self error: 'descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor'].
+		^I + ( self vecesDivideA: (unNumeroDePeano -self)) 
+		]! !
+
+
+!IIII class methodsFor: 'mensajes de error' stamp: 'asd 9/16/2018 20:15:46'!
+descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor
+
+	^ 'No se puede dividir por un número mayor'! !
+
+
+!IIII class methodsFor: 'as yet unclassified' stamp: 'asd 9/16/2018 20:17:07'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
 	next := nil.
-	prev := I.! !
+	prev := III.! !
 
 II initializeAfterFileIn!
+III initializeAfterFileIn!
+IIII initializeAfterFileIn!
