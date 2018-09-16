@@ -51,6 +51,12 @@ next
 	^II! !
 
 
+!I class methodsFor: 'auxiliar' stamp: 'jml 9/16/2018 19:24:20'!
+sustraerDe: unNumeroDePeano
+	"devuelve el resultado de restar este número al especificado"
+	
+	^ unNumeroDePeano previous! !
+
 !I class methodsFor: 'auxiliar' stamp: 'a 9/10/2018 02:28:06'!
 vecesDivideA: unNumeroDePeano
 
@@ -91,12 +97,10 @@ II class
 
 	^self previous + unNumeroDePeano next! !
 
-!II class methodsFor: 'operaciones' stamp: 'jml 9/11/2018 04:03:23'!
+!II class methodsFor: 'operaciones' stamp: 'jml 9/16/2018 19:31:14'!
 - unNumeroDePeano
 
-	unNumeroDePeano = I ifTrue: [^self previous].
-
-	^self previous - unNumeroDePeano previous! !
+	^ unNumeroDePeano sustraerDe: self! !
 
 !II class methodsFor: 'operaciones' stamp: 'jml 9/11/2018 04:08:30'!
 / unNumeroDePeano
@@ -151,6 +155,12 @@ setPrevious: unNumeroDePeano
 
 	prev _ unNumeroDePeano! !
 
+!II class methodsFor: 'auxiliar' stamp: 'jml 9/16/2018 19:31:04'!
+sustraerDe: unNumeroDePeano
+	"devuelve el resultado de restar este número al especificado"
+	
+	^ unNumeroDePeano previous - self previous! !
+
 !II class methodsFor: 'auxiliar' stamp: 'a 9/11/2018 05:30:02'!
 vecesDivideA: unNumeroDePeano
 
@@ -169,7 +179,7 @@ descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor
 	^ 'No se puede dividir por un número mayor'! !
 
 
-!II class methodsFor: 'as yet unclassified' stamp: 'jml 9/12/2018 17:26:44'!
+!II class methodsFor: 'as yet unclassified' stamp: 'jml 9/16/2018 19:34:55'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
