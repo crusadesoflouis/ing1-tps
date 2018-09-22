@@ -204,11 +204,11 @@ initialize
 	suspended:= OrderedCollection new.! !
 
 
-!CustomerBook methodsFor: 'customer management' stamp: 'HAW 9/19/2018 08:41:11'!
+!CustomerBook methodsFor: 'customer management' stamp: 'jml 9/22/2018 19:01:56'!
 addCustomerNamed: aName
 
 	aName isEmpty ifTrue: [ self signalCustomerNameCannotBeEmpty ].
-	((customers includes: aName) or: [suspended includes: aName]) ifTrue: [ self signalCustomerAlreadyExists ].
+	(self includesCustomerNamed: aName) ifTrue: [ self signalCustomerAlreadyExists ].
 	
 	customers add: aName ! !
 
@@ -217,10 +217,10 @@ numberOfActiveCustomers
 	
 	^customers size! !
 
-!CustomerBook methodsFor: 'customer management' stamp: 'NicolasRinaldi 9/16/2018 22:01:43'!
+!CustomerBook methodsFor: 'customer management' stamp: 'jml 9/22/2018 19:04:28'!
 numberOfCustomers
 	
-	^customers size + suspended size! !
+	^ self numberOfActiveCustomers + self numberOfSuspendedCustomers ! !
 
 !CustomerBook methodsFor: 'customer management' stamp: 'NR 9/19/2018 17:36:09'!
 numberOfSuspendedCustomers
