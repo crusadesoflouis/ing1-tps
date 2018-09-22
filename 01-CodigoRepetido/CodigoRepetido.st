@@ -21,7 +21,7 @@ TestCase subclass: #CustomerBookTest
 	poolDictionaries: ''
 	category: 'CodigoRepetido-Ejercicio'!
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'jluini 9/20/2018 20:43:06'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/22/2018 19:43:01'!
 test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
 	| customerBook |
 
@@ -39,7 +39,7 @@ test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 	self evaluationOf: [customerBook removeCustomerNamed: paulMcCartney] shouldNotTakeMoreThan: (100 * millisecond)
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'jluini 9/20/2018 21:04:46'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/22/2018 19:45:07'!
 test03CanNotAddACustomerWithEmptyName 
 
 	| customerBook |
@@ -64,7 +64,7 @@ test04CanNotRemoveAnInvalidCustomer
 			self assert: (customerBook includesCustomerNamed: johnLennon) ]
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'jluini 9/20/2018 21:39:02'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/22/2018 19:40:00'!
 test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 
 	| customerBook paulMcCartney|
@@ -73,7 +73,7 @@ test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 	
 	customerBook := self bookWithSingleSuspendedCustomerNamed: paulMcCartney.
 	
-	self checkNumberOfCustomersIn: customerBook Is: 1 Active: 0 Suspended: 1. 
+	self checkNumberOfCustomersIn: customerBook total: 1 active: 0 suspended: 1. 
 	
 	self assert: (customerBook includesCustomerNamed: paulMcCartney).
 	
@@ -81,7 +81,7 @@ test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 	
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'jluini 9/20/2018 21:39:27'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/22/2018 19:40:00'!
 test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 
 	| customerBook paulMcCartney|
@@ -92,7 +92,7 @@ test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 	
 	customerBook removeCustomerNamed: paulMcCartney.
 	
-	self checkNumberOfCustomersIn: customerBook Is: 0 Active: 0 Suspended: 0.
+	self checkNumberOfCustomersIn: customerBook total: 0 active: 0 suspended: 0.
 	
 	self deny: (customerBook includesCustomerNamed: paulMcCartney).
 
@@ -150,8 +150,8 @@ bookWithSingleSuspendedCustomerNamed: customerName
 	^ customerBook
 ! !
 
-!CustomerBookTest methodsFor: 'auxiliar' stamp: 'jluini 9/20/2018 21:37:33'!
-checkNumberOfCustomersIn: customerBook Is: numberOfCustomers  Active: numberOfActiveCustomers Suspended: numberOfSuspendedCustomers
+!CustomerBookTest methodsFor: 'auxiliar' stamp: 'jml 9/22/2018 19:40:00'!
+checkNumberOfCustomersIn: customerBook total: numberOfCustomers  active: numberOfActiveCustomers suspended: numberOfSuspendedCustomers
 	self assert: numberOfActiveCustomers equals: customerBook numberOfActiveCustomers.
 	self assert: numberOfSuspendedCustomers equals: customerBook numberOfSuspendedCustomers.
 	self assert: numberOfCustomers equals: customerBook numberOfCustomers.! !
