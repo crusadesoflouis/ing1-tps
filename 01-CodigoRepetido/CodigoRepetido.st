@@ -227,29 +227,15 @@ numberOfSuspendedCustomers
 	
 	^suspended size! !
 
-!CustomerBook methodsFor: 'customer management' stamp: 'jluini 9/20/2018 21:48:29'!
+!CustomerBook methodsFor: 'customer management' stamp: 'jml 9/22/2018 19:16:33'!
 removeCustomerNamed: aName 
 	
-	self removeCustomerNamed: aName From: customers ifNotFound: [
-		self removeCustomerNamed: aName From: suspended ifNotFound: [
+	self removeCustomerNamed: aName from: customers ifNotFound: [
+		self removeCustomerNamed: aName from: suspended ifNotFound: [
 			^ NotFound signal
 		]
 	]
 ! !
-
-!CustomerBook methodsFor: 'customer management' stamp: 'jluini 9/20/2018 21:47:37'!
-removeCustomerNamed: aName From: aCustomerList ifNotFound: aBlockClosure 
-	
-	1 to: aCustomerList size do: 
-	[ :index |
-		aName = (aCustomerList at: index)
-			ifTrue: [
-				aCustomerList removeAt: index.
-				^ aName 
-			] 
-	].
-	
-	aBlockClosure value.! !
 
 !CustomerBook methodsFor: 'customer management' stamp: 'HernanWilkinson 7/6/2011 17:52'!
 signalCustomerAlreadyExists 
@@ -270,6 +256,22 @@ suspendCustomerNamed: aName
 	
 	suspended add: aName
 ! !
+
+
+!CustomerBook methodsFor: 'customer management - private' stamp: 'jml 9/22/2018 19:19:32'!
+removeCustomerNamed: aName from: aCustomerList ifNotFound: notFoundClosure 
+	
+	1 to: aCustomerList size do: 
+	[ :index |
+		aName = (aCustomerList at: index)
+			ifTrue: [
+				aCustomerList removeAt: index.
+				^ aName 
+			] 
+	].
+	
+	"this is executed only if the customer to remove was not found in list"
+	notFoundClosure value.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
