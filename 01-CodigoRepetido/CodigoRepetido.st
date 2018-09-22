@@ -39,19 +39,22 @@ test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 	self evaluationOf: [customerBook removeCustomerNamed: paulMcCartney] shouldNotTakeMoreThan: (100 * millisecond)
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/22/2018 19:45:07'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/22/2018 20:09:09'!
 test03CanNotAddACustomerWithEmptyName 
 
 	| customerBook |
 			
 	customerBook := CustomerBook new.
 	
-	self evaluationOf: [customerBook addCustomerNamed: ''] shouldThrow: Error andThenDo: [ :anError | 
+	self
+		should: [ customerBook addCustomerNamed: '' ]
+		raise: Error
+		withExceptionDo: [ :anError | 
 			self assert: anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage.
 			self assert: customerBook isEmpty ]
-	! !
+! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'jluini 9/20/2018 21:17:59'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/22/2018 20:06:10'!
 test04CanNotRemoveAnInvalidCustomer
 	
 	| customerBook johnLennon |
@@ -59,10 +62,12 @@ test04CanNotRemoveAnInvalidCustomer
 	
 	customerBook := self bookWithSingleCustomerNamed: johnLennon.
 	
-	self evaluationOf: [ customerBook removeCustomerNamed: 'Paul McCartney' ] shouldThrow: NotFound andThenDo: [ :anError | 
+	self
+		should: [ customerBook removeCustomerNamed: 'Paul McCartney' ]
+		raise: NotFound
+		withExceptionDo: [ :anError | 
 			self assert: customerBook numberOfCustomers = 1.
-			self assert: (customerBook includesCustomerNamed: johnLennon) ]
-! !
+			self assert: (customerBook includesCustomerNamed: johnLennon) ]! !
 
 !CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/22/2018 19:40:00'!
 test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
@@ -100,7 +105,7 @@ test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 	
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'jluini 9/20/2018 21:21:03'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/22/2018 20:02:12'!
 test07CanNotSuspendAnInvalidCustomer
 	
 	| customerBook johnLennon |
@@ -108,13 +113,15 @@ test07CanNotSuspendAnInvalidCustomer
 	johnLennon := 'John Lennon'.
 	
 	customerBook := self bookWithSingleCustomerNamed: johnLennon.
-	
-	self evaluationOf: [ customerBook suspendCustomerNamed: 'Paul McCartney' ] shouldThrow: CantSuspend andThenDo: [ :anError | 
-			self assert: customerBook numberOfCustomers = 1.
-			self assert: (customerBook includesCustomerNamed: johnLennon) ]
-	! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'jluini 9/20/2018 21:28:16'!
+	self
+		should: [ customerBook suspendCustomerNamed: 'Paul McCartney' ]
+		raise: CantSuspend
+		withExceptionDo: [ :anError | 
+			self assert: customerBook numberOfCustomers = 1.
+			self assert: (customerBook includesCustomerNamed: johnLennon) ]! !
+
+!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/22/2018 20:04:43'!
 test08CanNotSuspendAnAlreadySuspendedCustomer
 	
 	| customerBook johnLennon |
@@ -122,10 +129,12 @@ test08CanNotSuspendAnAlreadySuspendedCustomer
 			
 	customerBook := self bookWithSingleSuspendedCustomerNamed: johnLennon.
 	
-	self evaluationOf: [ customerBook suspendCustomerNamed: johnLennon ] shouldThrow: CantSuspend andThenDo: [ :anError | 
+	self
+		should: [ customerBook suspendCustomerNamed: johnLennon ]
+		raise: CantSuspend
+		withExceptionDo: [ :anError | 
 			self assert: customerBook numberOfCustomers = 1.
-			self assert: (customerBook includesCustomerNamed: johnLennon) ]
-! !
+			self assert: (customerBook includesCustomerNamed: johnLennon) ]! !
 
 
 !CustomerBookTest methodsFor: 'auxiliar' stamp: 'jluini 9/20/2018 21:15:14'!
@@ -168,14 +177,6 @@ evaluationOf: aBlockClosure shouldNotTakeMoreThan: aTimeMeasure
 	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < aTimeMeasure
 	
 ! !
-
-!CustomerBookTest methodsFor: 'auxiliar' stamp: 'jluini 9/20/2018 21:04:46'!
-evaluationOf: aBlockClosure shouldThrow: anException andThenDo: anotherClosure
-	
-	[ aBlockClosure value.
-	self fail ]
-		on: anException 
-		do: anotherClosure ! !
 
 
 !classDefinition: #CustomerBook category: #'CodigoRepetido-Ejercicio'!
