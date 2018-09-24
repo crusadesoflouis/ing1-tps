@@ -30,12 +30,12 @@ test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
 	self evaluationOf: [ customerBook addCustomerNamed: 'John Lennon'. ] shouldNotTakeMoreThan: (50 * millisecond).
 	! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'jluini 9/20/2018 21:17:17'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/24/2018 01:02:10'!
 test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 	| customerBook paulMcCartney |
 	
 	paulMcCartney := 'Paul McCartney'.
-	customerBook := self bookWithSingleCustomerNamed: paulMcCartney.
+	customerBook := self newBookWithSingleCustomerNamed: paulMcCartney.
 	self evaluationOf: [customerBook removeCustomerNamed: paulMcCartney] shouldNotTakeMoreThan: (100 * millisecond)
 ! !
 
@@ -54,27 +54,27 @@ test03CanNotAddACustomerWithEmptyName
 			self assert: customerBook isEmpty ]
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/24/2018 00:58:27'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/24/2018 01:02:10'!
 test04CanNotRemoveAnInvalidCustomer
 	
 	| customerBook johnLennon |
 	johnLennon := 'John Lennon'.
 	
-	customerBook := self bookWithSingleCustomerNamed: johnLennon.
+	customerBook := self newBookWithSingleCustomerNamed: johnLennon.
 	
 	self
 		should: [ customerBook removeCustomerNamed: 'Paul McCartney' ]
 		raise: NotFound
 		withExceptionDo: [ :anError | self checkOnlyOneCustomerIn: customerBook named: johnLennon ]! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/22/2018 19:40:00'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/24/2018 01:03:24'!
 test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 
 	| customerBook paulMcCartney|
 	
 	paulMcCartney := 'Paul McCartney'.
 	
-	customerBook := self bookWithSingleSuspendedCustomerNamed: paulMcCartney.
+	customerBook := self newBookWithSingleSuspendedCustomerNamed: paulMcCartney.
 	
 	self checkNumberOfCustomersIn: customerBook total: 1 active: 0 suspended: 1. 
 	
@@ -84,14 +84,14 @@ test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 	
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/22/2018 19:40:00'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/24/2018 01:03:24'!
 test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 
 	| customerBook paulMcCartney|
 	
 	paulMcCartney := 'Paul McCartney'.
 	
-	customerBook := self bookWithSingleSuspendedCustomerNamed: paulMcCartney.
+	customerBook := self newBookWithSingleSuspendedCustomerNamed: paulMcCartney.
 	
 	customerBook removeCustomerNamed: paulMcCartney.
 	
@@ -103,55 +103,33 @@ test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 	
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/24/2018 00:59:16'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/24/2018 01:02:10'!
 test07CanNotSuspendAnInvalidCustomer
 	
 	| customerBook johnLennon |
 
 	johnLennon := 'John Lennon'.
 	
-	customerBook := self bookWithSingleCustomerNamed: johnLennon.
+	customerBook := self newBookWithSingleCustomerNamed: johnLennon.
 
 	self
 		should: [ customerBook suspendCustomerNamed: 'Paul McCartney' ]
 		raise: CantSuspend
 		withExceptionDo: [ :anError | self checkOnlyOneCustomerIn: customerBook named: johnLennon ]! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/24/2018 00:59:41'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/24/2018 01:03:24'!
 test08CanNotSuspendAnAlreadySuspendedCustomer
 	
 	| customerBook johnLennon |
 	johnLennon := 'John Lennon'.
 			
-	customerBook := self bookWithSingleSuspendedCustomerNamed: johnLennon.
+	customerBook := self newBookWithSingleSuspendedCustomerNamed: johnLennon.
 	
 	self
 		should: [ customerBook suspendCustomerNamed: johnLennon ]
 		raise: CantSuspend
 		withExceptionDo: [ :anError | self checkOnlyOneCustomerIn: customerBook named: johnLennon ]! !
 
-
-!CustomerBookTest methodsFor: 'auxiliar' stamp: 'jluini 9/20/2018 21:15:14'!
-bookWithSingleCustomerNamed: customerName
-	
-	| customerBook |
-	
-	customerBook := CustomerBook  new.
-	customerBook addCustomerNamed: customerName.
-	
-	^customerBook.
-! !
-
-!CustomerBookTest methodsFor: 'auxiliar' stamp: 'jluini 9/20/2018 21:26:58'!
-bookWithSingleSuspendedCustomerNamed: customerName
-	
-	| customerBook |
-	
-	customerBook := self bookWithSingleCustomerNamed: customerName.
-	customerBook suspendCustomerNamed: customerName.
-	
-	^ customerBook
-! !
 
 !CustomerBookTest methodsFor: 'auxiliar' stamp: 'jml 9/22/2018 19:40:00'!
 checkNumberOfCustomersIn: customerBook total: numberOfCustomers  active: numberOfActiveCustomers suspended: numberOfSuspendedCustomers
@@ -176,6 +154,28 @@ evaluationOf: aBlockClosure shouldNotTakeMoreThan: aTimeMeasure
 
 	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < aTimeMeasure
 	
+! !
+
+!CustomerBookTest methodsFor: 'auxiliar' stamp: 'jml 9/24/2018 01:02:10'!
+newBookWithSingleCustomerNamed: customerName
+	
+	| customerBook |
+	
+	customerBook := CustomerBook  new.
+	customerBook addCustomerNamed: customerName.
+	
+	^customerBook.
+! !
+
+!CustomerBookTest methodsFor: 'auxiliar' stamp: 'jml 9/24/2018 01:03:24'!
+newBookWithSingleSuspendedCustomerNamed: customerName
+	
+	| customerBook |
+	
+	customerBook := self newBookWithSingleCustomerNamed: customerName.
+	customerBook suspendCustomerNamed: customerName.
+	
+	^ customerBook
 ! !
 
 
