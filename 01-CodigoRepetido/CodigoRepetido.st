@@ -54,7 +54,7 @@ test03CanNotAddACustomerWithEmptyName
 			self assert: customerBook isEmpty ]
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/22/2018 20:06:10'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/24/2018 00:58:27'!
 test04CanNotRemoveAnInvalidCustomer
 	
 	| customerBook johnLennon |
@@ -65,9 +65,7 @@ test04CanNotRemoveAnInvalidCustomer
 	self
 		should: [ customerBook removeCustomerNamed: 'Paul McCartney' ]
 		raise: NotFound
-		withExceptionDo: [ :anError | 
-			self assert: customerBook numberOfCustomers = 1.
-			self assert: (customerBook includesCustomerNamed: johnLennon) ]! !
+		withExceptionDo: [ :anError | self checkOnlyOneCustomerIn: customerBook named: johnLennon ]! !
 
 !CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/22/2018 19:40:00'!
 test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
@@ -105,7 +103,7 @@ test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 	
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/22/2018 20:02:12'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/24/2018 00:59:16'!
 test07CanNotSuspendAnInvalidCustomer
 	
 	| customerBook johnLennon |
@@ -117,11 +115,9 @@ test07CanNotSuspendAnInvalidCustomer
 	self
 		should: [ customerBook suspendCustomerNamed: 'Paul McCartney' ]
 		raise: CantSuspend
-		withExceptionDo: [ :anError | 
-			self assert: customerBook numberOfCustomers = 1.
-			self assert: (customerBook includesCustomerNamed: johnLennon) ]! !
+		withExceptionDo: [ :anError | self checkOnlyOneCustomerIn: customerBook named: johnLennon ]! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/22/2018 20:04:43'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'jml 9/24/2018 00:59:41'!
 test08CanNotSuspendAnAlreadySuspendedCustomer
 	
 	| customerBook johnLennon |
@@ -132,9 +128,7 @@ test08CanNotSuspendAnAlreadySuspendedCustomer
 	self
 		should: [ customerBook suspendCustomerNamed: johnLennon ]
 		raise: CantSuspend
-		withExceptionDo: [ :anError | 
-			self assert: customerBook numberOfCustomers = 1.
-			self assert: (customerBook includesCustomerNamed: johnLennon) ]! !
+		withExceptionDo: [ :anError | self checkOnlyOneCustomerIn: customerBook named: johnLennon ]! !
 
 
 !CustomerBookTest methodsFor: 'auxiliar' stamp: 'jluini 9/20/2018 21:15:14'!
@@ -164,6 +158,12 @@ checkNumberOfCustomersIn: customerBook total: numberOfCustomers  active: numberO
 	self assert: numberOfActiveCustomers equals: customerBook numberOfActiveCustomers.
 	self assert: numberOfSuspendedCustomers equals: customerBook numberOfSuspendedCustomers.
 	self assert: numberOfCustomers equals: customerBook numberOfCustomers.! !
+
+!CustomerBookTest methodsFor: 'auxiliar' stamp: 'jml 9/24/2018 00:56:53'!
+checkOnlyOneCustomerIn: aCustomerBook named: aName
+	
+	self assert: aCustomerBook numberOfCustomers = 1.
+	self assert: (aCustomerBook includesCustomerNamed: aName)! !
 
 !CustomerBookTest methodsFor: 'auxiliar' stamp: 'jluini 9/20/2018 20:43:44'!
 evaluationOf: aBlockClosure shouldNotTakeMoreThan: aTimeMeasure
