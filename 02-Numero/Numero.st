@@ -340,6 +340,15 @@ isZero
 
 	self subclassResponsibility ! !
 
+
+!Numero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/24/2018 20:29:04'!
+addEntero: anEnteroToAdd
+	self subclassResponsibility ! !
+
+!Numero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/24/2018 20:29:23'!
+addFraccion: aFraccionToAdd
+	self subclassResponsibility ! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Numero class' category: #'Numero-Exercise'!
@@ -369,11 +378,11 @@ Numero subclass: #Entero
 	^self class with: value * aMultiplier integerValue
 	! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:13'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'jml 9/24/2018 20:34:31'!
 + anAdder 
 	
-	^self class with: value + anAdder integerValue
-! !
+	^anAdder addEntero: self.
+	! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'NR 9/23/2018 23:40:37'!
 - aSubtrahend 
@@ -421,7 +430,6 @@ hash
 	^value hash! !
 
 
-
 !Entero methodsFor: 'initialization' stamp: 'HernanWilkinson 5/7/2016 20:09'!
 initalizeWith: aValue 
 	
@@ -457,6 +465,17 @@ isZero
 	
 	^value = 0! !
 
+
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/24/2018 20:29:55'!
+addEntero: anEnteroToAdd
+	
+	^self class with: value + anEnteroToAdd integerValue! !
+
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/24/2018 20:34:38'!
+addFraccion: aFraccionToAdd
+
+	^aFraccionToAdd addEntero: self! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Entero class' category: #'Numero-Exercise'!
@@ -489,15 +508,10 @@ Numero subclass: #Fraccion
 	^(numerator * aMultiplier numerator) / (denominator * aMultiplier denominator)
 	! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:14'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'jml 9/24/2018 20:34:44'!
 + anAdder 
-	
-	| newNumerator newDenominator |
-	
-	newNumerator := (numerator * anAdder denominator) + (denominator * anAdder numerator).
-	newDenominator := denominator * anAdder denominator.
-	
-	^newNumerator / newDenominator ! !
+
+	anAdder addFraccion: self.! !
 
 !Fraccion methodsFor: 'arithmetic operations' stamp: 'NR 9/23/2018 23:43:50'!
 - aSubtrahend 
@@ -525,7 +539,6 @@ Numero subclass: #Fraccion
 hash
 
 	^(numerator hash / denominator hash) hash! !
-
 
 
 !Fraccion methodsFor: 'accessing' stamp: 'HernanWilkinson 5/7/2016 21:56'!
@@ -573,6 +586,26 @@ printOn: aStream
 		print: numerator;
 		nextPut: $/;
 		print: denominator ! !
+
+
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/24/2018 20:35:07'!
+addEntero: anEnteroToAdd
+	
+	| newNumerator |
+	
+	newNumerator := numerator + (denominator * anEnteroToAdd).
+	
+	^newNumerator / denominator ! !
+
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/24/2018 20:30:42'!
+addFraccion: aFraccionToAdd
+	
+	| newNumerator newDenominator |
+	
+	newNumerator := (numerator * aFraccionToAdd denominator) + (denominator * aFraccionToAdd numerator).
+	newDenominator := denominator * aFraccionToAdd denominator.
+	
+	^newNumerator / newDenominator ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
