@@ -613,16 +613,17 @@ printOn: aStream
 		print: denominator ! !
 
 
-!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:25:29'!
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:45:40'!
 addEntero: anAddend
 	
-	| newNumerator |
+	| newNumerator newDenominator |
 	
 	newNumerator := numerator + (denominator * anAddend).
+	newDenominator := denominator.
 	
-	^newNumerator / denominator ! !
+	^Fraccion with: newNumerator over: newDenominator! !
 
-!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:28:46'!
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:44:03'!
 addFraccion: anAddend
 	
 	| newNumerator newDenominator |
@@ -630,27 +631,47 @@ addFraccion: anAddend
 	newNumerator := (numerator * anAddend denominator) + (denominator * anAddend numerator).
 	newDenominator := denominator * anAddend denominator.
 	
-	^newNumerator / newDenominator ! !
+	^Fraccion with: newNumerator over: newDenominator! !
 
-!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:29:23'!
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:45:21'!
 divideEntero: aDividend
 	
-	^Fraccion with: (aDividend * denominator) over: numerator! !
+	| newNumerator newDenominator |
+	
+	newNumerator := aDividend * denominator.
+	newDenominator := numerator.
+	
+	^Fraccion with: newNumerator over: newDenominator! !
 
-!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:29:56'!
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:43:12'!
 divideFraccion: aDividend
 
-	^(denominator * aDividend numerator) / (numerator * aDividend denominator)! !
+	| newNumerator newDenominator |
+	
+	newNumerator := denominator * aDividend numerator.
+	newDenominator := numerator * aDividend denominator.
+	
+	^Fraccion with: newNumerator over: newDenominator! !
 
-!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:30:47'!
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:46:48'!
 multiplyEntero: aMultiplier
+	
+	| newNumerator newDenominator |
+	
+	newNumerator := numerator * aMultiplier.
+	newDenominator := denominator.
+	
+	^Fraccion with: newNumerator over: newDenominator! !
 
-	^(numerator * aMultiplier) / denominator! !
-
-!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:31:09'!
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:47:50'!
 multiplyFraccion: aMultiplier
-
-	^(numerator * aMultiplier numerator) / (denominator * aMultiplier denominator)! !
+	
+	| newNumerator newDenominator |
+	
+	newNumerator := numerator * aMultiplier numerator.
+	newDenominator := denominator * aMultiplier denominator.
+	
+	^Fraccion with: newNumerator over: newDenominator! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
