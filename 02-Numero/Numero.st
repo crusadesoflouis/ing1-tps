@@ -299,8 +299,8 @@ Object subclass: #Numero
 
 	self subclassResponsibility ! !
 
-!Numero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 22:49'!
-+ anAdder
+!Numero methodsFor: 'arithmetic operations' stamp: 'jml 9/25/2018 01:09:53'!
++ anAddend
 
 	self subclassResponsibility ! !
 
@@ -341,33 +341,35 @@ isZero
 	self subclassResponsibility ! !
 
 
-!Numero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/24/2018 20:29:04'!
-addEntero: anEnteroToAdd
+!Numero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:11:38'!
+addEntero: anAddend
+
 	self subclassResponsibility ! !
 
-!Numero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/24/2018 20:29:23'!
-addFraccion: aFraccionToAdd
+!Numero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:11:51'!
+addFraccion: anAddend
+
 	self subclassResponsibility ! !
 
-!Numero methodsFor: 'arithmetic operations - private' stamp: 'asd 9/25/2018 00:41:17'!
-divideEntero: anEntero
+!Numero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:12:29'!
+divideEntero: aDividend
+	
+	self subclassResponsibility ! !
 
- self subclassResponsibility ! !
+!Numero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:13:34'!
+divideFraccion: aDividend
+	
+	self subclassResponsibility ! !
 
-!Numero methodsFor: 'arithmetic operations - private' stamp: 'asd 9/25/2018 00:41:24'!
-divideFraccion: anEntero
+!Numero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:14:50'!
+multiplyEntero: aMultiplier
+	
+	self subclassResponsibility! !
 
- self subclassResponsibility ! !
-
-!Numero methodsFor: 'arithmetic operations - private' stamp: 'asd 9/25/2018 00:41:10'!
-multiplyEntero: anEntero
-
- self subclassResponsibility ! !
-
-!Numero methodsFor: 'arithmetic operations - private' stamp: 'asd 9/25/2018 00:40:57'!
-multiplyFraccion: anFraccion
-
- self subclassResponsibility ! !
+!Numero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:15:03'!
+multiplyFraccion: aMultiplier
+	
+	self subclassResponsibility ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -392,28 +394,24 @@ Numero subclass: #Entero
 	poolDictionaries: ''
 	category: 'Numero-Exercise'!
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'asd 9/24/2018 21:01:04'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'jml 9/25/2018 01:16:10'!
 * aMultiplier 
 	
-		^ aMultiplier  multiplyEntero: self
+	^aMultiplier multiplyEntero: self! !
 
-	"^self class with: value * aMultiplier integerValue"
-	! !
-
-!Entero methodsFor: 'arithmetic operations' stamp: 'jml 9/24/2018 20:34:31'!
-+ anAdder 
+!Entero methodsFor: 'arithmetic operations' stamp: 'jml 9/25/2018 01:16:05'!
++ anAddend
 	
-	^anAdder addEntero: self.
+	^anAddend addEntero: self.
 	! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'asd 9/25/2018 00:44:02'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'jml 9/25/2018 01:16:45'!
 - aSubtrahend 
 	
-	^ self + aSubtrahend  negated.! !
+	^self + aSubtrahend negated! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'asd 9/25/2018 00:39:32'!
-/ aDivisor 
-	
+!Entero methodsFor: 'arithmetic operations' stamp: 'jml 9/25/2018 01:17:12'!
+/ aDivisor
 	
 	^aDivisor divideEntero: self! !
 
@@ -489,41 +487,36 @@ isZero
 	^value = 0! !
 
 
-!Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/24/2018 20:29:55'!
-addEntero: anEnteroToAdd
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:19:16'!
+addEntero: anAddend
 	
-	^self class with: value + anEnteroToAdd integerValue! !
+	^self class with: value + anAddend integerValue! !
 
-!Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/24/2018 20:34:38'!
-addFraccion: aFraccionToAdd
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:19:52'!
+addFraccion: anAddend
 
-	^aFraccionToAdd addEntero: self! !
+	^anAddend addEntero: self! !
 
-!Entero methodsFor: 'arithmetic operations - private' stamp: 'asd 9/25/2018 00:39:32'!
-divideEntero: anNumerator 
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:20:36'!
+divideEntero: aDividend
+	
+	^Fraccion with: aDividend over: self! !
 
-
-^Fraccion with: anNumerator over: self! !
-
-!Entero methodsFor: 'arithmetic operations - private' stamp: 'L A 9/24/2018 23:25:02'!
-divideFraccion: anNumeratorFraccion 
-
-
-	^ Fraccion with: (anNumeratorFraccion numerator )over: (anNumeratorFraccion denominator * self)
-
-
-"anNumeratorFraccion dividido 0 " 
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:21:54'!
+divideFraccion: aDividend
+	
+	^Fraccion with: (aDividend numerator) over: (aDividend denominator * self)
 ! !
 
-!Entero methodsFor: 'arithmetic operations - private' stamp: 'asd 9/24/2018 21:49:25'!
-multiplyEntero: anEntero 
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:22:17'!
+multiplyEntero: aMultiplier
 
-	^self class with: value * anEntero integerValue! !
+	^self class with: value * aMultiplier integerValue! !
 
-!Entero methodsFor: 'arithmetic operations - private' stamp: 'L A 9/24/2018 21:56:07'!
-multiplyFraccion: anFraccion 
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:23:04'!
+multiplyFraccion: aMultiplier
 
-	^ anFraccion multiplyEntero: self! !
+	^aMultiplier multiplyEntero: self! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -551,25 +544,25 @@ Numero subclass: #Fraccion
 	poolDictionaries: ''
 	category: 'Numero-Exercise'!
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'asd 9/24/2018 21:53:27'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'jml 9/25/2018 01:23:30'!
 * aMultiplier 
 
-	^ aMultiplier  multiplyFraccion: self! !
+	^aMultiplier multiplyFraccion: self! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'asd 9/25/2018 00:39:50'!
-+ anAdder 
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'jml 9/25/2018 01:23:44'!
++ anAddend
 
-	^anAdder addFraccion: self.! !
+	^anAddend addFraccion: self! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'asd 9/25/2018 00:44:09'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'jml 9/25/2018 01:23:59'!
 - aSubtrahend 
 	
-	^ self + aSubtrahend  negated.! !
+	^self + aSubtrahend negated! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'L A 9/24/2018 23:06:27'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'jml 9/25/2018 01:24:08'!
 / aDivisor 
 	
-	^ aDivisor divideFraccion: self! !
+	^aDivisor divideFraccion: self! !
 
 
 !Fraccion methodsFor: 'comparing' stamp: 'HernanWilkinson 5/7/2016 20:42'!
@@ -630,53 +623,44 @@ printOn: aStream
 		print: denominator ! !
 
 
-!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/24/2018 20:35:07'!
-addEntero: anEnteroToAdd
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:25:29'!
+addEntero: anAddend
 	
 	| newNumerator |
 	
-	newNumerator := numerator + (denominator * anEnteroToAdd).
+	newNumerator := numerator + (denominator * anAddend).
 	
 	^newNumerator / denominator ! !
 
-!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/24/2018 20:30:42'!
-addFraccion: aFraccionToAdd
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:28:46'!
+addFraccion: anAddend
 	
 	| newNumerator newDenominator |
 	
-	newNumerator := (numerator * aFraccionToAdd denominator) + (denominator * aFraccionToAdd numerator).
-	newDenominator := denominator * aFraccionToAdd denominator.
+	newNumerator := (numerator * anAddend denominator) + (denominator * anAddend numerator).
+	newDenominator := denominator * anAddend denominator.
 	
 	^newNumerator / newDenominator ! !
 
-!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'asd 9/25/2018 00:39:13'!
-divideEntero: anEntero 
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:29:23'!
+divideEntero: aDividend
+	
+	^Fraccion with: (aDividend * denominator) over: numerator! !
 
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:29:56'!
+divideFraccion: aDividend
 
-^Fraccion with: (anEntero*denominator )over: numerator! !
+	^(denominator * aDividend numerator) / (numerator * aDividend denominator)! !
 
-!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'L A 9/24/2018 23:24:43'!
-divideFraccion: anNumeratorFraccion 
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:30:47'!
+multiplyEntero: aMultiplier
 
-"self =  selfNumerator
-		selfDenominator
-anNumeratorFraccion =   variableNumerator 
-							variableDenominator
-							lo que tengo que hacer es anNumerator dividido self 
-							
-							variableNumerador * self denominator  / variableDenominador * self numerador"
+	^(numerator * aMultiplier) / denominator! !
 
-	^(denominator * anNumeratorFraccion numerator) / (numerator * anNumeratorFraccion denominator)! !
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:31:09'!
+multiplyFraccion: aMultiplier
 
-!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'asd 9/24/2018 21:47:47'!
-multiplyEntero: anEntero 
-
-	^(numerator * anEntero) / (denominator)! !
-
-!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'L A 9/24/2018 21:55:05'!
-multiplyFraccion: anFraccion
-
-	^(numerator * anFraccion numerator) / (denominator * anFraccion denominator)! !
+	^(numerator * aMultiplier numerator) / (denominator * aMultiplier denominator)! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
