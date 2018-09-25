@@ -406,10 +406,10 @@ Numero subclass: #Entero
 	^anAdder addEntero: self.
 	! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'NR 9/23/2018 23:40:37'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'asd 9/25/2018 00:44:02'!
 - aSubtrahend 
 	
-	^ self class with: value - aSubtrahend integerValue.! !
+	^ self + aSubtrahend  negated.! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'asd 9/25/2018 00:39:32'!
 / aDivisor 
@@ -561,16 +561,10 @@ Numero subclass: #Fraccion
 
 	^anAdder addFraccion: self.! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'NR 9/23/2018 23:43:50'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'asd 9/25/2018 00:44:09'!
 - aSubtrahend 
 	
-	| newNumerator newDenominator |
-	
-	newNumerator := (numerator * aSubtrahend denominator) - (denominator * aSubtrahend numerator).
-	newDenominator := denominator * aSubtrahend denominator.
-	
-	^newNumerator / newDenominator 
-! !
+	^ self + aSubtrahend  negated.! !
 
 !Fraccion methodsFor: 'arithmetic operations' stamp: 'L A 9/24/2018 23:06:27'!
 / aDivisor 
