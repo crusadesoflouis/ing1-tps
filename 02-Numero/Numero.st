@@ -372,10 +372,12 @@ Numero subclass: #Entero
 	poolDictionaries: ''
 	category: 'Numero-Exercise'!
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:13'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'asd 9/24/2018 21:01:04'!
 * aMultiplier 
 	
-	^self class with: value * aMultiplier integerValue
+		^ aMultiplier  multiplyEntero: self
+
+	"^self class with: value * aMultiplier integerValue"
 	! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'jml 9/24/2018 20:34:31'!
@@ -476,6 +478,16 @@ addFraccion: aFraccionToAdd
 
 	^aFraccionToAdd addEntero: self! !
 
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'asd 9/24/2018 21:49:25'!
+multiplyEntero: anEntero 
+
+	^self class with: value * anEntero integerValue! !
+
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'L A 9/24/2018 21:56:07'!
+multiplyFraccion: anFraccion 
+
+	^ anFraccion multiplyEntero: self! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Entero class' category: #'Numero-Exercise'!
@@ -502,11 +514,10 @@ Numero subclass: #Fraccion
 	poolDictionaries: ''
 	category: 'Numero-Exercise'!
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:14'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'asd 9/24/2018 21:53:27'!
 * aMultiplier 
-	
-	^(numerator * aMultiplier numerator) / (denominator * aMultiplier denominator)
-	! !
+
+	^ aMultiplier  multiplyFraccion: self! !
 
 !Fraccion methodsFor: 'arithmetic operations' stamp: 'jml 9/24/2018 20:34:44'!
 + anAdder 
@@ -606,6 +617,16 @@ addFraccion: aFraccionToAdd
 	newDenominator := denominator * aFraccionToAdd denominator.
 	
 	^newNumerator / newDenominator ! !
+
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'asd 9/24/2018 21:47:47'!
+multiplyEntero: anEntero 
+
+	^(numerator * anEntero) / (denominator)! !
+
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'L A 9/24/2018 21:55:05'!
+multiplyFraccion: anFraccion
+
+	^(numerator * anFraccion numerator) / (denominator * anFraccion denominator)! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
