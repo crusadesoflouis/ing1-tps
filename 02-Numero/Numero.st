@@ -391,10 +391,11 @@ Numero subclass: #Entero
 	
 	^ self class with: value - aSubtrahend integerValue.! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:14'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'L A 9/24/2018 22:56:06'!
 / aDivisor 
 	
-	^Fraccion with: self over: aDivisor! !
+	
+	^aDivisor dividedeEntero: self! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 21:55'!
 // aDivisor 
@@ -478,6 +479,22 @@ addFraccion: aFraccionToAdd
 
 	^aFraccionToAdd addEntero: self! !
 
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'L A 9/24/2018 23:25:02'!
+divideFraccion: anNumeratorFraccion 
+
+
+	^ Fraccion with: (anNumeratorFraccion numerator )over: (anNumeratorFraccion denominator * self)
+
+
+"anNumeratorFraccion dividido 0 " 
+! !
+
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'L A 9/24/2018 23:26:09'!
+dividedeEntero: anNumerator 
+
+
+^Fraccion with: anNumerator over: self! !
+
 !Entero methodsFor: 'arithmetic operations - private' stamp: 'asd 9/24/2018 21:49:25'!
 multiplyEntero: anEntero 
 
@@ -535,10 +552,10 @@ Numero subclass: #Fraccion
 	^newNumerator / newDenominator 
 ! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:14'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'L A 9/24/2018 23:06:27'!
 / aDivisor 
 	
-	^(numerator * aDivisor denominator) / (denominator * aDivisor numerator)! !
+	^ aDivisor divideFraccion: self! !
 
 
 !Fraccion methodsFor: 'comparing' stamp: 'HernanWilkinson 5/7/2016 20:42'!
@@ -617,6 +634,25 @@ addFraccion: aFraccionToAdd
 	newDenominator := denominator * aFraccionToAdd denominator.
 	
 	^newNumerator / newDenominator ! !
+
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'L A 9/24/2018 23:24:43'!
+divideFraccion: anNumeratorFraccion 
+
+"self =  selfNumerator
+		selfDenominator
+anNumeratorFraccion =   variableNumerator 
+							variableDenominator
+							lo que tengo que hacer es anNumerator dividido self 
+							
+							variableNumerador * self denominator  / variableDenominador * self numerador"
+
+	^(denominator * anNumeratorFraccion numerator) / (numerator * anNumeratorFraccion denominator)! !
+
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'L A 9/24/2018 23:26:25'!
+dividedeEntero: anEntero 
+
+
+^Fraccion with: (anEntero*denominator )over: numerator! !
 
 !Fraccion methodsFor: 'arithmetic operations - private' stamp: 'asd 9/24/2018 21:47:47'!
 multiplyEntero: anEntero 
