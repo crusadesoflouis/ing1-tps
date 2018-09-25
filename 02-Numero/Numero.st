@@ -497,11 +497,15 @@ divideEntero: aDividend
 	
 	^Fraccion with: aDividend over: self! !
 
-!Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:21:54'!
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 14:32:58'!
 divideFraccion: aDividend
 	
-	^Fraccion with: (aDividend numerator) over: (aDividend denominator * self)
-! !
+	| newNumerator newDenominator |
+	
+	newNumerator := aDividend numerator.
+	newDenominator := self * aDividend denominator.
+	
+	^Fraccion with: newNumerator over: newDenominator! !
 
 !Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:22:17'!
 multiplyEntero: aMultiplier
