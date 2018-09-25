@@ -304,10 +304,10 @@ Object subclass: #Numero
 
 	self subclassResponsibility ! !
 
-!Numero methodsFor: 'arithmetic operations' stamp: 'NR 9/23/2018 22:21:28'!
-- aSubtrahend
-
-	self subclassResponsibility ! !
+!Numero methodsFor: 'arithmetic operations' stamp: 'jml 9/25/2018 01:34:44'!
+- aSubtrahend 
+	
+	^self + aSubtrahend negated! !
 
 !Numero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 22:49'!
 / aDivisor
@@ -404,11 +404,6 @@ Numero subclass: #Entero
 	
 	^anAddend addEntero: self.
 	! !
-
-!Entero methodsFor: 'arithmetic operations' stamp: 'jml 9/25/2018 01:16:45'!
-- aSubtrahend 
-	
-	^self + aSubtrahend negated! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'jml 9/25/2018 01:17:12'!
 / aDivisor
@@ -553,11 +548,6 @@ Numero subclass: #Fraccion
 + anAddend
 
 	^anAddend addFraccion: self! !
-
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'jml 9/25/2018 01:23:59'!
-- aSubtrahend 
-	
-	^self + aSubtrahend negated! !
 
 !Fraccion methodsFor: 'arithmetic operations' stamp: 'jml 9/25/2018 01:24:08'!
 / aDivisor 
