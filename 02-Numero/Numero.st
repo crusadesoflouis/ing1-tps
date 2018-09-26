@@ -683,21 +683,23 @@ multiplyFraccion: aMultiplier
 Fraccion class
 	instanceVariableNames: ''!
 
-!Fraccion class methodsFor: 'intance creation' stamp: 'NR 9/23/2018 23:45:19'!
-with: aDividend over: aDivisor
+!Fraccion class methodsFor: 'intance creation' stamp: 'jml 9/26/2018 12:34:22'!
+with: aNumerator over: aDenominator
 
-	| greatestCommonDivisor numerator denominator |
+	| greatestCommonDivisor newNumerator newDenominator |
 	
-	aDivisor isZero ifTrue: [ self error: self canNotDivideByZeroErrorDescription ].
-	aDividend isZero ifTrue: [ ^aDividend ].
+	aDenominator isZero ifTrue: [ self error: self canNotDivideByZeroErrorDescription ].
+	aNumerator isZero ifTrue: [ ^aNumerator ].
 	
-	aDivisor isNegative ifTrue:[ ^aDividend negated / aDivisor negated].
+	aDenominator isNegative ifTrue: [
+		^self with: aNumerator negated over: aDenominator negated
+	].
 	
-	greatestCommonDivisor := aDividend greatestCommonDivisorWith: aDivisor. 
-	numerator := aDividend // greatestCommonDivisor.
-	denominator := aDivisor // greatestCommonDivisor.
+	greatestCommonDivisor := aNumerator greatestCommonDivisorWith: aDenominator. 
+	newNumerator := aNumerator // greatestCommonDivisor.
+	newDenominator := aDenominator // greatestCommonDivisor.
 	
-	denominator isOne ifTrue: [ ^numerator ].
+	newDenominator isOne ifTrue: [ ^ newNumerator ].
 
-	^self new initializeWith: numerator over: denominator
+	^self new initializeWith: newNumerator over: newDenominator
 	! !
