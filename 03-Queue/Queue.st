@@ -128,12 +128,52 @@ test10CanNotNextWhenThereAreNoObjectsInTheQueue
 			self assert: anError messageText equals: Queue queueEmptyErrorDescription ].! !
 
 
-!classDefinition: #Queue category: #'Queue-Exercise'!
-Object subclass: #Queue
-	instanceVariableNames: 'contents'
+!classDefinition: #Node category: #'Queue-Exercise'!
+Object subclass: #Node
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Queue-Exercise'!
+
+
+!classDefinition: #ElementNode category: #'Queue-Exercise'!
+Node subclass: #ElementNode
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Queue-Exercise'!
+
+
+!classDefinition: #NullNode category: #'Queue-Exercise'!
+Node subclass: #NullNode
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Queue-Exercise'!
+
+!NullNode methodsFor: 'testing' stamp: 'LA 9/27/2018 20:33:59'!
+isNull
+	^true ! !
+
+
+!classDefinition: #Queue category: #'Queue-Exercise'!
+Object subclass: #Queue
+	instanceVariableNames: 'head tail'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Queue-Exercise'!
+
+!Queue methodsFor: 'testing' stamp: 'LA 9/27/2018 20:42:20'!
+initialize
+
+	head := NullNode new.
+	tail := NullNode new.! !
+
+!Queue methodsFor: 'testing' stamp: 'LA 9/27/2018 20:35:39'!
+isEmpty
+
+	^head isNull! !
+
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
