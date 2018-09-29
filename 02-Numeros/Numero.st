@@ -389,7 +389,7 @@ invalidNumberTypeErrorDescription
 
 !classDefinition: #Entero category: #'Numero-Exercise'!
 Numero subclass: #Entero
-	instanceVariableNames: 'value'
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Numero-Exercise'!
@@ -410,82 +410,85 @@ Numero subclass: #Entero
 	
 	^aDivisor divideEntero: self! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 21:55'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'jml 9/29/2018 02:01:04'!
 // aDivisor 
 	
-	^self class with: value // aDivisor integerValue! !
+	^self class with: (self integerValue // aDivisor integerValue)! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'HAW 9/24/2018 08:47:50'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'jml 9/29/2018 02:39:33'!
 fibonacci
+	
+	self subclassResponsibility ! !
 
-	| one two |
-	
-	one := Entero with: 1.
-	two := Entero with: 2.
-	
-	self isNegative ifTrue: [self error: Entero negativeFibonacciErrorDescription ].	
-	(self isZero or: [self isOne]) ifTrue: [^one].
-	
-	^ (self - one) fibonacci + (self - two) fibonacci
-		! !
-
-!Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 21:00'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'jml 9/29/2018 02:03:05'!
 greatestCommonDivisorWith: anEntero 
 	
-	^self class with: (value gcd: anEntero integerValue)! !
+	^self class with: (self integerValue gcd: anEntero integerValue)! !
 
 
-!Entero methodsFor: 'comparing' stamp: 'HernanWilkinson 5/7/2016 21:01'!
+!Entero methodsFor: 'comparing' stamp: 'jml 9/29/2018 02:01:47'!
 = anObject
 
-	^(anObject isKindOf: self class) and: [ value = anObject integerValue ]! !
+	^(anObject isKindOf: self class) and: [ self integerValue = anObject integerValue ]! !
 
-!Entero methodsFor: 'comparing' stamp: 'HernanWilkinson 5/7/2016 20:17'!
+!Entero methodsFor: 'comparing' stamp: 'jml 9/29/2018 02:03:22'!
 hash
 
-	^value hash! !
+	^self integerValue hash! !
 
 
-!Entero methodsFor: 'initialization' stamp: 'HernanWilkinson 5/7/2016 20:09'!
-initalizeWith: aValue 
-	
-	value := aValue! !
 
-
-!Entero methodsFor: 'value' stamp: 'HernanWilkinson 5/7/2016 21:02'!
+!Entero methodsFor: 'value' stamp: 'jml 9/29/2018 02:00:49'!
 integerValue
 
 	"Usamos integerValue en vez de value para que no haya problemas con el mensaje value implementado en Object - Hernan"
-	
-	^value! !
+	self subclassResponsibility ! !
 
 
-!Entero methodsFor: 'printing' stamp: 'HAW 9/24/2018 08:53:19'!
+!Entero methodsFor: 'printing' stamp: 'jml 9/29/2018 02:05:59'!
 printOn: aStream
 
-	aStream print: value ! !
+	aStream print: self integerValue.! !
 
 
-!Entero methodsFor: 'testing' stamp: 'NR 9/23/2018 22:17:55'!
+!Entero methodsFor: 'testing' stamp: 'jml 9/29/2018 02:25:41'!
+ifNegative: aBlock
+	
+	self subclassResponsibility ! !
+
+!Entero methodsFor: 'testing' stamp: 'jml 9/29/2018 02:25:23'!
+ifOne: aBlock
+	
+	self subclassResponsibility ! !
+
+!Entero methodsFor: 'testing' stamp: 'jml 9/29/2018 02:25:09'!
+ifZero: aBlock
+	
+	self subclassResponsibility ! !
+
+!Entero methodsFor: 'testing' stamp: 'jml 9/29/2018 02:37:45'!
 isNegative
 	
-	^value < 0! !
+	self ifNegative: [ ^ true].
+	^ false.! !
 
-!Entero methodsFor: 'testing' stamp: 'HernanWilkinson 5/7/2016 20:14'!
+!Entero methodsFor: 'testing' stamp: 'jml 9/29/2018 02:37:15'!
 isOne
 	
-	^value = 1! !
+	self ifOne: [ ^ true].
+	^ false.! !
 
-!Entero methodsFor: 'testing' stamp: 'HernanWilkinson 5/7/2016 20:12'!
+!Entero methodsFor: 'testing' stamp: 'jml 9/29/2018 02:37:11'!
 isZero
 	
-	^value = 0! !
+	self ifZero: [ ^ true].
+	^ false.! !
 
 
-!Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:19:16'!
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/29/2018 02:02:06'!
 addEntero: anAddend
 	
-	^self class with: value + anAddend integerValue! !
+	^self class with: (self integerValue + anAddend integerValue)! !
 
 !Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:19:52'!
 addFraccion: anAddend
@@ -507,10 +510,10 @@ divideFraccion: aDividend
 	
 	^Fraccion with: newNumerator over: newDenominator! !
 
-!Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:22:17'!
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/29/2018 02:05:37'!
 multiplyEntero: aMultiplier
 
-	^self class with: value * aMultiplier integerValue! !
+	^self class with: (self integerValue * aMultiplier integerValue)! !
 
 !Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:23:04'!
 multiplyFraccion: aMultiplier
@@ -527,13 +530,169 @@ Entero class
 negativeFibonacciErrorDescription
 	^ ' Fibonacci no está definido aquí para enteros negativos'! !
 
-!Entero class methodsFor: 'instance creation' stamp: 'HernanWilkinson 5/7/2016 22:53'!
+!Entero class methodsFor: 'instance creation' stamp: 'jml 9/29/2018 02:32:21'!
 with: aValue 
 	
 	"Esta verificacion esta puesta por si se equivocan y quieren crear un Entero pasando otra cosa que un Integer - Hernan"
 	aValue isInteger ifFalse: [  self error: 'aValue debe ser anInteger' ].
 	
-	^self new initalizeWith: aValue! !
+	aValue < 0 ifTrue: [ ^ NegativeEntero new initializeWith: aValue ].
+	aValue == 0 ifTrue: [ ^ ZeroEntero new ].
+	aValue == 1 ifTrue: [ ^ OneEntero new ].
+	aValue > 1 ifTrue: [ ^ GreaterThanOneEntero new initializeWith: aValue ].
+	
+	self error: 'impossible to reach here; value should be either zero, one, negative or greater than one'.! !
+
+
+!classDefinition: #GreaterThanOneEntero category: #'Numero-Exercise'!
+Entero subclass: #GreaterThanOneEntero
+	instanceVariableNames: 'value'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Numero-Exercise'!
+
+!GreaterThanOneEntero methodsFor: 'initialization' stamp: 'jml 9/29/2018 02:41:27'!
+initializeWith: aValue
+	
+	aValue isInteger ifFalse: [ self error: 'aValue should be an integer' ].
+	aValue > 1 ifFalse: [ self error: 'I don`t represent this integer' ]. "TODO remove this check or change to represents:aValue"
+	
+	value := aValue.! !
+
+
+!GreaterThanOneEntero methodsFor: 'value' stamp: 'jml 9/29/2018 02:14:43'!
+integerValue
+	
+	^ value! !
+
+
+!GreaterThanOneEntero methodsFor: 'arithmetic operations' stamp: 'jml 9/29/2018 02:20:06'!
+fibonacci
+	
+	| one two |
+	
+	one := Entero with: 1.
+	two := Entero with: 2.
+	
+	^ (self - one) fibonacci + (self - two) fibonacci! !
+
+
+!GreaterThanOneEntero methodsFor: 'testing' stamp: 'jml 9/29/2018 02:26:42'!
+ifNegative: aBlock
+	! !
+
+!GreaterThanOneEntero methodsFor: 'testing' stamp: 'jml 9/29/2018 02:26:37'!
+ifOne: aBlock
+	! !
+
+!GreaterThanOneEntero methodsFor: 'testing' stamp: 'jml 9/29/2018 02:26:22'!
+ifZero: aBlock
+	! !
+
+
+!classDefinition: #NegativeEntero category: #'Numero-Exercise'!
+Entero subclass: #NegativeEntero
+	instanceVariableNames: 'value'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Numero-Exercise'!
+
+!NegativeEntero methodsFor: 'initialization' stamp: 'jml 9/29/2018 02:42:04'!
+initializeWith: aValue
+	
+	aValue isInteger ifFalse: [ self error: 'aValue should be an integer' ].
+	aValue < 0 ifFalse: [ self error: 'I don`t represent this integer' ]. "TODO remove this check or change to represents:aValue"
+	
+	value := aValue.! !
+
+
+!NegativeEntero methodsFor: 'value' stamp: 'jml 9/29/2018 02:14:57'!
+integerValue
+	
+	^ value! !
+
+
+!NegativeEntero methodsFor: 'arithmetic operations' stamp: 'jml 9/29/2018 02:17:10'!
+fibonacci
+
+	self error: Entero negativeFibonacciErrorDescription! !
+
+
+!NegativeEntero methodsFor: 'testing' stamp: 'jml 9/29/2018 02:27:25'!
+ifNegative: aBlock
+	
+	aBlock value.! !
+
+!NegativeEntero methodsFor: 'testing' stamp: 'jml 9/29/2018 02:27:04'!
+ifOne: aBlock
+	! !
+
+!NegativeEntero methodsFor: 'testing' stamp: 'jml 9/29/2018 02:26:59'!
+ifZero: aBlock
+	! !
+
+
+!classDefinition: #OneEntero category: #'Numero-Exercise'!
+Entero subclass: #OneEntero
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Numero-Exercise'!
+
+!OneEntero methodsFor: 'value' stamp: 'jml 9/29/2018 02:15:12'!
+integerValue
+	
+	^ 1! !
+
+
+!OneEntero methodsFor: 'arithmetic operations' stamp: 'jml 9/29/2018 02:18:12'!
+fibonacci
+	
+	^ self! !
+
+
+!OneEntero methodsFor: 'testing' stamp: 'jml 9/29/2018 02:28:06'!
+ifNegative: aBlock
+	! !
+
+!OneEntero methodsFor: 'testing' stamp: 'jml 9/29/2018 02:27:55'!
+ifOne: aBlock
+	
+	aBlock value.! !
+
+!OneEntero methodsFor: 'testing' stamp: 'jml 9/29/2018 02:27:41'!
+ifZero: aBlock! !
+
+
+!classDefinition: #ZeroEntero category: #'Numero-Exercise'!
+Entero subclass: #ZeroEntero
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Numero-Exercise'!
+
+!ZeroEntero methodsFor: 'value' stamp: 'jml 9/29/2018 02:15:24'!
+integerValue
+	
+	^ 0! !
+
+
+!ZeroEntero methodsFor: 'arithmetic operations' stamp: 'jml 9/29/2018 02:18:39'!
+fibonacci
+	
+	^ Entero with: 1! !
+
+
+!ZeroEntero methodsFor: 'testing' stamp: 'jml 9/29/2018 02:29:12'!
+ifNegative: aBlock! !
+
+!ZeroEntero methodsFor: 'testing' stamp: 'jml 9/29/2018 02:29:06'!
+ifOne: aBlock! !
+
+!ZeroEntero methodsFor: 'testing' stamp: 'jml 9/29/2018 02:28:54'!
+ifZero: aBlock
+	
+	aBlock value.! !
 
 
 !classDefinition: #Fraccion category: #'Numero-Exercise'!
@@ -592,10 +751,10 @@ initializeWith: aNumerator over: aDenominator
 	denominator := aDenominator ! !
 
 
-!Fraccion methodsFor: 'testing' stamp: 'NR 9/23/2018 23:41:38'!
+!Fraccion methodsFor: 'testing' stamp: 'jml 9/29/2018 02:35:41'!
 isNegative
 	
-	^numerator < 0! !
+	^numerator isNegative! !
 
 !Fraccion methodsFor: 'testing' stamp: 'HernanWilkinson 5/7/2016 22:51'!
 isOne
@@ -683,15 +842,15 @@ multiplyFraccion: aMultiplier
 Fraccion class
 	instanceVariableNames: ''!
 
-!Fraccion class methodsFor: 'intance creation' stamp: 'jml 9/26/2018 12:34:22'!
+!Fraccion class methodsFor: 'intance creation' stamp: 'jml 9/29/2018 02:22:11'!
 with: aNumerator over: aDenominator
 
 	| greatestCommonDivisor newNumerator newDenominator |
 	
-	aDenominator isZero ifTrue: [ self error: self canNotDivideByZeroErrorDescription ].
-	aNumerator isZero ifTrue: [ ^aNumerator ].
+	aDenominator ifZero: [ self error: self canNotDivideByZeroErrorDescription ].
+	aNumerator ifZero: [ ^ aNumerator ].
 	
-	aDenominator isNegative ifTrue: [
+	aDenominator ifNegative: [
 		^self with: aNumerator negated over: aDenominator negated
 	].
 	
@@ -699,7 +858,7 @@ with: aNumerator over: aDenominator
 	newNumerator := aNumerator // greatestCommonDivisor.
 	newDenominator := aDenominator // greatestCommonDivisor.
 	
-	newDenominator isOne ifTrue: [ ^ newNumerator ].
+	newDenominator ifOne: [ ^ newNumerator ].
 
 	^self new initializeWith: newNumerator over: newDenominator
 	! !
