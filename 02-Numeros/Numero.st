@@ -410,20 +410,20 @@ Numero subclass: #Entero
 	
 	^aDivisor divideEntero: self! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'jml 9/29/2018 02:01:04'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'jml 9/30/2018 18:42:26'!
 // aDivisor 
 	
-	^self class with: (self integerValue // aDivisor integerValue)! !
+	^ Entero with: (self integerValue // aDivisor integerValue)! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'jml 9/29/2018 02:39:33'!
 fibonacci
 	
 	self subclassResponsibility ! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'jml 9/29/2018 02:03:05'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'jml 9/30/2018 18:40:28'!
 greatestCommonDivisorWith: anEntero 
 	
-	^self class with: (self integerValue gcd: anEntero integerValue)! !
+	^ Entero with: (self integerValue gcd: anEntero integerValue)! !
 
 
 !Entero methodsFor: 'comparing' stamp: 'jml 9/29/2018 02:01:47'!
@@ -436,6 +436,11 @@ hash
 
 	^self integerValue hash! !
 
+
+!Entero methodsFor: 'initialization' stamp: 'jml 9/30/2018 18:49:16'!
+initializeWith: aValue
+	
+	self subclassResponsibility ! !
 
 
 !Entero methodsFor: 'value' stamp: 'jml 9/29/2018 02:00:49'!
@@ -485,10 +490,10 @@ isZero
 	^ false.! !
 
 
-!Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/29/2018 02:02:06'!
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/30/2018 18:44:05'!
 addEntero: anAddend
 	
-	^self class with: (self integerValue + anAddend integerValue)! !
+	^ Entero with: (self integerValue + anAddend integerValue)! !
 
 !Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:19:52'!
 addFraccion: anAddend
@@ -510,10 +515,10 @@ divideFraccion: aDividend
 	
 	^Fraccion with: newNumerator over: newDenominator! !
 
-!Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/29/2018 02:05:37'!
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/30/2018 18:45:14'!
 multiplyEntero: aMultiplier
 
-	^self class with: (self integerValue * aMultiplier integerValue)! !
+	^ Entero with: (self integerValue * aMultiplier integerValue)! !
 
 !Entero methodsFor: 'arithmetic operations - private' stamp: 'jml 9/25/2018 01:23:04'!
 multiplyFraccion: aMultiplier
@@ -530,18 +535,24 @@ Entero class
 negativeFibonacciErrorDescription
 	^ ' Fibonacci no está definido aquí para enteros negativos'! !
 
-!Entero class methodsFor: 'instance creation' stamp: 'jml 9/29/2018 02:32:21'!
+!Entero class methodsFor: 'instance creation' stamp: 'jml 9/30/2018 18:50:33'!
 with: aValue 
+	
+	| enteroClass |
 	
 	"Esta verificacion esta puesta por si se equivocan y quieren crear un Entero pasando otra cosa que un Integer - Hernan"
 	aValue isInteger ifFalse: [  self error: 'aValue debe ser anInteger' ].
 	
-	aValue < 0 ifTrue: [ ^ NegativeEntero new initializeWith: aValue ].
-	aValue == 0 ifTrue: [ ^ ZeroEntero new ].
-	aValue == 1 ifTrue: [ ^ OneEntero new ].
-	aValue > 1 ifTrue: [ ^ GreaterThanOneEntero new initializeWith: aValue ].
+	enteroClass := self subclasses detect: [ :aClass | aClass represents: aValue ].
 	
-	self error: 'impossible to reach here; value should be either zero, one, negative or greater than one'.! !
+	^ enteroClass new initializeWith: aValue.! !
+
+
+!Entero class methodsFor: 'value' stamp: 'jml 9/30/2018 18:20:54'!
+represents: aValue
+	"Does this Entero's sublcass represent this integer value?"
+	
+	self subclassResponsibility! !
 
 
 !classDefinition: #GreaterThanOneEntero category: #'Numero-Exercise'!
@@ -589,6 +600,17 @@ ifOne: aBlock
 ifZero: aBlock
 	! !
 
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'GreaterThanOneEntero class' category: #'Numero-Exercise'!
+GreaterThanOneEntero class
+	instanceVariableNames: ''!
+
+!GreaterThanOneEntero class methodsFor: 'value' stamp: 'jml 9/30/2018 18:31:45'!
+represents: aValue
+	
+	^ aValue > 1! !
+
 
 !classDefinition: #NegativeEntero category: #'Numero-Exercise'!
 Entero subclass: #NegativeEntero
@@ -631,6 +653,17 @@ ifOne: aBlock
 ifZero: aBlock
 	! !
 
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'NegativeEntero class' category: #'Numero-Exercise'!
+NegativeEntero class
+	instanceVariableNames: ''!
+
+!NegativeEntero class methodsFor: 'value' stamp: 'jml 9/30/2018 18:32:52'!
+represents: aValue
+	
+	^ aValue < 0! !
+
 
 !classDefinition: #OneEntero category: #'Numero-Exercise'!
 Entero subclass: #OneEntero
@@ -663,6 +696,22 @@ ifOne: aBlock
 !OneEntero methodsFor: 'testing' stamp: 'jml 9/29/2018 02:27:41'!
 ifZero: aBlock! !
 
+
+!OneEntero methodsFor: 'initialization' stamp: 'jml 9/30/2018 18:49:49'!
+initializeWith: aValue
+	! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'OneEntero class' category: #'Numero-Exercise'!
+OneEntero class
+	instanceVariableNames: ''!
+
+!OneEntero class methodsFor: 'value' stamp: 'jml 9/30/2018 18:33:15'!
+represents: aValue
+	
+	^ aValue = 1! !
+
 
 !classDefinition: #ZeroEntero category: #'Numero-Exercise'!
 Entero subclass: #ZeroEntero
@@ -693,6 +742,22 @@ ifOne: aBlock! !
 ifZero: aBlock
 	
 	aBlock value.! !
+
+
+!ZeroEntero methodsFor: 'initialization' stamp: 'jml 9/30/2018 18:50:18'!
+initializeWith: aValue
+	! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ZeroEntero class' category: #'Numero-Exercise'!
+ZeroEntero class
+	instanceVariableNames: ''!
+
+!ZeroEntero class methodsFor: 'value' stamp: 'jml 9/30/2018 18:33:39'!
+represents: aValue
+	
+	^ aValue = 0! !
 
 
 !classDefinition: #Fraccion category: #'Numero-Exercise'!
@@ -740,12 +805,13 @@ numerator
 	^ numerator! !
 
 
-!Fraccion methodsFor: 'initialization' stamp: 'HernanWilkinson 5/7/2016 22:54'!
+!Fraccion methodsFor: 'initialization' stamp: 'jml 9/30/2018 18:56:05'!
 initializeWith: aNumerator over: aDenominator
 
 	"Estas precondiciones estan por si se comenten errores en la implementacion - Hernan"
-	aNumerator isZero ifTrue: [ self error: 'una fraccion no puede ser cero' ].
-	aDenominator isOne ifTrue: [ self error: 'una fraccion no puede tener denominador 1 porque sino es un entero' ].
+	aNumerator ifZero: [ self error: 'una fraccion no puede ser cero' ].
+	aDenominator ifOne: [ self error: 'una fraccion no puede tener denominador 1 porque si no es un entero' ].
+	aDenominator ifZero: [ self error: 'una fraccion no puede tener denominador cero' ].
 	
 	numerator := aNumerator.
 	denominator := aDenominator ! !
