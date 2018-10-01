@@ -562,11 +562,8 @@ Entero subclass: #GreaterThanOneEntero
 	poolDictionaries: ''
 	category: 'Numero-Exercise'!
 
-!GreaterThanOneEntero methodsFor: 'initialization' stamp: 'jml 9/29/2018 02:41:27'!
+!GreaterThanOneEntero methodsFor: 'initialization' stamp: 'jml 10/1/2018 16:55:38'!
 initializeWith: aValue
-	
-	aValue isInteger ifFalse: [ self error: 'aValue should be an integer' ].
-	aValue > 1 ifFalse: [ self error: 'I don`t represent this integer' ]. "TODO remove this check or change to represents:aValue"
 	
 	value := aValue.! !
 
@@ -619,11 +616,8 @@ Entero subclass: #NegativeEntero
 	poolDictionaries: ''
 	category: 'Numero-Exercise'!
 
-!NegativeEntero methodsFor: 'initialization' stamp: 'jml 9/29/2018 02:42:04'!
+!NegativeEntero methodsFor: 'initialization' stamp: 'jml 10/1/2018 16:55:28'!
 initializeWith: aValue
-	
-	aValue isInteger ifFalse: [ self error: 'aValue should be an integer' ].
-	aValue < 0 ifFalse: [ self error: 'I don`t represent this integer' ]. "TODO remove this check or change to represents:aValue"
 	
 	value := aValue.! !
 
