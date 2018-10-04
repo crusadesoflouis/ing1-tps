@@ -128,34 +128,6 @@ test10CanNotNextWhenThereAreNoObjectsInTheQueue
 			self assert: anError messageText equals: Queue queueEmptyErrorDescription ].! !
 
 
-!classDefinition: #Node category: #'Queue-Exercise'!
-Object subclass: #Node
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Queue-Exercise'!
-
-
-!classDefinition: #ElementNode category: #'Queue-Exercise'!
-Node subclass: #ElementNode
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Queue-Exercise'!
-
-
-!classDefinition: #NullNode category: #'Queue-Exercise'!
-Node subclass: #NullNode
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Queue-Exercise'!
-
-!NullNode methodsFor: 'testing' stamp: 'LA 9/27/2018 20:33:59'!
-isNull
-	^true ! !
-
-
 !classDefinition: #Queue category: #'Queue-Exercise'!
 Object subclass: #Queue
 	instanceVariableNames: 'head tail'
@@ -163,17 +135,53 @@ Object subclass: #Queue
 	poolDictionaries: ''
 	category: 'Queue-Exercise'!
 
-!Queue methodsFor: 'testing' stamp: 'LA 9/27/2018 20:42:20'!
-initialize
-
-	head := NullNode new.
-	tail := NullNode new.! !
-
-!Queue methodsFor: 'testing' stamp: 'LA 9/27/2018 20:35:39'!
+!Queue methodsFor: 'testing' stamp: 'jml 10/2/2018 16:11:25'!
 isEmpty
 
-	^head isNull! !
+	^ head next = tail! !
 
+
+!Queue methodsFor: 'initialization' stamp: 'jml 10/3/2018 11:51:31'!
+initialize
+
+	head := HeadQueueNode basicNew.
+	tail := TailQueueNode basicNew.
+	
+	head setNext: tail.
+	tail setPrevious: head.! !
+
+
+!Queue methodsFor: 'accessing' stamp: 'jml 10/2/2018 16:30:55'!
+next
+	
+	^ head next content! !
+
+!Queue methodsFor: 'accessing' stamp: 'jml 10/2/2018 16:31:04'!
+size
+	
+	^ head size! !
+
+
+!Queue methodsFor: 'removing' stamp: 'jml 10/2/2018 16:09:45'!
+dequeue
+	
+	| firstNode |
+	
+	firstNode := head next.
+	head setNext: firstNode next.
+	
+	^ firstNode content! !
+
+
+!Queue methodsFor: 'adding' stamp: 'jml 10/3/2018 11:30:00'!
+enqueue: anElement
+	
+	| newNode |
+	
+	newNode := ElementQueueNode newWith: anElement next: tail.
+	
+	tail previous setNext: newNode.
+	tail setPrevious: newNode.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -184,3 +192,137 @@ Queue class
 !Queue class methodsFor: 'error descriptions'!
 queueEmptyErrorDescription
 	^ 'Queue is empty'.! !
+
+
+!classDefinition: #QueueNode category: #'Queue-Exercise'!
+Object subclass: #QueueNode
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Queue-Exercise'!
+
+!QueueNode methodsFor: 'accessing' stamp: 'jml 10/2/2018 16:08:05'!
+next
+	
+	self subclassResponsibility! !
+
+!QueueNode methodsFor: 'accessing' stamp: 'jml 10/2/2018 16:08:26'!
+size
+	
+	self subclassResponsibility! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'QueueNode class' category: #'Queue-Exercise'!
+QueueNode class
+	instanceVariableNames: ''!
+
+!QueueNode class methodsFor: 'instance creation' stamp: 'jml 10/3/2018 11:50:46'!
+new
+	
+	self error: 'Cannot create QueueNode`s manually'.! !
+
+
+!classDefinition: #ElementQueueNode category: #'Queue-Exercise'!
+QueueNode subclass: #ElementQueueNode
+	instanceVariableNames: 'next content'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Queue-Exercise'!
+
+!ElementQueueNode methodsFor: 'initialization' stamp: 'jml 9/28/2018 12:18:32'!
+initializeWith: anElement next: aNode
+	
+	content := anElement.
+	next := aNode.! !
+
+
+!ElementQueueNode methodsFor: 'accessing' stamp: 'jml 10/2/2018 16:31:25'!
+content
+
+	^ content! !
+
+!ElementQueueNode methodsFor: 'accessing' stamp: 'jml 10/2/2018 16:31:41'!
+next
+	
+	^ next! !
+
+!ElementQueueNode methodsFor: 'accessing' stamp: 'jml 10/2/2018 16:32:11'!
+size
+	
+	^ next size + 1! !
+
+
+!ElementQueueNode methodsFor: 'linking' stamp: 'jml 9/28/2018 11:59:10'!
+setNext: nextNode
+	
+	next := nextNode.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ElementQueueNode class' category: #'Queue-Exercise'!
+ElementQueueNode class
+	instanceVariableNames: ''!
+
+!ElementQueueNode class methodsFor: 'instance creation' stamp: 'jml 10/3/2018 11:52:07'!
+newWith: anElement next: aNode
+	
+	^self basicNew initializeWith: anElement next: aNode! !
+
+
+!classDefinition: #HeadQueueNode category: #'Queue-Exercise'!
+QueueNode subclass: #HeadQueueNode
+	instanceVariableNames: 'next'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Queue-Exercise'!
+
+!HeadQueueNode methodsFor: 'accessing' stamp: 'jml 10/2/2018 16:32:41'!
+next
+	
+	^ next! !
+
+!HeadQueueNode methodsFor: 'accessing' stamp: 'jml 10/2/2018 16:32:48'!
+size
+	
+	^ next size! !
+
+
+!HeadQueueNode methodsFor: 'linking' stamp: 'jml 9/28/2018 11:57:04'!
+setNext: nextNode
+
+	next := nextNode.! !
+
+
+!classDefinition: #TailQueueNode category: #'Queue-Exercise'!
+QueueNode subclass: #TailQueueNode
+	instanceVariableNames: 'previous'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Queue-Exercise'!
+
+!TailQueueNode methodsFor: 'accessing' stamp: 'jml 9/28/2018 12:27:21'!
+content
+	
+	self error: Queue queueEmptyErrorDescription ! !
+
+!TailQueueNode methodsFor: 'accessing' stamp: 'jml 9/28/2018 12:25:51'!
+next
+	
+	self error: Queue queueEmptyErrorDescription ! !
+
+!TailQueueNode methodsFor: 'accessing' stamp: 'jml 10/2/2018 16:32:59'!
+previous
+	
+	^ previous! !
+
+!TailQueueNode methodsFor: 'accessing' stamp: 'jml 10/2/2018 16:33:02'!
+size
+	
+	^ 0! !
+
+
+!TailQueueNode methodsFor: 'linking' stamp: 'jml 9/28/2018 12:02:16'!
+setPrevious: previousNode
+	
+	previous := previousNode.! !
