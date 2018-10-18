@@ -16,6 +16,12 @@ value
 
 	self subclassResponsibility ! !
 
+
+!AccountTransaction methodsFor: 'summary' stamp: 'jml 10/18/2018 20:52:42'!
+summaryLine
+	
+	self subclassResponsibility! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'AccountTransaction class' category: #'PortfolioTreePrinter-Ejercicio'!
@@ -58,7 +64,7 @@ applyToBalance: balance for: anAccount
 	^ balance + value! !
 
 
-!Deposit methodsFor: 'as yet unclassified' stamp: 'jml 10/18/2018 20:22:17'!
+!Deposit methodsFor: 'summary' stamp: 'jml 10/18/2018 20:22:17'!
 summaryLine
 	
 	^ 'Deposito por ', value printString! !
@@ -115,7 +121,7 @@ applyToBalance: balance for: anAccount
 	^ balance + self value! !
 
 
-!IncomingWire methodsFor: 'as yet unclassified' stamp: 'jml 10/18/2018 20:23:20'!
+!IncomingWire methodsFor: 'summary' stamp: 'jml 10/18/2018 20:23:20'!
 summaryLine
 	
 	^ 'Transferencia por ', self value printString! !
@@ -147,7 +153,7 @@ applyToBalance: balance for: anAccount
 	^ balance - self value! !
 
 
-!OutcomingWire methodsFor: 'as yet unclassified' stamp: 'jml 10/18/2018 20:23:27'!
+!OutcomingWire methodsFor: 'summary' stamp: 'jml 10/18/2018 20:23:27'!
 summaryLine
 	
 	^ 'Transferencia por -', self value printString! !
@@ -189,7 +195,7 @@ applyToBalance: balance for: anAccount
 	^ balance - value! !
 
 
-!Withdraw methodsFor: 'as yet unclassified' stamp: 'jml 10/18/2018 20:22:50'!
+!Withdraw methodsFor: 'summary' stamp: 'jml 10/18/2018 20:22:50'!
 summaryLine
 	
 	^ 'Extraccion por ', value printString! !
@@ -394,7 +400,7 @@ balance
 	^ transactions inject: 0 into: [ :balance :transaction | transaction applyToBalance: balance for: self ] "TODO sacar for:"! !
 
 
-!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'jml 10/18/2018 20:18:33'!
+!ReceptiveAccount methodsFor: 'summary' stamp: 'jml 10/18/2018 20:18:33'!
 summaryLines
 	
 	^ transactions collect: [ :transaction | transaction summaryLine ]! !
@@ -407,7 +413,7 @@ Object subclass: #Transfer
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!Transfer methodsFor: 'initialization' stamp: 'jml 10/18/2018 20:42:00'!
+!Transfer methodsFor: 'initialization' stamp: 'jml 10/18/2018 20:49:51'!
 initializeFor: aValue
 
 	value := aValue.
