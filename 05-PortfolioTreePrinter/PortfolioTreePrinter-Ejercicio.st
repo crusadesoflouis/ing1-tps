@@ -75,95 +75,90 @@ for: aValue
 	^ self new initializeFor: aValue ! !
 
 
-!classDefinition: #IncomingWireTransfer category: #'PortfolioTreePrinter-Ejercicio'!
-AccountTransaction subclass: #IncomingWireTransfer
+!classDefinition: #TransferLeg category: #'PortfolioTreePrinter-Ejercicio'!
+AccountTransaction subclass: #TransferLeg
 	instanceVariableNames: 'transfer'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!IncomingWireTransfer methodsFor: 'initialization' stamp: 'jml 10/18/2018 20:02:10'!
-initializeFor: aTransfer
+!TransferLeg methodsFor: 'as yet unclassified' stamp: 'jml 10/18/2018 20:39:54'!
+transfer
 	
-	transfer := aTransfer.! !
+	^ transfer! !
 
 
-!IncomingWireTransfer methodsFor: 'value' stamp: 'jml 10/18/2018 20:03:16'!
+!TransferLeg methodsFor: 'value' stamp: 'jml 10/18/2018 20:40:00'!
 value
 	
 	^ transfer value! !
 
 
-!IncomingWireTransfer methodsFor: 'balance' stamp: 'jml 10/18/2018 20:04:45'!
+!TransferLeg methodsFor: 'initialization' stamp: 'jml 10/18/2018 20:40:27'!
+initializeFor: aTransfer
+	
+	transfer := aTransfer.! !
+
+
+!classDefinition: #IncomingWire category: #'PortfolioTreePrinter-Ejercicio'!
+TransferLeg subclass: #IncomingWire
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+
+
+!IncomingWire methodsFor: 'balance' stamp: 'jml 10/18/2018 20:04:45'!
 applyToBalance: balance for: anAccount
 	
 	^ balance + self value! !
 
 
-!IncomingWireTransfer methodsFor: 'as yet unclassified' stamp: 'jml 10/18/2018 20:23:20'!
+!IncomingWire methodsFor: 'as yet unclassified' stamp: 'jml 10/18/2018 20:23:20'!
 summaryLine
 	
 	^ 'Transferencia por ', self value printString! !
 
-!IncomingWireTransfer methodsFor: 'as yet unclassified' stamp: 'jml 10/18/2018 20:08:37'!
-transfer
-	
-	^ transfer! !
-
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'IncomingWireTransfer class' category: #'PortfolioTreePrinter-Ejercicio'!
-IncomingWireTransfer class
+!classDefinition: 'IncomingWire class' category: #'PortfolioTreePrinter-Ejercicio'!
+IncomingWire class
 	instanceVariableNames: ''!
 
-!IncomingWireTransfer class methodsFor: 'instance creation' stamp: 'jml 10/18/2018 20:01:28'!
+!IncomingWire class methodsFor: 'instance creation' stamp: 'jml 10/18/2018 20:01:28'!
 for: aTransfer
 	
 	^ self new initializeFor: aTransfer! !
 
 
-!classDefinition: #OutcomingWireTransfer category: #'PortfolioTreePrinter-Ejercicio'!
-AccountTransaction subclass: #OutcomingWireTransfer
-	instanceVariableNames: 'transfer'
+!classDefinition: #OutcomingWire category: #'PortfolioTreePrinter-Ejercicio'!
+TransferLeg subclass: #OutcomingWire
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!OutcomingWireTransfer methodsFor: 'initialization' stamp: 'jml 10/18/2018 20:01:55'!
-initializeFor: aTransfer
-	
-	transfer := aTransfer.! !
 
 
-!OutcomingWireTransfer methodsFor: 'value' stamp: 'jml 10/18/2018 20:03:26'!
-value
-	
-	^ transfer value! !
-
-
-!OutcomingWireTransfer methodsFor: 'balance' stamp: 'jml 10/18/2018 20:05:01'!
+!OutcomingWire methodsFor: 'balance' stamp: 'jml 10/18/2018 20:05:01'!
 applyToBalance: balance for: anAccount
 	
 	^ balance - self value! !
 
 
-!OutcomingWireTransfer methodsFor: 'as yet unclassified' stamp: 'jml 10/18/2018 20:23:27'!
+!OutcomingWire methodsFor: 'as yet unclassified' stamp: 'jml 10/18/2018 20:23:27'!
 summaryLine
 	
 	^ 'Transferencia por -', self value printString! !
 
-!OutcomingWireTransfer methodsFor: 'as yet unclassified' stamp: 'jml 10/18/2018 20:08:25'!
-transfer
-	
-	^ transfer! !
-
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'OutcomingWireTransfer class' category: #'PortfolioTreePrinter-Ejercicio'!
-OutcomingWireTransfer class
+!classDefinition: 'OutcomingWire class' category: #'PortfolioTreePrinter-Ejercicio'!
+OutcomingWire class
 	instanceVariableNames: ''!
 
-!OutcomingWireTransfer class methodsFor: 'instance creation' stamp: 'jml 10/18/2018 20:01:39'!
+!OutcomingWire class methodsFor: 'instance creation' stamp: 'jml 10/18/2018 20:01:39'!
 for: aTransfer
 	
 	^ self new initializeFor: aTransfer! !
@@ -412,12 +407,12 @@ Object subclass: #Transfer
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!Transfer methodsFor: 'initialization' stamp: 'jml 10/18/2018 20:11:44'!
+!Transfer methodsFor: 'initialization' stamp: 'jml 10/18/2018 20:42:00'!
 initializeFor: aValue
 
 	value := aValue.
-	withdrawLeg := OutcomingWireTransfer for: self.
-	depositLeg := IncomingWireTransfer for: self.
+	withdrawLeg := OutcomingWire for: self.
+	depositLeg := IncomingWire for: self.
 ! !
 
 
