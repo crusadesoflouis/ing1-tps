@@ -5,6 +5,12 @@ Object subclass: #AccountTransaction
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
 
+!AccountTransaction methodsFor: 'balance' stamp: 'jml 10/12/2018 11:32:21'!
+applyToBalance: balance
+	
+	self subclassResponsibility! !
+
+
 !AccountTransaction methodsFor: 'value' stamp: 'HernanWilkinson 9/12/2011 12:25'!
 value 
 
@@ -45,6 +51,12 @@ value
 
 	^ value! !
 
+
+!Deposit methodsFor: 'balance' stamp: 'jml 10/12/2018 11:32:44'!
+applyToBalance: balance
+	
+	^ balance + value! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Deposit class' category: #'Portfolio-Ejercicio'!
@@ -74,6 +86,12 @@ initializeFor: aValue
 value
 
 	^ value! !
+
+
+!Withdraw methodsFor: 'balance' stamp: 'jml 10/12/2018 11:33:00'!
+applyToBalance: balance
+	
+	^ balance - value! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -111,46 +129,71 @@ transactions
 	self subclassResponsibility ! !
 
 
-!SummarizingAccount methodsFor: 'balance' stamp: 'HernanWilkinson 7/13/2011 18:34'!
+!SummarizingAccount methodsFor: 'balance' stamp: 'jml 10/15/2018 13:12:53'!
 balance
 
-	self subclassResponsibility ! !
+	self subclassResponsibility! !
 
 
 !classDefinition: #Portfolio category: #'Portfolio-Ejercicio'!
 SummarizingAccount subclass: #Portfolio
-	instanceVariableNames: ''
+	instanceVariableNames: 'accounts'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
 
-!Portfolio methodsFor: 'balance' stamp: 'HernanWilkinson 7/13/2011 18:39'!
-balance
-
-	self shouldBeImplemented ! !
-
-
-!Portfolio methodsFor: 'testing' stamp: 'HAW 10/11/2018 16:53:28'!
+!Portfolio methodsFor: 'testing' stamp: 'jml 10/12/2018 14:48:18'!
 doesManage: anAccount
 
-	self shouldBeImplemented 
+	^ self = anAccount or: [ accounts anySatisfy: [ :account | account doesManage: anAccount ] ]
 ! !
 
-!Portfolio methodsFor: 'testing' stamp: 'HAW 10/11/2018 16:53:54'!
+!Portfolio methodsFor: 'testing' stamp: 'jml 10/13/2018 01:58:46'!
+doesManageAnyPartOf: anAccount
+
+	^ (anAccount doesManage: self) or: [ accounts anySatisfy: [ :account | account doesManageAnyPartOf: anAccount ] ]
+! !
+
+!Portfolio methodsFor: 'testing' stamp: 'jml 10/12/2018 12:04:31'!
 hasRegistered: aTransaction
 
-	self shouldBeImplemented ! !
+	^ accounts anySatisfy: [ :account | account hasRegistered: aTransaction ]! !
 
 
-!Portfolio methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:39'!
+!Portfolio methodsFor: 'transactions' stamp: 'jml 10/15/2018 12:57:22'!
 transactions 
 
-	self shouldBeImplemented ! !
+	^ accounts collect: [ :account | account transactions ] andFold: [ :coll1 :coll2 | coll1, coll2 ] ifEmpty: OrderedCollection new! !
 
-!Portfolio methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:40'!
+!Portfolio methodsFor: 'transactions' stamp: 'jml 10/15/2018 12:58:26'!
 transactionsOf: anAccount 
 
-	self shouldBeImplemented ! !
+	(self doesManage: anAccount)
+		ifFalse: [ self error: self class accountNotManagedMessageDescription ].
+	
+	^ anAccount transactions! !
+
+
+!Portfolio methodsFor: 'adding' stamp: 'jml 10/15/2018 12:46:55'!
+addAccount: anAccount
+	
+	(self doesManageAnyPartOf: anAccount)
+		ifTrue: [ self error: self class accountAlreadyManagedErrorMessage ].
+	
+	accounts add: anAccount.
+! !
+
+
+!Portfolio methodsFor: 'initialization' stamp: 'jml 10/12/2018 11:41:30'!
+initialize
+	
+	accounts := OrderedCollection new.! !
+
+
+!Portfolio methodsFor: 'balance' stamp: 'jml 10/15/2018 12:44:07'!
+balance
+	
+	^ accounts sum: [ :account | account balance ]! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -158,15 +201,22 @@ transactionsOf: anAccount
 Portfolio class
 	instanceVariableNames: ''!
 
-!Portfolio class methodsFor: 'instance creation' stamp: 'HAW 5/8/2018 16:10:00'!
+!Portfolio class methodsFor: 'instance creation' stamp: 'jml 10/15/2018 12:14:30'!
 with: leftAccount with: rightAccount
+	
+	^ self withAll: (Array with: leftAccount with: rightAccount)! !
 
-	self shouldBeImplemented ! !
-
-!Portfolio class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/13/2011 18:41'!
+!Portfolio class methodsFor: 'instance creation' stamp: 'jml 10/15/2018 13:08:18'!
 withAll: aCollectionOfAccounts
 
-	self shouldBeImplemented ! !
+	| newPortfolio |
+	
+	aCollectionOfAccounts ifEmpty: [ self error: self emptyPortfolioErrorMessage ].
+	
+	newPortfolio := self new.
+	aCollectionOfAccounts do: [ :account | newPortfolio addAccount: account ].
+	
+	^ newPortfolio! !
 
 
 !Portfolio class methodsFor: 'error messages' stamp: 'HAW 5/8/2018 16:08:43'!
@@ -178,6 +228,16 @@ accountAlreadyManagedErrorMessage
 accountNotManagedMessageDescription
 	
 	^ 'Account not managed'! !
+
+!Portfolio class methodsFor: 'error messages' stamp: 'jml 10/15/2018 13:08:38'!
+emptyPorfolioErrorMessage
+	
+	^ 'Cannot create an empty portfolio'! !
+
+!Portfolio class methodsFor: 'error messages' stamp: 'jml 10/15/2018 13:09:25'!
+emptyPortfolioErrorMessage
+	
+	^ 'Cannot create an empty portfolio'! !
 
 
 !classDefinition: #ReceptiveAccount category: #'Portfolio-Ejercicio'!
@@ -206,20 +266,26 @@ transactions
 	^ transactions copy! !
 
 
-!ReceptiveAccount methodsFor: 'balance' stamp: 'HAW 10/11/2018 16:51:30'!
-balance
-
-	self shouldBeImplemented ! !
-
-
 !ReceptiveAccount methodsFor: 'testing' stamp: 'HAW 10/11/2018 16:53:28'!
 doesManage: anAccount
 
 	^ self = anAccount 
 ! !
 
-!ReceptiveAccount methodsFor: 'testing' stamp: 'HAW 10/11/2018 16:53:54'!
-hasRegistered: aTtransaction
+!ReceptiveAccount methodsFor: 'testing' stamp: 'jml 10/13/2018 01:59:33'!
+doesManageAnyPartOf: anAccount
 
-	^ transactions includes: aTtransaction 
+	^ anAccount doesManage: self
 ! !
+
+!ReceptiveAccount methodsFor: 'testing' stamp: 'jml 10/12/2018 10:50:23'!
+hasRegistered: aTransaction
+
+	^ transactions includes: aTransaction 
+! !
+
+
+!ReceptiveAccount methodsFor: 'balance' stamp: 'jml 10/15/2018 12:44:55'!
+balance
+	
+	^ transactions inject: 0 into: [ :balance :transaction | transaction applyToBalance: balance ]! !
