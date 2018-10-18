@@ -117,6 +117,11 @@ doesManage: anAccount
 
 	self subclassResponsibility ! !
 
+!SummarizingAccount methodsFor: 'testing' stamp: 'L A 10/18/2018 11:54:15'!
+doesManageAnyPartOf: anAccount
+
+	self subclassResponsibility ! !
+
 !SummarizingAccount methodsFor: 'testing' stamp: 'HAW 10/11/2018 16:53:54'!
 hasRegistered: aTransaction
 
