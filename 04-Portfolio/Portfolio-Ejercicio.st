@@ -22,15 +22,15 @@ value
 AccountTransaction class
 	instanceVariableNames: ''!
 
-!AccountTransaction class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/13/2011 18:38'!
+!AccountTransaction class methodsFor: 'instance creation' stamp: 'jml 10/18/2018 09:40:04'!
 register: aValue on: account
 
-	| withdraw |
+	| transaction |
 	
-	withdraw := self for: aValue.
-	account register: withdraw.
+	transaction := self for: aValue.
+	account register: transaction.
 		
-	^ withdraw! !
+	^ transaction! !
 
 
 !classDefinition: #Deposit category: #'Portfolio-Ejercicio'!
@@ -228,11 +228,6 @@ accountAlreadyManagedErrorMessage
 accountNotManagedMessageDescription
 	
 	^ 'Account not managed'! !
-
-!Portfolio class methodsFor: 'error messages' stamp: 'jml 10/15/2018 13:08:38'!
-emptyPorfolioErrorMessage
-	
-	^ 'Cannot create an empty portfolio'! !
 
 !Portfolio class methodsFor: 'error messages' stamp: 'jml 10/15/2018 13:09:25'!
 emptyPortfolioErrorMessage
