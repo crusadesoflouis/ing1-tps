@@ -10,6 +10,21 @@ applyToBalance: currentBalance
 	
 	self subclassResponsibility! !
 
+!AccountTransaction methodsFor: 'balance' stamp: 'jml 10/18/2018 21:29:26'!
+applyToInvestmentEarnings: currentEarnings
+	
+	^ currentEarnings! !
+
+!AccountTransaction methodsFor: 'balance' stamp: 'jml 10/18/2018 21:26:12'!
+applyToInvestmentNet: currentNet
+	
+	^ currentNet! !
+
+!AccountTransaction methodsFor: 'balance' stamp: 'jml 10/18/2018 21:26:21'!
+applyToTransferNet: currentNet
+	
+	^ currentNet! !
+
 
 !AccountTransaction methodsFor: 'value' stamp: 'HernanWilkinson 9/12/2011 12:25'!
 value 
@@ -37,6 +52,66 @@ register: aValue on: account
 	account register: transaction.
 		
 	^ transaction! !
+
+
+!classDefinition: #CertificateOfDeposit category: #'PortfolioTreePrinter-Ejercicio'!
+AccountTransaction subclass: #CertificateOfDeposit
+	instanceVariableNames: 'value term interestRate'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!CertificateOfDeposit methodsFor: 'initialization' stamp: 'jml 10/18/2018 21:18:48'!
+initializeFor: anAmount during: aTerm at: anInterestRate
+	
+	value := anAmount.
+	term := aTerm.
+	interestRate := anInterestRate.! !
+
+
+!CertificateOfDeposit methodsFor: 'balance' stamp: 'jml 10/18/2018 21:20:44'!
+applyToBalance: currentBalance
+	
+	^ currentBalance - value! !
+
+!CertificateOfDeposit methodsFor: 'balance' stamp: 'jml 10/18/2018 21:34:02'!
+applyToInvestmentEarnings: currentEarnings
+	
+	^ currentEarnings + (value * (interestRate / 360) * term)! !
+
+!CertificateOfDeposit methodsFor: 'balance' stamp: 'jml 10/18/2018 21:25:51'!
+applyToInvestmentNet: currentNet
+	
+	^ currentNet + value! !
+
+
+!CertificateOfDeposit methodsFor: 'summary' stamp: 'jml 10/18/2018 21:22:45'!
+summaryLine
+	
+	^ 'Plazo fijo por ', value printString, ' durante ', term printString, ' dias a una tna de ', (interestRate * 100) printString, '%'! !
+
+
+!CertificateOfDeposit methodsFor: 'value' stamp: 'jml 10/18/2018 21:23:01'!
+value
+	
+	^ value! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'CertificateOfDeposit class' category: #'PortfolioTreePrinter-Ejercicio'!
+CertificateOfDeposit class
+	instanceVariableNames: ''!
+
+!CertificateOfDeposit class methodsFor: 'instance creation' stamp: 'jml 10/18/2018 21:17:16'!
+register: anAmount during: aTerm at: anInterestRate on: anAccount
+	
+	| newCertificate |
+	
+	newCertificate := self new initializeFor: anAmount during: aTerm at: anInterestRate.
+	
+	anAccount register: newCertificate.
+	
+	^ newCertificate! !
 
 
 !classDefinition: #Deposit category: #'PortfolioTreePrinter-Ejercicio'!
@@ -88,10 +163,10 @@ AccountTransaction subclass: #TransferLeg
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!TransferLeg methodsFor: 'as yet unclassified' stamp: 'jml 10/18/2018 20:39:54'!
-transfer
+!TransferLeg methodsFor: 'balance' stamp: 'jml 10/18/2018 21:06:01'!
+applyToTransferNet: currentNet
 	
-	^ transfer! !
+	^ self applyToBalance: currentNet! !
 
 
 !TransferLeg methodsFor: 'value' stamp: 'jml 10/18/2018 20:40:00'!
@@ -104,6 +179,12 @@ value
 initializeFor: aTransfer
 	
 	transfer := aTransfer.! !
+
+
+!TransferLeg methodsFor: 'accessing' stamp: 'jml 10/18/2018 20:39:54'!
+transfer
+	
+	^ transfer! !
 
 
 !classDefinition: #IncomingWire category: #'PortfolioTreePrinter-Ejercicio'!
@@ -399,10 +480,20 @@ balance
 	
 	^ transactions inject: 0 into: [ :balance :transaction | transaction applyToBalance: balance ]! !
 
-!ReceptiveAccount methodsFor: 'balance' stamp: 'jml 10/18/2018 20:56:20'!
+!ReceptiveAccount methodsFor: 'balance' stamp: 'jml 10/18/2018 21:29:09'!
+investmentEarnings
+	
+	^ transactions inject: 0 into: [ :earnings :transaction | transaction applyToInvestmentEarnings: earnings ]! !
+
+!ReceptiveAccount methodsFor: 'balance' stamp: 'jml 10/18/2018 21:24:46'!
+investmentNet
+	
+	^ transactions inject: 0 into: [ :net :transaction | transaction applyToInvestmentNet: net ]! !
+
+!ReceptiveAccount methodsFor: 'balance' stamp: 'jml 10/18/2018 21:03:17'!
 transferNet
 	
-	^ 0! !
+	^ transactions inject: 0 into: [ :net :transaction | transaction applyToTransferNet: net ]! !
 
 
 !ReceptiveAccount methodsFor: 'summary' stamp: 'jml 10/18/2018 20:18:33'!
