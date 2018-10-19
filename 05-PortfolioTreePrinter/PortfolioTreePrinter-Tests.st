@@ -5,11 +5,6 @@ TestCase subclass: #PortfolioTest
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Tests'!
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HAW 10/18/2018 18:28:42'!
-registerDepositFor: amount into: account
-	
-	^Deposit register: amount on: account.! !
-
 !PortfolioTest methodsFor: 'tests' stamp: 'HAW 10/18/2018 16:20:55'!
 test01ReceptiveAccountHaveZeroAsBalanceWhenCreated 
 
@@ -279,7 +274,7 @@ test19CanNotCreatePortfoliosWithRepeatedAccount
 		withExceptionDo: [ :invalidPortfolio |
 			self assert: Portfolio accountAlreadyManagedErrorMessage  = invalidPortfolio messageText ]! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HAW 10/18/2018 18:22:55'!
+!PortfolioTest methodsFor: 'tests' stamp: 'jml 10/18/2018 18:46:00'!
 test20CanNotCreatePortfoliosWithAccountsManagedByOtherManagedPortfolio 
 
 	| account1 account2 account3 complexPortfolio |
@@ -295,7 +290,7 @@ test20CanNotCreatePortfoliosWithAccountsManagedByOtherManagedPortfolio
 		withExceptionDo: [ :invalidPortfolio |
 			self assert: Portfolio accountAlreadyManagedErrorMessage = invalidPortfolio messageText ]! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HAW 10/18/2018 18:23:08'!
+!PortfolioTest methodsFor: 'tests' stamp: 'jml 10/18/2018 18:46:19'!
 test20_01CanNotCreatePortfoliosWithPortfoliosThatManagedSameAccounts
 
     | account1 account2 account3 complexPortfolio1 complexPortfolio2 |
@@ -528,15 +523,15 @@ test29ReversePortfolioTreePrinterPrintsTheCompositeStartingFromTheLeaves
 	! !
 
 
-!PortfolioTest methodsFor: 'test support' stamp: 'HAW 5/10/2018 19:22:21'!
+!PortfolioTest methodsFor: 'test support' stamp: 'jml 10/18/2018 20:14:22'!
 accountSummaryLinesOf: aReceptiveAccount 
 	
-	self shouldBeImplemented ! !
+	^ aReceptiveAccount summaryLines! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'HernanWilkinson 9/6/2016 19:43'!
+!PortfolioTest methodsFor: 'test support' stamp: 'jml 10/18/2018 20:50:59'!
 accountTransferNetOf: aReceptiveAccount 
 	
-	self shouldBeImplemented ! !
+	^ aReceptiveAccount transferNet! !
 
 !PortfolioTest methodsFor: 'test support' stamp: 'HernanWilkinson 9/6/2016 19:43'!
 investmentEarningsOf: aReceptiveAccount 
@@ -558,10 +553,10 @@ registerCertificateOfDepositOf: anAmount during: aNumberOfDays at: anInteresRate
 
 	self shouldBeImplemented ! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'HAW 10/18/2018 16:37:27'!
+!PortfolioTest methodsFor: 'test support' stamp: 'jml 10/18/2018 19:17:59'!
 registerTransferOf: anAmount from: fromAccount to: toAccount
 
-	self shouldBeImplemented ! !
+	^ Transfer register: anAmount from: fromAccount to: toAccount! !
 
 !PortfolioTest methodsFor: 'test support' stamp: 'HernanWilkinson 9/6/2016 19:43'!
 reversePortofolioTreeOf: aPortfolio namingAccountWith: aDictionary 

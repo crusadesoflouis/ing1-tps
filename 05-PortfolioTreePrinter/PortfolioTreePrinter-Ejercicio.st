@@ -5,8 +5,8 @@ Object subclass: #AccountTransaction
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!AccountTransaction methodsFor: 'balance' stamp: 'jml 10/18/2018 19:30:46'!
-applyToBalance: balance for: anAccount
+!AccountTransaction methodsFor: 'balance' stamp: 'jml 10/18/2018 20:56:46'!
+applyToBalance: currentBalance
 	
 	self subclassResponsibility! !
 
@@ -58,10 +58,10 @@ value
 	^ value! !
 
 
-!Deposit methodsFor: 'balance' stamp: 'jml 10/18/2018 19:31:00'!
-applyToBalance: balance for: anAccount
+!Deposit methodsFor: 'balance' stamp: 'jml 10/18/2018 20:57:01'!
+applyToBalance: currentBalance
 	
-	^ balance + value! !
+	^ currentBalance + value! !
 
 
 !Deposit methodsFor: 'summary' stamp: 'jml 10/18/2018 20:22:17'!
@@ -115,10 +115,10 @@ TransferLeg subclass: #IncomingWire
 
 
 
-!IncomingWire methodsFor: 'balance' stamp: 'jml 10/18/2018 20:04:45'!
-applyToBalance: balance for: anAccount
+!IncomingWire methodsFor: 'balance' stamp: 'jml 10/18/2018 20:58:38'!
+applyToBalance: currentBalance
 	
-	^ balance + self value! !
+	^ currentBalance + self value! !
 
 
 !IncomingWire methodsFor: 'summary' stamp: 'jml 10/18/2018 20:23:20'!
@@ -147,10 +147,10 @@ TransferLeg subclass: #OutcomingWire
 
 
 
-!OutcomingWire methodsFor: 'balance' stamp: 'jml 10/18/2018 20:05:01'!
-applyToBalance: balance for: anAccount
+!OutcomingWire methodsFor: 'balance' stamp: 'jml 10/18/2018 20:59:02'!
+applyToBalance: currentBalance
 	
-	^ balance - self value! !
+	^ currentBalance - self value! !
 
 
 !OutcomingWire methodsFor: 'summary' stamp: 'jml 10/18/2018 20:23:27'!
@@ -189,10 +189,10 @@ value
 	^ value! !
 
 
-!Withdraw methodsFor: 'balance' stamp: 'jml 10/18/2018 19:31:27'!
-applyToBalance: balance for: anAccount
+!Withdraw methodsFor: 'balance' stamp: 'jml 10/18/2018 20:59:18'!
+applyToBalance: currentBalance
 	
-	^ balance - value! !
+	^ currentBalance - value! !
 
 
 !Withdraw methodsFor: 'summary' stamp: 'jml 10/18/2018 20:22:50'!
@@ -394,10 +394,15 @@ hasRegistered: aTransaction
 ! !
 
 
-!ReceptiveAccount methodsFor: 'balance' stamp: 'jml 10/18/2018 20:04:01'!
+!ReceptiveAccount methodsFor: 'balance' stamp: 'jml 10/18/2018 21:00:00'!
 balance
 	
-	^ transactions inject: 0 into: [ :balance :transaction | transaction applyToBalance: balance for: self ] "TODO sacar for:"! !
+	^ transactions inject: 0 into: [ :balance :transaction | transaction applyToBalance: balance ]! !
+
+!ReceptiveAccount methodsFor: 'balance' stamp: 'jml 10/18/2018 20:56:20'!
+transferNet
+	
+	^ 0! !
 
 
 !ReceptiveAccount methodsFor: 'summary' stamp: 'jml 10/18/2018 20:18:33'!
