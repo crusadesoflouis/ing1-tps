@@ -528,20 +528,20 @@ accountSummaryLinesOf: aReceptiveAccount
 	
 	^ (AccountSummaryLines for: aReceptiveAccount) value! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'jml 10/18/2018 20:50:59'!
+!PortfolioTest methodsFor: 'test support' stamp: 'jml 10/22/2018 19:29:54'!
 accountTransferNetOf: aReceptiveAccount 
 	
-	^ aReceptiveAccount transferNet! !
+	^ (AccountTransferNet for: aReceptiveAccount) value! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'jml 10/18/2018 21:28:02'!
+!PortfolioTest methodsFor: 'test support' stamp: 'jml 10/22/2018 19:41:35'!
 investmentEarningsOf: aReceptiveAccount 
 	
-	^ aReceptiveAccount investmentEarnings! !
+	^ (AccountInvestmentEarnings for: aReceptiveAccount) value! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'jml 10/18/2018 21:24:04'!
+!PortfolioTest methodsFor: 'test support' stamp: 'jml 10/22/2018 19:38:30'!
 investmentNetOf: aReceptiveAccount 
 	
-	^ aReceptiveAccount investmentNet! !
+	^ (AccountInvestmentNet for: aReceptiveAccount) value! !
 
 !PortfolioTest methodsFor: 'test support' stamp: 'HernanWilkinson 9/6/2016 19:43'!
 portofolioTreeOf: aPortfolio namingAccountWith: aDictionary 

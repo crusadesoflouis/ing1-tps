@@ -10,23 +10,8 @@ applyToBalance: currentBalance
 	
 	self subclassResponsibility! !
 
-!AccountTransaction methodsFor: 'balance' stamp: 'jml 10/18/2018 21:29:26'!
-applyToInvestmentEarnings: currentEarnings
-	
-	^ currentEarnings! !
 
-!AccountTransaction methodsFor: 'balance' stamp: 'jml 10/18/2018 21:26:12'!
-applyToInvestmentNet: currentNet
-	
-	^ currentNet! !
-
-!AccountTransaction methodsFor: 'balance' stamp: 'jml 10/18/2018 21:26:21'!
-applyToTransferNet: currentNet
-	
-	^ currentNet! !
-
-
-!AccountTransaction methodsFor: 'value' stamp: 'HernanWilkinson 9/12/2011 12:25'!
+!AccountTransaction methodsFor: 'accessing' stamp: 'HernanWilkinson 9/12/2011 12:25'!
 value 
 
 	self subclassResponsibility ! !
@@ -73,16 +58,6 @@ initializeFor: anAmount during: aTerm at: anInterestRate
 applyToBalance: currentBalance
 	
 	^ currentBalance - value! !
-
-!CertificateOfDeposit methodsFor: 'balance' stamp: 'jml 10/18/2018 21:34:02'!
-applyToInvestmentEarnings: currentEarnings
-	
-	^ currentEarnings + (value * (interestRate / 360) * term)! !
-
-!CertificateOfDeposit methodsFor: 'balance' stamp: 'jml 10/18/2018 21:25:51'!
-applyToInvestmentNet: currentNet
-	
-	^ currentNet + value! !
 
 
 !CertificateOfDeposit methodsFor: 'accessing' stamp: 'jml 10/22/2018 19:19:31'!
@@ -175,18 +150,6 @@ AccountTransaction subclass: #TransferLeg
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!TransferLeg methodsFor: 'balance' stamp: 'jml 10/18/2018 21:06:01'!
-applyToTransferNet: currentNet
-	
-	^ self applyToBalance: currentNet! !
-
-
-!TransferLeg methodsFor: 'value' stamp: 'jml 10/18/2018 20:40:00'!
-value
-	
-	^ transfer value! !
-
-
 !TransferLeg methodsFor: 'initialization' stamp: 'jml 10/18/2018 20:40:27'!
 initializeFor: aTransfer
 	
@@ -197,6 +160,11 @@ initializeFor: aTransfer
 transfer
 	
 	^ transfer! !
+
+!TransferLeg methodsFor: 'accessing' stamp: 'jml 10/18/2018 20:40:00'!
+value
+	
+	^ transfer value! !
 
 
 !classDefinition: #TransferDeposit category: #'PortfolioTreePrinter-Ejercicio'!
@@ -360,6 +328,90 @@ for: anAccount
 	^self new initializeFor: anAccount! !
 
 
+!classDefinition: #AccountInvestmentEarnings category: #'PortfolioTreePrinter-Ejercicio'!
+AccountTransactionVisitor subclass: #AccountInvestmentEarnings
+	instanceVariableNames: 'investmentEarnings'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!AccountInvestmentEarnings methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:39:46'!
+value
+	
+	investmentEarnings := 0.
+	
+	account visitTransactionsWith: self.
+	
+	^ investmentEarnings! !
+
+!AccountInvestmentEarnings methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:40:46'!
+visitCertificateOfDeposit: aCertificate
+	
+	investmentEarnings := investmentEarnings + (aCertificate value * (aCertificate interestRate / 360) * aCertificate term).! !
+
+!AccountInvestmentEarnings methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:39:19'!
+visitDeposit: aDeposit
+	
+	! !
+
+!AccountInvestmentEarnings methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:39:19'!
+visitTransferDeposit: aDeposit
+	
+	! !
+
+!AccountInvestmentEarnings methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:39:19'!
+visitTransferWithdraw: aWithdraw
+	
+	! !
+
+!AccountInvestmentEarnings methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:39:19'!
+visitWithdraw: aWithdraw
+	
+	! !
+
+
+!classDefinition: #AccountInvestmentNet category: #'PortfolioTreePrinter-Ejercicio'!
+AccountTransactionVisitor subclass: #AccountInvestmentNet
+	instanceVariableNames: 'investmentNet'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!AccountInvestmentNet methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:36:55'!
+value
+	
+	investmentNet := 0.
+	
+	account visitTransactionsWith: self.
+	
+	^ investmentNet! !
+
+!AccountInvestmentNet methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:37:14'!
+visitCertificateOfDeposit: aCertificate
+
+	investmentNet := investmentNet + aCertificate value! !
+
+!AccountInvestmentNet methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:34:46'!
+visitDeposit: aDeposit
+	
+	! !
+
+!AccountInvestmentNet methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:37:38'!
+visitTransferDeposit: aDeposit
+	
+	! !
+
+!AccountInvestmentNet methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:37:47'!
+visitTransferWithdraw: aWithdraw
+	
+	! !
+
+!AccountInvestmentNet methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:34:46'!
+visitWithdraw: aWithdraw
+	
+	! !
+
+
 !classDefinition: #AccountSummaryLines category: #'PortfolioTreePrinter-Ejercicio'!
 AccountTransactionVisitor subclass: #AccountSummaryLines
 	instanceVariableNames: 'lines'
@@ -400,6 +452,48 @@ visitTransferWithdraw: aWithdraw
 visitWithdraw: aWithdraw
 	
 	lines add:  'Extraccion por ', aWithdraw value printString! !
+
+
+!classDefinition: #AccountTransferNet category: #'PortfolioTreePrinter-Ejercicio'!
+AccountTransactionVisitor subclass: #AccountTransferNet
+	instanceVariableNames: 'transferNet'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!AccountTransferNet methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:36:44'!
+value
+	
+	transferNet := 0.
+	
+	account visitTransactionsWith: self.
+	
+	^ transferNet! !
+
+!AccountTransferNet methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:30:25'!
+visitCertificateOfDeposit: aCertificate
+
+	! !
+
+!AccountTransferNet methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:30:09'!
+visitDeposit: aDeposit
+	
+	! !
+
+!AccountTransferNet methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:36:44'!
+visitTransferDeposit: aDeposit
+	
+	transferNet := transferNet + aDeposit value! !
+
+!AccountTransferNet methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:36:44'!
+visitTransferWithdraw: aWithdraw
+	
+	transferNet := transferNet - aWithdraw value! !
+
+!AccountTransferNet methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:30:13'!
+visitWithdraw: aWithdraw
+	
+	! !
 
 
 !classDefinition: #SummarizingAccount category: #'PortfolioTreePrinter-Ejercicio'!
@@ -600,26 +694,6 @@ balance
 	
 	^ transactions inject: 0 into: [ :balance :transaction | transaction applyToBalance: balance ]! !
 
-!ReceptiveAccount methodsFor: 'balance' stamp: 'jml 10/18/2018 21:29:09'!
-investmentEarnings
-	
-	^ transactions inject: 0 into: [ :earnings :transaction | transaction applyToInvestmentEarnings: earnings ]! !
-
-!ReceptiveAccount methodsFor: 'balance' stamp: 'jml 10/18/2018 21:24:46'!
-investmentNet
-	
-	^ transactions inject: 0 into: [ :net :transaction | transaction applyToInvestmentNet: net ]! !
-
-!ReceptiveAccount methodsFor: 'balance' stamp: 'jml 10/18/2018 21:03:17'!
-transferNet
-	
-	^ transactions inject: 0 into: [ :net :transaction | transaction applyToTransferNet: net ]! !
-
-
-!ReceptiveAccount methodsFor: 'summary' stamp: 'jml 10/18/2018 20:18:33'!
-summaryLines
-	
-	^ transactions collect: [ :transaction | transaction summaryLine ]! !
 
 
 !ReceptiveAccount methodsFor: 'visiting' stamp: 'jml 10/22/2018 19:00:19'!
