@@ -32,10 +32,10 @@ value
 	self subclassResponsibility ! !
 
 
-!AccountTransaction methodsFor: 'summary' stamp: 'jml 10/18/2018 20:52:42'!
-summaryLine
-	
-	self subclassResponsibility! !
+!AccountTransaction methodsFor: 'visiting' stamp: 'jml 10/22/2018 19:07:26'!
+accept: aVisitor
+
+	self subclassResponsibility ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -85,16 +85,27 @@ applyToInvestmentNet: currentNet
 	^ currentNet + value! !
 
 
-!CertificateOfDeposit methodsFor: 'summary' stamp: 'jml 10/18/2018 21:22:45'!
-summaryLine
-	
-	^ 'Plazo fijo por ', value printString, ' durante ', term printString, ' dias a una tna de ', (interestRate * 100) printString, '%'! !
+!CertificateOfDeposit methodsFor: 'accessing' stamp: 'jml 10/22/2018 19:19:31'!
+interestRate
 
+	^interestRate ! !
 
-!CertificateOfDeposit methodsFor: 'value' stamp: 'jml 10/18/2018 21:23:01'!
+!CertificateOfDeposit methodsFor: 'accessing' stamp: 'jml 10/22/2018 19:19:11'!
+term
+
+	^term ! !
+
+!CertificateOfDeposit methodsFor: 'accessing' stamp: 'jml 10/18/2018 21:23:01'!
 value
 	
 	^ value! !
+
+
+!CertificateOfDeposit methodsFor: 'visiting' stamp: 'jml 10/22/2018 19:07:05'!
+accept: aVisitor
+
+	aVisitor visitCertificateOfDeposit: self.
+	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -139,10 +150,11 @@ applyToBalance: currentBalance
 	^ currentBalance + value! !
 
 
-!Deposit methodsFor: 'summary' stamp: 'jml 10/18/2018 20:22:17'!
-summaryLine
-	
-	^ 'Deposito por ', value printString! !
+!Deposit methodsFor: 'visiting' stamp: 'jml 10/22/2018 19:07:57'!
+accept: aVisitor
+
+	aVisitor visitDeposit: self.
+	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -200,10 +212,11 @@ applyToBalance: currentBalance
 	^ currentBalance + self value! !
 
 
-!TransferDeposit methodsFor: 'summary' stamp: 'jml 10/18/2018 20:23:20'!
-summaryLine
-	
-	^ 'Transferencia por ', self value printString! !
+!TransferDeposit methodsFor: 'visiting' stamp: 'jml 10/22/2018 19:08:31'!
+accept: aVisitor
+
+	aVisitor visitTransferDeposit: self.
+! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -230,10 +243,11 @@ applyToBalance: currentBalance
 	^ currentBalance - self value! !
 
 
-!TransferWithdraw methodsFor: 'summary' stamp: 'jml 10/18/2018 20:23:27'!
-summaryLine
-	
-	^ 'Transferencia por -', self value printString! !
+!TransferWithdraw methodsFor: 'visiting' stamp: 'jml 10/22/2018 19:08:47'!
+accept: aVisitor
+
+	aVisitor visitTransferWithdraw: self.
+! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -272,10 +286,11 @@ applyToBalance: currentBalance
 	^ currentBalance - value! !
 
 
-!Withdraw methodsFor: 'summary' stamp: 'jml 10/18/2018 20:22:50'!
-summaryLine
-	
-	^ 'Extraccion por ', value printString! !
+!Withdraw methodsFor: 'visiting' stamp: 'jml 10/22/2018 19:09:12'!
+accept: aVisitor
+
+	aVisitor visitWithdraw: self.
+! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -287,6 +302,104 @@ Withdraw class
 for: aValue
 
 	^ self new initializeFor: aValue ! !
+
+
+!classDefinition: #AccountTransactionVisitor category: #'PortfolioTreePrinter-Ejercicio'!
+Object subclass: #AccountTransactionVisitor
+	instanceVariableNames: 'account'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!AccountTransactionVisitor methodsFor: 'initialization' stamp: 'jml 10/22/2018 18:51:37'!
+initializeFor: anAccount
+	
+	account := anAccount! !
+
+
+!AccountTransactionVisitor methodsFor: 'visiting' stamp: 'jml 10/22/2018 18:54:06'!
+visitCertificateOfDeposit: aCertificateOfDeposit
+	
+	self subclassResponsibility! !
+
+!AccountTransactionVisitor methodsFor: 'visiting' stamp: 'jml 10/22/2018 18:53:15'!
+visitDeposit: aDeposit
+	
+	self subclassResponsibility! !
+
+!AccountTransactionVisitor methodsFor: 'visiting' stamp: 'jml 10/22/2018 18:53:43'!
+visitTransferDeposit: aDeposit
+	
+	self subclassResponsibility! !
+
+!AccountTransactionVisitor methodsFor: 'visiting' stamp: 'jml 10/22/2018 18:53:38'!
+visitTransferWithdraw: aWithdraw
+	
+	self subclassResponsibility! !
+
+!AccountTransactionVisitor methodsFor: 'visiting' stamp: 'jml 10/22/2018 18:53:26'!
+visitWithdraw: aWithdraw
+	
+	self subclassResponsibility! !
+
+
+!AccountTransactionVisitor methodsFor: 'evaluation' stamp: 'jml 10/22/2018 18:52:07'!
+value
+	
+	self subclassResponsibility! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'AccountTransactionVisitor class' category: #'PortfolioTreePrinter-Ejercicio'!
+AccountTransactionVisitor class
+	instanceVariableNames: ''!
+
+!AccountTransactionVisitor class methodsFor: 'instance creation' stamp: 'jml 10/22/2018 19:23:41'!
+for: anAccount
+	
+	^self new initializeFor: anAccount! !
+
+
+!classDefinition: #AccountSummaryLines category: #'PortfolioTreePrinter-Ejercicio'!
+AccountTransactionVisitor subclass: #AccountSummaryLines
+	instanceVariableNames: 'lines'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!AccountSummaryLines methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:11:15'!
+value
+	
+	lines := OrderedCollection new.
+	
+	account visitTransactionsWith: self.
+	
+	^ lines! !
+
+!AccountSummaryLines methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:20:00'!
+visitCertificateOfDeposit: aCertificate
+
+	lines add: 'Plazo fijo por ', aCertificate value printString, ' durante ', aCertificate term printString, ' dias a una tna de ', (aCertificate interestRate * 100) printString, '%'! !
+
+!AccountSummaryLines methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:13:16'!
+visitDeposit: aDeposit
+	
+	lines add:  'Deposito por ', aDeposit value printString! !
+
+!AccountSummaryLines methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:15:37'!
+visitTransferDeposit: aDeposit
+	
+	lines add:  'Transferencia por ', aDeposit value printString! !
+
+!AccountSummaryLines methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:16:45'!
+visitTransferWithdraw: aWithdraw
+	
+	lines add: 'Transferencia por ', aWithdraw value negated printString! !
+
+!AccountSummaryLines methodsFor: 'evaluation' stamp: 'jml 10/22/2018 19:14:47'!
+visitWithdraw: aWithdraw
+	
+	lines add:  'Extraccion por ', aWithdraw value printString! !
 
 
 !classDefinition: #SummarizingAccount category: #'PortfolioTreePrinter-Ejercicio'!
@@ -321,6 +434,12 @@ transactions
 !SummarizingAccount methodsFor: 'balance' stamp: 'jml 10/15/2018 13:12:53'!
 balance
 
+	self subclassResponsibility! !
+
+
+!SummarizingAccount methodsFor: 'visiting' stamp: 'jml 10/22/2018 18:57:09'!
+visitTransactionsWith: aVisitor
+	
 	self subclassResponsibility! !
 
 
@@ -383,6 +502,13 @@ initialize
 balance
 	
 	^ accounts sum: [ :account | account balance ]! !
+
+
+!Portfolio methodsFor: 'visiting' stamp: 'jml 10/22/2018 19:01:36'!
+visitTransactionsWith: aVisitor
+	
+	
+	accounts do: [ :account | account visitTransactionsWith: aVisitor ].! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -494,6 +620,12 @@ transferNet
 summaryLines
 	
 	^ transactions collect: [ :transaction | transaction summaryLine ]! !
+
+
+!ReceptiveAccount methodsFor: 'visiting' stamp: 'jml 10/22/2018 19:00:19'!
+visitTransactionsWith: aVisitor
+	
+	transactions do: [ :transaction | transaction accept: aVisitor ].! !
 
 
 !classDefinition: #Transfer category: #'PortfolioTreePrinter-Ejercicio'!

@@ -523,10 +523,10 @@ test29ReversePortfolioTreePrinterPrintsTheCompositeStartingFromTheLeaves
 	! !
 
 
-!PortfolioTest methodsFor: 'test support' stamp: 'jml 10/18/2018 20:14:22'!
+!PortfolioTest methodsFor: 'test support' stamp: 'jml 10/22/2018 18:50:21'!
 accountSummaryLinesOf: aReceptiveAccount 
 	
-	^ aReceptiveAccount summaryLines! !
+	^ (AccountSummaryLines for: aReceptiveAccount) value! !
 
 !PortfolioTest methodsFor: 'test support' stamp: 'jml 10/18/2018 20:50:59'!
 accountTransferNetOf: aReceptiveAccount 
