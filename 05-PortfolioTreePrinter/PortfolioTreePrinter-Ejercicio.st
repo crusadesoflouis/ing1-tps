@@ -187,61 +187,61 @@ transfer
 	^ transfer! !
 
 
-!classDefinition: #IncomingWire category: #'PortfolioTreePrinter-Ejercicio'!
-TransferLeg subclass: #IncomingWire
+!classDefinition: #TransferDeposit category: #'PortfolioTreePrinter-Ejercicio'!
+TransferLeg subclass: #TransferDeposit
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!IncomingWire methodsFor: 'balance' stamp: 'jml 10/18/2018 20:58:38'!
+!TransferDeposit methodsFor: 'balance' stamp: 'jml 10/18/2018 20:58:38'!
 applyToBalance: currentBalance
 	
 	^ currentBalance + self value! !
 
 
-!IncomingWire methodsFor: 'summary' stamp: 'jml 10/18/2018 20:23:20'!
+!TransferDeposit methodsFor: 'summary' stamp: 'jml 10/18/2018 20:23:20'!
 summaryLine
 	
 	^ 'Transferencia por ', self value printString! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'IncomingWire class' category: #'PortfolioTreePrinter-Ejercicio'!
-IncomingWire class
+!classDefinition: 'TransferDeposit class' category: #'PortfolioTreePrinter-Ejercicio'!
+TransferDeposit class
 	instanceVariableNames: ''!
 
-!IncomingWire class methodsFor: 'instance creation' stamp: 'jml 10/18/2018 20:01:28'!
+!TransferDeposit class methodsFor: 'instance creation' stamp: 'jml 10/18/2018 20:01:28'!
 for: aTransfer
 	
 	^ self new initializeFor: aTransfer! !
 
 
-!classDefinition: #OutcomingWire category: #'PortfolioTreePrinter-Ejercicio'!
-TransferLeg subclass: #OutcomingWire
+!classDefinition: #TransferWithdraw category: #'PortfolioTreePrinter-Ejercicio'!
+TransferLeg subclass: #TransferWithdraw
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!OutcomingWire methodsFor: 'balance' stamp: 'jml 10/18/2018 20:59:02'!
+!TransferWithdraw methodsFor: 'balance' stamp: 'jml 10/18/2018 20:59:02'!
 applyToBalance: currentBalance
 	
 	^ currentBalance - self value! !
 
 
-!OutcomingWire methodsFor: 'summary' stamp: 'jml 10/18/2018 20:23:27'!
+!TransferWithdraw methodsFor: 'summary' stamp: 'jml 10/18/2018 20:23:27'!
 summaryLine
 	
 	^ 'Transferencia por -', self value printString! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'OutcomingWire class' category: #'PortfolioTreePrinter-Ejercicio'!
-OutcomingWire class
+!classDefinition: 'TransferWithdraw class' category: #'PortfolioTreePrinter-Ejercicio'!
+TransferWithdraw class
 	instanceVariableNames: ''!
 
-!OutcomingWire class methodsFor: 'instance creation' stamp: 'jml 10/18/2018 20:01:39'!
+!TransferWithdraw class methodsFor: 'instance creation' stamp: 'jml 10/18/2018 20:01:39'!
 for: aTransfer
 	
 	^ self new initializeFor: aTransfer! !
@@ -503,12 +503,12 @@ Object subclass: #Transfer
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!Transfer methodsFor: 'initialization' stamp: 'jml 10/18/2018 20:49:51'!
+!Transfer methodsFor: 'initialization' stamp: 'jml 10/22/2018 18:24:29'!
 initializeFor: aValue
 
 	value := aValue.
-	withdrawLeg := OutcomingWire for: self.
-	depositLeg := IncomingWire for: self.
+	withdrawLeg := TransferWithdraw for: self.
+	depositLeg := TransferDeposit for: self.
 ! !
 
 
