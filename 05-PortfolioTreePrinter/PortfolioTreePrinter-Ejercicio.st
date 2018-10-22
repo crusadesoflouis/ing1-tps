@@ -127,9 +127,9 @@ initializeFor: aValue
 	value := aValue ! !
 
 
-!Deposit methodsFor: 'value' stamp: 'jml 10/18/2018 18:58:19'!
+!Deposit methodsFor: 'value' stamp: 'jml 10/22/2018 18:15:13'!
 value
-	"TODO subir a superclase?"
+	
 	^ value! !
 
 
@@ -194,8 +194,6 @@ TransferLeg subclass: #IncomingWire
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-
-
 !IncomingWire methodsFor: 'balance' stamp: 'jml 10/18/2018 20:58:38'!
 applyToBalance: currentBalance
 	
@@ -225,8 +223,6 @@ TransferLeg subclass: #OutcomingWire
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
-
-
 
 !OutcomingWire methodsFor: 'balance' stamp: 'jml 10/18/2018 20:59:02'!
 applyToBalance: currentBalance
@@ -435,13 +431,11 @@ SummarizingAccount subclass: #ReceptiveAccount
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!ReceptiveAccount methodsFor: 'initialization' stamp: 'jml 10/18/2018 19:10:18'!
+!ReceptiveAccount methodsFor: 'initialization' stamp: 'jml 10/22/2018 18:15:03'!
 initialize
 
 	super initialize.
-	transactions := OrderedCollection new.
-	incomingTransfers := OrderedCollection new.
-	outcomingTransfers := OrderedCollection new.! !
+	transactions := OrderedCollection new.! !
 
 
 !ReceptiveAccount methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:37'!
@@ -516,7 +510,6 @@ initializeFor: aValue
 	withdrawLeg := OutcomingWire for: self.
 	depositLeg := IncomingWire for: self.
 ! !
-
 
 
 !Transfer methodsFor: 'value' stamp: 'jml 10/18/2018 18:57:55'!
