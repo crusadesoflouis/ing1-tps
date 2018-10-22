@@ -496,6 +496,69 @@ visitWithdraw: aWithdraw
 	! !
 
 
+!classDefinition: #AccountVisitor category: #'PortfolioTreePrinter-Ejercicio'!
+Object subclass: #AccountVisitor
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+
+!AccountVisitor methodsFor: 'evaluation' stamp: 'jml 10/22/2018 20:03:20'!
+value
+	
+	self subclassResponsibility! !
+
+
+!classDefinition: #PortfolioTree category: #'PortfolioTreePrinter-Ejercicio'!
+AccountVisitor subclass: #PortfolioTree
+	instanceVariableNames: 'portfolio namingDictionary lines'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!PortfolioTree methodsFor: 'initialization' stamp: 'jml 10/22/2018 20:02:44'!
+initializeWith: aPortfolio namingAccountWith: aDictionary 
+	
+	portfolio := aPortfolio.
+	namingDictionary := aDictionary.! !
+
+
+!PortfolioTree methodsFor: 'evaluation' stamp: 'jml 10/22/2018 20:24:21'!
+value
+	
+	lines := OrderedCollection new.
+	
+	portfolio accept: self.
+	
+	^ lines! !
+
+
+!PortfolioTree methodsFor: 'visiting' stamp: 'jml 10/22/2018 20:19:55'!
+visit: anAccount atLevel: level
+	
+	| newLine |
+	
+	newLine := (String new: level) atAllPut: $ .
+	
+	newLine := newLine , (namingDictionary at: anAccount).
+	
+	lines add: newLine.
+	
+	! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PortfolioTree class' category: #'PortfolioTreePrinter-Ejercicio'!
+PortfolioTree class
+	instanceVariableNames: ''!
+
+!PortfolioTree class methodsFor: 'instance creation' stamp: 'jml 10/22/2018 20:07:11'!
+for: aPortfolio namingAccountWith: namingDictionary
+	
+	^ self new initializeWith: aPortfolio namingAccountWith: namingDictionary! !
+
+
 !classDefinition: #SummarizingAccount category: #'PortfolioTreePrinter-Ejercicio'!
 Object subclass: #SummarizingAccount
 	instanceVariableNames: ''
@@ -598,6 +661,18 @@ balance
 	^ accounts sum: [ :account | account balance ]! !
 
 
+!Portfolio methodsFor: 'visiting' stamp: 'jml 10/22/2018 20:05:13'!
+accept: aVisitor
+
+	self accept: aVisitor atLevel: 0! !
+
+!Portfolio methodsFor: 'visiting' stamp: 'jml 10/22/2018 19:56:01'!
+accept: aVisitor atLevel: level
+	
+	aVisitor visit: self atLevel: level.
+	
+	accounts do: [ :account | account accept: aVisitor atLevel: (level + 1) ].! !
+
 !Portfolio methodsFor: 'visiting' stamp: 'jml 10/22/2018 19:01:36'!
 visitTransactionsWith: aVisitor
 	
@@ -695,6 +770,11 @@ balance
 	^ transactions inject: 0 into: [ :balance :transaction | transaction applyToBalance: balance ]! !
 
 
+
+!ReceptiveAccount methodsFor: 'visiting' stamp: 'jml 10/22/2018 19:56:16'!
+accept: aVisitor atLevel: level
+	
+	aVisitor visit: self atLevel: level.! !
 
 !ReceptiveAccount methodsFor: 'visiting' stamp: 'jml 10/22/2018 19:00:19'!
 visitTransactionsWith: aVisitor
