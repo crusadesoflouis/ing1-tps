@@ -558,7 +558,7 @@ registerTransferOf: anAmount from: fromAccount to: toAccount
 
 	^ Transfer register: anAmount from: fromAccount to: toAccount! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'jml 10/22/2018 20:23:28'!
+!PortfolioTest methodsFor: 'test support' stamp: 'jml 10/24/2018 23:37:11'!
 reversePortofolioTreeOf: aPortfolio namingAccountWith: aDictionary 
 	
-	^ (PortfolioTree for: aPortfolio namingAccountWith: aDictionary) value reverse! !
+	^ (ReverseValueDecorator for: (PortfolioTree for: aPortfolio namingAccountWith: aDictionary)) value! !

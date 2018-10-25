@@ -503,9 +503,14 @@ Object subclass: #AccountVisitor
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-
 !AccountVisitor methodsFor: 'evaluation' stamp: 'jml 10/22/2018 20:03:20'!
 value
+	
+	self subclassResponsibility! !
+
+
+!AccountVisitor methodsFor: 'visiting' stamp: 'jml 10/24/2018 23:31:36'!
+visit: anAccount atLevel: level
 	
 	self subclassResponsibility! !
 
@@ -557,6 +562,38 @@ PortfolioTree class
 for: aPortfolio namingAccountWith: namingDictionary
 	
 	^ self new initializeWith: aPortfolio namingAccountWith: namingDictionary! !
+
+
+!classDefinition: #ReverseValueDecorator category: #'PortfolioTreePrinter-Ejercicio'!
+Object subclass: #ReverseValueDecorator
+	instanceVariableNames: 'decoratee'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!ReverseValueDecorator methodsFor: 'evaluation' stamp: 'jml 10/24/2018 23:34:38'!
+value
+	
+	^ decoratee value reverse
+	
+	! !
+
+
+!ReverseValueDecorator methodsFor: 'initialization' stamp: 'jml 10/24/2018 23:34:12'!
+initializeFor: aDecoratee
+	
+	decoratee := aDecoratee! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ReverseValueDecorator class' category: #'PortfolioTreePrinter-Ejercicio'!
+ReverseValueDecorator class
+	instanceVariableNames: ''!
+
+!ReverseValueDecorator class methodsFor: 'instance creation' stamp: 'jml 10/24/2018 23:36:53'!
+for: aDecoratee
+	
+	^ self new initializeFor: aDecoratee! !
 
 
 !classDefinition: #SummarizingAccount category: #'PortfolioTreePrinter-Ejercicio'!
@@ -768,7 +805,6 @@ hasRegistered: aTransaction
 balance
 	
 	^ transactions inject: 0 into: [ :balance :transaction | transaction applyToBalance: balance ]! !
-
 
 
 !ReceptiveAccount methodsFor: 'visiting' stamp: 'jml 10/22/2018 19:56:16'!
