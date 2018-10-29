@@ -11,22 +11,14 @@ initializeFor: aReceptiveAccount
 	account := aReceptiveAccount ! !
 
 
-!AccountSummaryWithAllInvestmentInformation methodsFor: 'evaluating' stamp: 'jml 10/25/2018 21:15:58'!
+!AccountSummaryWithAllInvestmentInformation methodsFor: 'evaluating' stamp: 'jml 10/26/2018 15:26:02'!
 lines 
 
-	| lines investmentEarnings semaphore |
-	
-	semaphore := Semaphore new.
-	
-	[ lines := (AccountSummaryWithInvestmentEarnings for: account) lines. semaphore signal. ] fork.
-	
-	investmentEarnings := (InvestmentNetVisitor for: account) value.
-	
-	semaphore wait.
-	
-	lines add: 'Inversiones por ', investmentEarnings printString.
-	
-	 ^ lines! !
+	^ (ParallelRunner
+		with: [ (AccountSummaryWithInvestmentEarnings for: account) lines ]
+		and: [ (InvestmentNetVisitor for: account) value ]
+	) runAndReturn:
+		[ :summaryLines :investmentNet | summaryLines add: 'Inversiones por ', investmentNet printString; yourself ]! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -53,22 +45,14 @@ initializeFor: aReceptiveAccount
 	account := aReceptiveAccount ! !
 
 
-!AccountSummaryWithInvestmentEarnings methodsFor: 'evaluating' stamp: 'jml 10/25/2018 21:15:09'!
+!AccountSummaryWithInvestmentEarnings methodsFor: 'evaluating' stamp: 'jml 10/26/2018 15:21:28'!
 lines 
 
-	| semaphore lines investmentEarnings |
-	
-	semaphore := Semaphore new.
-	
-	[ lines := (AccountSummary for: account) lines. semaphore signal. ] fork.
-	
-	investmentEarnings := (InvestmentEarningVisitor for: account) value.
-	
-	semaphore wait.
-	
-	lines add: 'Ganancias por ', investmentEarnings printString.
-		
-	^ lines! !
+	^ (ParallelRunner
+		with: [ (AccountSummary for: account) lines ]
+		and: [ (InvestmentEarningVisitor for: account) value ]
+	) runAndReturn:
+		[ :summaryLines :investmentEarnings | summaryLines add: 'Ganancias por ', investmentEarnings printString; yourself ]! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -423,7 +407,7 @@ visitWithdraw: aWithdraw
 	lines add: 'Extraccion por ', aWithdraw value printString ! !
 
 
-!AccountSummary methodsFor: 'evaluating' stamp: 'jml 10/25/2018 21:12:39'!
+!AccountSummary methodsFor: 'evaluating' stamp: 'jml 10/26/2018 15:24:26'!
 lines
 	
 	(Delay forSeconds: 1) wait.
@@ -682,6 +666,47 @@ InvestmentNetVisitor class
 for: aReceptiveAccount 
 	
 	^ self new initializeFor: aReceptiveAccount ! !
+
+
+!classDefinition: #ParallelRunner category: #'PortfolioTimeConsuming-Ejercicio'!
+Object subclass: #ParallelRunner
+	instanceVariableNames: 'process1 process2'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTimeConsuming-Ejercicio'!
+
+!ParallelRunner methodsFor: 'initialization' stamp: 'jml 10/26/2018 15:06:33'!
+initializeWith: aProcess and: anotherProcess
+	
+	process1 := aProcess.
+	process2 := anotherProcess.! !
+
+
+!ParallelRunner methodsFor: 'running' stamp: 'jml 10/26/2018 15:21:28'!
+runAndReturn: aBlock
+	
+	| semaphore value1 value2 |
+	
+	semaphore := Semaphore new.
+	
+	[ value1 := process1 value. semaphore signal. ] fork.
+	
+	value2 := process2 value.
+	
+	semaphore wait.
+	
+	^ aBlock value: value1 value: value2.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ParallelRunner class' category: #'PortfolioTimeConsuming-Ejercicio'!
+ParallelRunner class
+	instanceVariableNames: ''!
+
+!ParallelRunner class methodsFor: 'instance creation' stamp: 'jml 10/26/2018 15:05:31'!
+with: process1 and: process2
+	
+	^ self new initializeWith: process1 and: process2! !
 
 
 !classDefinition: #ReversePortfolioTreePrinter category: #'PortfolioTimeConsuming-Ejercicio'!
