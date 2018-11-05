@@ -171,7 +171,7 @@ test12InitiallyWonGameForColumnsIsFinished
 		self assert: anException messageText equals: TerniLapilli finishedGameErrorDescription
 	].! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'la 11/5/2018 16:01:14'!
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'jml 11/5/2018 17:23:15'!
 test13gameInitialPhaseFinishedWhitoutWinner
 	
 	| game |
@@ -182,12 +182,15 @@ test13gameInitialPhaseFinishedWhitoutWinner
 	game setO: 2@1.
 	game setX: 1@2.
 	game setO: 2@2.
-	
-
 	game setX: 2@3.
 	game setO: 1@3.
+	
 	self deny: game finished.
-	self deny: game inInitialPhase.! !
+	self deny: game inInitialPhase.
+	
+	self should: [ game setX: 3@3 ] raise: Error withExceptionDo: [ : anException |
+		self assert: anException messageText equals: TerniLapilli cannotAddMorePieces
+	].! !
 
 !TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'la 11/5/2018 15:38:16'!
 test14gameInitialPhaseNotFinished
@@ -200,7 +203,7 @@ test14gameInitialPhaseNotFinished
 	self deny: game finished.
 	self assert: game inInitialPhase.! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'la 11/5/2018 15:51:22'!
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'jml 11/5/2018 17:08:46'!
 test15InvalidMovement
 	
 	| game |
@@ -215,149 +218,145 @@ test15InvalidMovement
 	game setO: 1@3.
 	
 	self should: [game moveXfrom: 1@1 to: 0@0] raise: Error withExceptionDo: [ : anException |
-	self assert: anException messageText equals: TerniLapilli invalidMovement
+		self assert: anException messageText equals: TerniLapilli invalidPositionErrorDescription
 	].! !
 
 
 !classDefinition: #TerniLapilli category: #TerniLapilli!
 Object subclass: #TerniLapilli
-	instanceVariableNames: 'board isXturn piecesOnBoard'
+	instanceVariableNames: 'board isXturn'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/1/2018 20:55:39'!
-anyColumnIsFullOf: aPiece
+!TerniLapilli methodsFor: 'playing' stamp: 'jml 11/5/2018 17:12:55'!
+moveXfrom: fromPosition to: toPosition 
 	
-	 ^ #(1 2 3) anySatisfy: [ :col | self col: col isFullOf: aPiece ]! !
-
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/1/2018 21:02:02'!
-anyDiagonalIsFullOf: aPiece
+	((self isValidPosition: fromPosition) and: [ self isValidPosition: toPosition ]) ifFalse: [
+		self error: self class invalidPositionErrorDescription
+	].
 	
-	^ (self leftDiagonalIsFullOf: aPiece) or: [ self rightDiagonalIsFullOf: aPiece ]! !
+	" TODO move "! !
 
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/1/2018 20:51:52'!
-anyRowIsFullOf: aPiece
-	
-	^ #(1 2 3) anySatisfy: [ :row | self row: row isFullOf: aPiece ]! !
-
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/1/2018 20:56:05'!
-col: col isFullOf: aPiece
-	
-	^ #(1 2 3) allSatisfy: [ :row | self has: aPiece at: col@row ]! !
-
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/5/2018 16:34:31'!
-finished
-	
-	^ self wonForX or: [ self wonForO]! !
-
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/1/2018 20:52:31'!
-has: aPiece at: aPosition
-	
-	^ (board includesKey: aPosition) and: [ (board at: aPosition) = aPiece ]! !
-
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/5/2018 16:47:00'!
-hasO: aPoint 
-
-	^ self has: 'O' at: aPoint! !
-
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/5/2018 16:48:00'!
-hasX: aPoint 
-	
-	^ true! !
-
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/5/2018 15:59:52'!
-inInitialPhase
-	
-	^(self piecesOnBoard) < 6! !
-
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/5/2018 15:54:36'!
-initialize
-
-	board := Dictionary new.	
-	isXturn:= true.
-	piecesOnBoard := 0.! !
-
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/1/2018 19:57:05'!
-isEmpty: aPosition 
-
-	^(board includesKey: aPosition) not! !
-
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/1/2018 20:16:41'!
-isValidCoordinate: aCoordinate
-	
-	^ aCoordinate between: 1 and: 3! !
-
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/1/2018 20:17:49'!
-isValidPosition: aPosition
-	
-	^ (self isValidCoordinate: aPosition x) and: [ self isValidCoordinate: aPosition y ]! !
-
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/1/2018 21:07:34'!
-leftDiagonalIsFullOf: aPiece
-	
-	^ (Array with: 1@1 with: 2@2 with: 3@3) allSatisfy: [ :pos | self has: aPiece at: pos ]! !
-
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/5/2018 16:43:53'!
-moveXfrom: aPosition to: anOtherPosition 
-	
-
-	|set|
-	set := #(1 2 3).
-	((set includes: aPosition x) and:[	(set includes: aPosition y)
-	and:[((set includes: anOtherPosition x) and:[	(set includes: anOtherPosition  y)])]])
-		ifFalse:  [^self error: self class invalidMovement ].! !
-
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/5/2018 15:53:21'!
-piecesOnBoard
-
-	^piecesOnBoard ! !
-
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/1/2018 21:08:09'!
-rightDiagonalIsFullOf: aPiece
-	
-	^ (Array with: 1@3 with: 2@2 with: 3@1) allSatisfy: [ :pos | self has: aPiece at: pos ]! !
-
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/1/2018 20:48:18'!
-row: row isFullOf: aPiece
-	
-	^ #(1 2 3) allSatisfy: [ :col | self has: aPiece at: col@row ]! !
-
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/5/2018 15:55:02'!
-set: aPiece at: aPosition
-	(self finished) ifTrue: [ self error: self class finishedGameErrorDescription ].
-	(self isValidPosition: aPosition) ifFalse: [ self error: self class invalidPositionErrorDescription ].	
-	(self isEmpty: aPosition) ifFalse: [ self error: self class occupiedPositionErrorDescription ].
-	
-	board at: aPosition put: aPiece.
-	
-	isXturn := isXturn not.
-	
-	piecesOnBoard := piecesOnBoard +1.! !
-
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/1/2018 20:11:54'!
+!TerniLapilli methodsFor: 'playing' stamp: 'la 11/1/2018 20:11:54'!
 setO: aPosition
 
 	isXturn ifTrue: [self error: self class invalidTurnErrorDescription].
 	
 	self set: $O at: aPosition.! !
 
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/1/2018 20:13:26'!
+!TerniLapilli methodsFor: 'playing' stamp: 'la 11/1/2018 20:13:26'!
 setX: aPosition
 
 	isXturn ifFalse: [self error: self class invalidTurnErrorDescription].
 	
 	self set: $X at: aPosition.! !
 
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/1/2018 20:54:37'!
+
+!TerniLapilli methodsFor: 'testing' stamp: 'la 11/5/2018 16:34:31'!
+finished
+	
+	^ self wonForX or: [ self wonForO]! !
+
+!TerniLapilli methodsFor: 'testing' stamp: 'la 11/5/2018 16:47:00'!
+hasO: aPoint 
+
+	^ self has: 'O' at: aPoint! !
+
+!TerniLapilli methodsFor: 'testing' stamp: 'la 11/5/2018 16:48:00'!
+hasX: aPoint 
+	
+	^ true! !
+
+!TerniLapilli methodsFor: 'testing' stamp: 'jml 11/5/2018 17:05:43'!
+inInitialPhase
+	
+	^ board size < 6! !
+
+!TerniLapilli methodsFor: 'testing' stamp: 'la 11/1/2018 19:57:05'!
+isEmpty: aPosition 
+
+	^(board includesKey: aPosition) not! !
+
+!TerniLapilli methodsFor: 'testing' stamp: 'la 11/1/2018 20:54:37'!
 wonForO
 	
 	^ (self anyRowIsFullOf: $O) or: [ (self anyColumnIsFullOf: $O) or: [ self anyDiagonalIsFullOf: $O ] ]! !
 
-!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'la 11/1/2018 20:54:01'!
+!TerniLapilli methodsFor: 'testing' stamp: 'la 11/1/2018 20:54:01'!
 wonForX
 	
 	^ (self anyRowIsFullOf: $X) or: [ (self anyColumnIsFullOf: $X) or: [ self anyDiagonalIsFullOf: $X ] ]! !
+
+
+!TerniLapilli methodsFor: 'testing - private' stamp: 'la 11/1/2018 20:55:39'!
+anyColumnIsFullOf: aPiece
+	
+	 ^ #(1 2 3) anySatisfy: [ :col | self col: col isFullOf: aPiece ]! !
+
+!TerniLapilli methodsFor: 'testing - private' stamp: 'la 11/1/2018 21:02:02'!
+anyDiagonalIsFullOf: aPiece
+	
+	^ (self leftDiagonalIsFullOf: aPiece) or: [ self rightDiagonalIsFullOf: aPiece ]! !
+
+!TerniLapilli methodsFor: 'testing - private' stamp: 'la 11/1/2018 20:51:52'!
+anyRowIsFullOf: aPiece
+	
+	^ #(1 2 3) anySatisfy: [ :row | self row: row isFullOf: aPiece ]! !
+
+!TerniLapilli methodsFor: 'testing - private' stamp: 'la 11/1/2018 20:56:05'!
+col: col isFullOf: aPiece
+	
+	^ #(1 2 3) allSatisfy: [ :row | self has: aPiece at: col@row ]! !
+
+!TerniLapilli methodsFor: 'testing - private' stamp: 'la 11/1/2018 20:52:31'!
+has: aPiece at: aPosition
+	
+	^ (board includesKey: aPosition) and: [ (board at: aPosition) = aPiece ]! !
+
+!TerniLapilli methodsFor: 'testing - private' stamp: 'la 11/1/2018 20:16:41'!
+isValidCoordinate: aCoordinate
+	
+	^ aCoordinate between: 1 and: 3! !
+
+!TerniLapilli methodsFor: 'testing - private' stamp: 'la 11/1/2018 20:17:49'!
+isValidPosition: aPosition
+	
+	^ (self isValidCoordinate: aPosition x) and: [ self isValidCoordinate: aPosition y ]! !
+
+!TerniLapilli methodsFor: 'testing - private' stamp: 'la 11/1/2018 21:07:34'!
+leftDiagonalIsFullOf: aPiece
+	
+	^ (Array with: 1@1 with: 2@2 with: 3@3) allSatisfy: [ :pos | self has: aPiece at: pos ]! !
+
+!TerniLapilli methodsFor: 'testing - private' stamp: 'la 11/1/2018 21:08:09'!
+rightDiagonalIsFullOf: aPiece
+	
+	^ (Array with: 1@3 with: 2@2 with: 3@1) allSatisfy: [ :pos | self has: aPiece at: pos ]! !
+
+!TerniLapilli methodsFor: 'testing - private' stamp: 'la 11/1/2018 20:48:18'!
+row: row isFullOf: aPiece
+	
+	^ #(1 2 3) allSatisfy: [ :col | self has: aPiece at: col@row ]! !
+
+
+!TerniLapilli methodsFor: 'initialization' stamp: 'jml 11/5/2018 17:05:09'!
+initialize
+
+	board := Dictionary new.	
+	isXturn:= true.! !
+
+
+!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/5/2018 17:28:24'!
+set: aPiece at: aPosition
+	self finished ifTrue: [ self error: self class finishedGameErrorDescription ].
+	self inInitialPhase ifFalse: [ self error: self class cannotAddMorePieces ].
+	(self isValidPosition: aPosition) ifFalse: [ self error: self class invalidPositionErrorDescription ].	
+	(self isEmpty: aPosition) ifFalse: [ self error: self class occupiedPositionErrorDescription ].
+	
+	board at: aPosition put: aPiece.
+	
+	isXturn := isXturn not.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -365,28 +364,32 @@ wonForX
 TerniLapilli class
 	instanceVariableNames: ''!
 
-!TerniLapilli class methodsFor: 'error descriptions' stamp: 'la 11/5/2018 15:51:44'!
-invalidMovement
+!TerniLapilli class methodsFor: 'error descriptions' stamp: 'jml 11/5/2018 17:26:23'!
+cannotAddMorePieces
+	
+	^ 'cannot add more than 6 pieces'! !
 
-	^'movimiento invalido'! !
+!TerniLapilli class methodsFor: 'error descriptions' stamp: 'la 11/1/2018 20:34:33'!
+finishedGameErrorDescription
+	
+	^ 'game is finished'! !
+
+!TerniLapilli class methodsFor: 'error descriptions' stamp: 'jml 11/5/2018 17:25:45'!
+invalidMoveErrorDescription
+
+	^ 'invalid move'! !
 
 !TerniLapilli class methodsFor: 'error descriptions' stamp: 'la 11/1/2018 20:09:56'!
 invalidPositionErrorDescription
 
 	^ 'invalid position'! !
 
-!TerniLapilli class methodsFor: 'error descriptions' stamp: 'la 11/1/2018 20:09:31'!
+!TerniLapilli class methodsFor: 'error descriptions' stamp: 'jml 11/5/2018 17:26:04'!
 invalidTurnErrorDescription
 
-	^'turno invalido'! !
+	^ 'invalid turn'! !
 
-
-!TerniLapilli class methodsFor: 'as yet unclassified' stamp: 'la 11/1/2018 20:34:33'!
-finishedGameErrorDescription
-	
-	^ 'game is finished'! !
-
-!TerniLapilli class methodsFor: 'as yet unclassified' stamp: 'la 11/1/2018 20:24:14'!
+!TerniLapilli class methodsFor: 'error descriptions' stamp: 'la 11/1/2018 20:24:14'!
 occupiedPositionErrorDescription
 	
 	^ 'occupied position'! !
