@@ -81,7 +81,7 @@ test08CannotPlayAtAnOccupiedPosition
 		self deny: (game isEmpty: aPosition).
 	].! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 20:10:17'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 20:54:01'!
 test09InitiallyWonGameForColumnsIsFinished
 	
 	| game |
@@ -94,11 +94,11 @@ test09InitiallyWonGameForColumnsIsFinished
 	game playAt: 3@3.
 	game playAt: 1@3.
 	
-	self assert: game finished.
+	self assert: game isFinished.
 	self assert: game wonForX.
 	self deny: game wonForO.! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 20:11:37'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 20:54:01'!
 test10InitiallyWonGameForRowIsFinished
 	
 	| game |
@@ -111,11 +111,11 @@ test10InitiallyWonGameForRowIsFinished
 	game playAt: 3@3.
 	game playAt: 3@1.
 
-	self assert: game finished.
+	self assert: game isFinished.
 	self assert: game wonForX.
 	self deny: game wonForO.! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 20:11:41'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 20:54:01'!
 test11InitiallyWonGameForDiagonalIsFinished
 	
 	| game |
@@ -128,7 +128,7 @@ test11InitiallyWonGameForDiagonalIsFinished
 	game playAt: 3@1.
 	game playAt: 3@3.
 	
-	self assert: game finished.
+	self assert: game isFinished.
 	self assert: game wonForX.
 	self deny: game wonForO.! !
 
@@ -151,8 +151,8 @@ test12CannotPlayWhenGameIsFinished
 	].
 ! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 19:34:03'!
-test13gameInitialPhaseFinishedWhitoutWinner
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 20:54:01'!
+test13GameInitialPhaseFinishedWhitoutWinner
 	
 	| game |
 	
@@ -165,7 +165,7 @@ test13gameInitialPhaseFinishedWhitoutWinner
 	game playAt: 2@3.
 	game playAt: 1@3.
 	
-	self deny: game finished.
+	self deny: game isFinished.
 	self deny: game inInitialPhase.
 	
 	self should: [ game playAt: 3@3 ] raise: Error withExceptionDo: [ : anException |
@@ -173,7 +173,7 @@ test13gameInitialPhaseFinishedWhitoutWinner
 		self assert: (game isEmpty: 3@3).
 	].! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 18:54:39'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 20:54:01'!
 test14gameInitialPhaseNotFinished
 	
 	| game |
@@ -181,7 +181,7 @@ test14gameInitialPhaseNotFinished
 	game := TerniLapilli new.
 	game playAt: 1@1.
 	
-	self deny: game finished.
+	self deny: game isFinished.
 	self assert: game inInitialPhase.! !
 
 !TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 19:36:27'!
@@ -260,7 +260,7 @@ test17InvalidMovementBecauseOfUnconnectedPositions
 		self assert: (game isEmpty: 2@3)	
 	].! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 20:01:33'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 20:54:01'!
 test18CanMove
 	
 	| game |
@@ -277,10 +277,10 @@ test18CanMove
 
 	self assert: (game isEmpty: 1@1).
 	self assert: (game hasX: 2@2).
-	self deny: game finished.
+	self deny: game isFinished
 ! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 20:01:25'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 20:54:01'!
 test19OCanMoveAfterX
 	
 	| game |
@@ -298,9 +298,9 @@ test19OCanMoveAfterX
 
 	self assert: (game isEmpty: 1@3).
 	self assert: (game hasO: 2@3).
-	self deny: game finished.! !
+	self deny: game isFinished.! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 20:03:44'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 20:54:01'!
 test20WonAfterAMove
 	
 	| game |
@@ -315,8 +315,40 @@ test20WonAfterAMove
 	game playAt: 1@3.
 	game moveFrom: 1@2 to: 2@2.
 	
-	self assert: game finished.
+	self assert: game isFinished
 ! !
+
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 20:19:18'!
+test21CannotMoveWhenGameIsFinished
+	| game |
+	game := TerniLapilli new.
+	
+	game playAt: 1@1.
+	game playAt: 3@1.
+	game playAt: 1@2.
+	game playAt: 3@2.
+	game playAt: 3@3.
+	game playAt: 1@3.
+	game moveFrom: 1@2 to: 2@2.
+	
+	self should: [ game moveFrom: 3@1 to: 2@1 ] raise: Error withExceptionDo: [ : anException |
+		self assert: anException messageText equals: TerniLapilli finishedGameErrorDescription.
+		self assert: (game hasO: 3@1).
+		self assert: (game isEmpty: 2@1).
+	].! !
+
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 20:33:10'!
+test22CannontMoveDuringInitialPhase
+
+	| game |	
+	game := TerniLapilli new.
+	game playAt: 1@1.
+	game playAt: 1@2.
+	
+	self should: [ game moveFrom: 1@1 to: 2@1. ] raise: Error withExceptionDo: [ :anException |
+		self assert: anException messageText equals: TerniLapilli cannotMoveYetErrorDescription.
+	].
+	! !
 
 
 !TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'jml 11/5/2018 19:14:42'!
@@ -341,21 +373,43 @@ boardIsEmpty: aGame
 
 !classDefinition: #TerniLapilli category: #TerniLapilli!
 Object subclass: #TerniLapilli
-	instanceVariableNames: 'board isXturn'
+	instanceVariableNames: 'board isXturn isFinished'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!TerniLapilli methodsFor: 'playing' stamp: 'jml 11/5/2018 18:59:36'!
+!TerniLapilli methodsFor: 'playing' stamp: 'jml 11/5/2018 20:54:01'!
+moveFrom: fromPosition to: toPosition 
+	
+	self isFinished ifTrue: [
+		self error: self class finishedGameErrorDescription 
+	].
+	
+	self inInitialPhase ifTrue: [
+		self error: self class cannotMoveYetErrorDescription 
+	].
+	
+	((self isValidPosition: fromPosition) and: [ self isValidPosition: toPosition ]) ifFalse: [
+		self error: self class invalidPositionErrorDescription
+	].
+	
+	(self has: self currentPiece at: fromPosition) ifFalse: [
+		self error: self class missingPieceErrorDescription
+	].
+	
+	(self positionsAreConnected: fromPosition and: toPosition) ifFalse: [
+		self error: self class invalidMoveErrorDescription
+	].
+	
+	board removeKey: fromPosition.
+	self play: self currentPiece at: toPosition 
+! !
+
+!TerniLapilli methodsFor: 'playing' stamp: 'jml 11/5/2018 20:15:14'!
 playAt: aPosition
 	
-	self set: self currentPiece at: aPosition.! !
+	self play: self currentPiece at: aPosition.! !
 
-
-!TerniLapilli methodsFor: 'testing' stamp: 'la 11/5/2018 16:34:31'!
-finished
-	
-	^ self wonForX or: [ self wonForO]! !
 
 !TerniLapilli methodsFor: 'testing' stamp: 'jml 11/5/2018 17:38:14'!
 hasO: aPosition
@@ -376,6 +430,11 @@ inInitialPhase
 isEmpty: aPosition 
 
 	^(board includesKey: aPosition) not! !
+
+!TerniLapilli methodsFor: 'testing' stamp: 'jml 11/5/2018 20:56:11'!
+isFinished
+	
+	^ isFinished! !
 
 !TerniLapilli methodsFor: 'testing' stamp: 'la 11/1/2018 20:54:37'!
 wonForO
@@ -402,6 +461,11 @@ anyDiagonalIsFullOf: aPiece
 anyRowIsFullOf: aPiece
 	
 	^ #(1 2 3) anySatisfy: [ :row | self row: row isFullOf: aPiece ]! !
+
+!TerniLapilli methodsFor: 'testing - private' stamp: 'jml 11/5/2018 20:55:48'!
+checkFinished
+	
+	^ self wonForX or: [ self wonForO]! !
 
 !TerniLapilli methodsFor: 'testing - private' stamp: 'la 11/1/2018 20:56:05'!
 col: col isFullOf: aPiece
@@ -479,42 +543,27 @@ verticalDistanceBetween: fromPosition and: toPosition
 	^ (fromPosition y - toPosition y) abs! !
 
 
-!TerniLapilli methodsFor: 'initialization' stamp: 'jml 11/5/2018 17:05:09'!
+!TerniLapilli methodsFor: 'initialization' stamp: 'jml 11/5/2018 20:55:23'!
 initialize
 
 	board := Dictionary new.	
-	isXturn:= true.! !
+	isXturn := true.
+	isFinished := false.! !
 
 
-!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/5/2018 19:55:29'!
-moveFrom: fromPosition to: toPosition 
-	
-	((self isValidPosition: fromPosition) and: [ self isValidPosition: toPosition ]) ifFalse: [
-		self error: self class invalidPositionErrorDescription
-	].
-	
-	(self has: self currentPiece at: fromPosition) ifFalse: [
-		self error: self class missingPieceErrorDescription
-	].
-	
-	(self positionsAreConnected: fromPosition and: toPosition) ifFalse: [
-		self error: self class invalidMoveErrorDescription
-	].
+!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/5/2018 20:56:25'!
+play: aPiece at: aPosition
 
-	board removeKey: fromPosition.
-	self set: self currentPiece  at:toPosition 
-! !
-
-!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/5/2018 17:28:24'!
-set: aPiece at: aPosition
-	self finished ifTrue: [ self error: self class finishedGameErrorDescription ].
+	self isFinished ifTrue: [ self error: self class finishedGameErrorDescription ].
 	self inInitialPhase ifFalse: [ self error: self class cannotAddMorePieces ].
 	(self isValidPosition: aPosition) ifFalse: [ self error: self class invalidPositionErrorDescription ].	
 	(self isEmpty: aPosition) ifFalse: [ self error: self class occupiedPositionErrorDescription ].
 	
 	board at: aPosition put: aPiece.
 	
-	isXturn := isXturn not.! !
+	isXturn := isXturn not.
+	
+	isFinished := self checkFinished.! !
 
 
 !TerniLapilli methodsFor: 'accessing - private' stamp: 'jml 11/5/2018 18:59:53'!
@@ -532,6 +581,11 @@ TerniLapilli class
 cannotAddMorePieces
 	
 	^ 'cannot add more than 6 pieces'! !
+
+!TerniLapilli class methodsFor: 'error descriptions' stamp: 'jml 11/5/2018 20:33:44'!
+cannotMoveYetErrorDescription
+
+	^ 'cannot move'! !
 
 !TerniLapilli class methodsFor: 'error descriptions' stamp: 'la 11/1/2018 20:34:33'!
 finishedGameErrorDescription
@@ -562,3 +616,35 @@ missingPieceErrorDescription
 occupiedPositionErrorDescription
 	
 	^ 'occupied position'! !
+
+
+!classDefinition: #TerniLapilliState category: #TerniLapilli!
+Object subclass: #TerniLapilliState
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+
+!classDefinition: #FinishedState category: #TerniLapilli!
+TerniLapilliState subclass: #FinishedState
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+
+!classDefinition: #InitialPhaseState category: #TerniLapilli!
+TerniLapilliState subclass: #InitialPhaseState
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+
+!classDefinition: #MovementPhaseState category: #TerniLapilli!
+TerniLapilliState subclass: #MovementPhaseState
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
