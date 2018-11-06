@@ -394,17 +394,18 @@ Object subclass: #TerniLapilli
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!TerniLapilli methodsFor: 'playing' stamp: 'la 11/6/2018 02:55:29'!
+!TerniLapilli methodsFor: 'playing' stamp: 'jml 11/6/2018 15:01:59'!
 moveFrom: fromPosition to: toPosition 
 
-
 	((self isValidPosition: fromPosition) and: [ self isValidPosition: toPosition ]) ifFalse: [
-	self error: self class invalidPositionErrorDescription
+		self error: self class invalidPositionErrorDescription
 	].
+
 	(self positionsAreConnected: fromPosition and: toPosition) ifFalse: [
 		self error: self class invalidMoveErrorDescription
 	].
-	self state moveFrom: fromPosition to:toPosition 	! !
+
+	self state moveFrom: fromPosition to: toPosition 	! !
 
 !TerniLapilli methodsFor: 'playing' stamp: 'jml 11/6/2018 14:33:16'!
 moveOFrom: fromPosition to: toPosition 
@@ -750,6 +751,11 @@ PlayingState subclass: #MovingState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
+!MovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 15:02:32'!
+placePieceAt: aPosition
+	
+	^ self error: game class cannotAddMorePieces! !
+
 
 !classDefinition: #OIsMovingState category: #TerniLapilli!
 MovingState subclass: #OIsMovingState
@@ -772,11 +778,6 @@ moveFrom: fromPosition to:toPosition
 	].
 "! !
 
-!OIsMovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:54:44'!
-placePieceAt: aPosition
-	
-	^ self error: game class cannotAddMorePieces! !
-
 
 !classDefinition: #XIsMovingState category: #TerniLapilli!
 MovingState subclass: #XIsMovingState
@@ -790,11 +791,6 @@ moveFrom: fromPosition to:toPosition
 
 	game  checkXIn: fromPosition.
 	game  moveXFrom: fromPosition to: toPosition ! !
-
-!XIsMovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:55:12'!
-placePieceAt: aPosition
-	
-	^ self error: game class cannotAddMorePieces! !
 
 
 !classDefinition: #PlacingState category: #TerniLapilli!
