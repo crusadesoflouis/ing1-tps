@@ -366,7 +366,7 @@ test22CannontMoveDuringInitialPhase
 	! !
 
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'jml 11/5/2018 19:14:42'!
+!TerniLapilliTest methodsFor: 'positions' stamp: 'jml 11/5/2018 19:14:42'!
 allPositions
 	| positions |
 	
@@ -380,7 +380,8 @@ allPositions
 	
 	^ positions! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'jml 11/5/2018 19:23:36'!
+
+!TerniLapilliTest methodsFor: 'checking' stamp: 'jml 11/5/2018 19:23:36'!
 boardIsEmpty: aGame
 	
 	^ self allPositions allSatisfy: [ :aPosition | aGame isEmpty: aPosition ]! !
@@ -405,25 +406,25 @@ moveFrom: fromPosition to: toPosition
 	].
 	self state moveFrom: fromPosition to:toPosition 	! !
 
-!TerniLapilli methodsFor: 'playing' stamp: 'la 11/6/2018 02:48:32'!
+!TerniLapilli methodsFor: 'playing' stamp: 'jml 11/6/2018 14:33:16'!
 moveOFrom: fromPosition to: toPosition 
 
 	board removeKey: fromPosition.
 	self place: $O at: toPosition.
 	
 	(self checkFinished)
-	ifTrue: [state := OHasWonState initializeWith: self ]
-	ifFalse: [state := XIsMovingState initializeWith: self]! !
+	ifTrue: [state := OHasWonState for: self ]
+	ifFalse: [state := XIsMovingState for: self]! !
 
-!TerniLapilli methodsFor: 'playing' stamp: 'la 11/6/2018 02:35:36'!
+!TerniLapilli methodsFor: 'playing' stamp: 'jml 11/6/2018 14:33:16'!
 moveXFrom: fromPosition to: toPosition 
 
 	board removeKey: fromPosition.
 	self place: $X at: toPosition.
 	
 	(self checkFinished)
-	ifTrue: [state := XHasWonState initializeWith: self ]
-	ifFalse: [state := OIsMovingState initializeWith: self]! !
+	ifTrue: [state := XHasWonState for: self ]
+	ifFalse: [state := OIsMovingState for: self]! !
 
 !TerniLapilli methodsFor: 'playing' stamp: 'la 11/5/2018 23:45:17'!
 placeAt: aPosition
@@ -577,11 +578,11 @@ verticalDistanceBetween: fromPosition and: toPosition
 	^ (fromPosition y - toPosition y) abs! !
 
 
-!TerniLapilli methodsFor: 'initialization' stamp: 'la 11/5/2018 23:18:51'!
+!TerniLapilli methodsFor: 'initialization' stamp: 'jml 11/6/2018 14:33:16'!
 initialize
 
 	board := Dictionary new.	
-	state := XIsPlacingState initializeWith: self.! !
+	state := XIsPlacingState for: self.! !
 
 
 !TerniLapilli methodsFor: 'playing - private' stamp: 'la 11/6/2018 02:54:05'!
@@ -589,23 +590,23 @@ place: aPiece at: aPosition
 
 	board at: aPosition put: aPiece.! !
 
-!TerniLapilli methodsFor: 'playing - private' stamp: 'la 11/6/2018 00:33:26'!
+!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/6/2018 14:33:16'!
 placeOAt: aPosition 
 
 	board at: aPosition put: $O.
 	(self checkFinished )
-	ifTrue: [state := OHasWonState initializeWith: self.].
+	ifTrue: [state := OHasWonState for: self.].
 	(self checkEndInitialPhase)
-	ifTrue: [state := XIsMovingState initializeWith: self.]
-	ifFalse: [state := XIsPlacingState initializeWith: self.].! !
+	ifTrue: [state := XIsMovingState for: self.]
+	ifFalse: [state := XIsPlacingState for: self.].! !
 
-!TerniLapilli methodsFor: 'playing - private' stamp: 'la 11/6/2018 00:22:23'!
+!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/6/2018 14:33:16'!
 placeXAt: aPosition
 
 	board at: aPosition put: $X.
 	(self checkFinished )
-	ifTrue: [state := XHasWonState initializeWith: self.]
-	ifFalse: [state := OIsPlacingState initializeWith: self.]! !
+	ifTrue: [state := XHasWonState for: self.]
+	ifFalse: [state := OIsPlacingState for: self.]! !
 
 
 !TerniLapilli methodsFor: 'accessing - private' stamp: 'la 11/6/2018 00:29:16'!
@@ -617,7 +618,6 @@ checkEndInitialPhase
 state
 
 	^state! !
-
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -668,15 +668,15 @@ occupiedPositionErrorDescription
 
 !classDefinition: #TerniLapilliState category: #TerniLapilli!
 Object subclass: #TerniLapilliState
-	instanceVariableNames: 'TerniLapilli'
+	instanceVariableNames: 'game'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!TerniLapilliState methodsFor: 'as yet unclassified' stamp: 'la 11/5/2018 23:11:34'!
-initializeWith: aTerniLapilli
+!TerniLapilliState methodsFor: 'initialization' stamp: 'jml 11/6/2018 14:34:23'!
+initializeFor: aGame
 
-	TerniLapilli := aTerniLapilli ! !
+	game := aGame! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -684,10 +684,10 @@ initializeWith: aTerniLapilli
 TerniLapilliState class
 	instanceVariableNames: ''!
 
-!TerniLapilliState class methodsFor: 'as yet unclassified' stamp: 'la 11/5/2018 23:10:54'!
-initializeWith: aTerniLapilli
+!TerniLapilliState class methodsFor: 'instance creation' stamp: 'jml 11/6/2018 14:33:33'!
+for: aTerniLapilli
 
-	^ self new initializeWith: aTerniLapilli ! !
+	^ self new initializeFor: aTerniLapilli! !
 
 
 !classDefinition: #GameOverState category: #TerniLapilli!
@@ -697,6 +697,11 @@ TerniLapilliState subclass: #GameOverState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
+!GameOverState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:39:14'!
+moveFrom: fromPosition to: toPosition 
+
+	^self error: game class finishedGameErrorDescription! !
+
 
 !classDefinition: #OHasWonState category: #TerniLapilli!
 GameOverState subclass: #OHasWonState
@@ -705,20 +710,16 @@ GameOverState subclass: #OHasWonState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!OHasWonState methodsFor: 'as yet unclassified' stamp: 'la 11/6/2018 00:35:38'!
+!OHasWonState methodsFor: 'testing' stamp: 'la 11/6/2018 00:35:38'!
 isFinished
 	
 	^ true! !
 
-!OHasWonState methodsFor: 'as yet unclassified' stamp: 'la 11/6/2018 02:50:25'!
-moveFrom: fromPosition to:toPosition 
 
-	^self error: TerniLapilli class finishedGameErrorDescription ! !
-
-!OHasWonState methodsFor: 'as yet unclassified' stamp: 'la 11/6/2018 00:44:15'!
+!OHasWonState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
 place: aPoint 
 
-	^self error: TerniLapilli class finishedGameErrorDescription ! !
+	^self error: game class finishedGameErrorDescription ! !
 
 
 !classDefinition: #XHasWonState category: #TerniLapilli!
@@ -728,20 +729,16 @@ GameOverState subclass: #XHasWonState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!XHasWonState methodsFor: 'as yet unclassified' stamp: 'la 11/6/2018 00:35:31'!
+!XHasWonState methodsFor: 'testing' stamp: 'la 11/6/2018 00:35:31'!
 isFinished
 	
 	^ true! !
 
-!XHasWonState methodsFor: 'as yet unclassified' stamp: 'la 11/6/2018 02:50:30'!
-moveFrom: fromPosition to:toPosition 
 
-	^self error: TerniLapilli class finishedGameErrorDescription ! !
-
-!XHasWonState methodsFor: 'as yet unclassified' stamp: 'la 11/6/2018 00:44:08'!
+!XHasWonState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
 place: aPoint 
 
-	^self error: TerniLapilli class finishedGameErrorDescription ! !
+	^self error: game class finishedGameErrorDescription ! !
 
 
 !classDefinition: #PlayingState category: #TerniLapilli!
@@ -759,18 +756,19 @@ PlayingState subclass: #OIsMovingState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!OIsMovingState methodsFor: 'as yet unclassified' stamp: 'la 11/6/2018 00:35:10'!
+!OIsMovingState methodsFor: 'testing' stamp: 'la 11/6/2018 00:35:10'!
 isFinished
 	
 	^ false! !
 
-!OIsMovingState methodsFor: 'as yet unclassified' stamp: 'la 11/6/2018 02:44:43'!
+
+!OIsMovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
 moveFrom: fromPosition to:toPosition 
 
 
 
-	TerniLapilli  checkOIn: fromPosition.
-	TerniLapilli  moveOFrom: fromPosition to: toPosition 
+	game  checkOIn: fromPosition.
+	game  moveOFrom: fromPosition to: toPosition 
 	
 	
 "	(self has: self currentPiece at: fromPosition) ifFalse: [
@@ -778,10 +776,10 @@ moveFrom: fromPosition to:toPosition
 	].
 "! !
 
-!OIsMovingState methodsFor: 'as yet unclassified' stamp: 'la 11/6/2018 00:49:45'!
+!OIsMovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
 place: aPoint 
 
-	^self error: TerniLapilli class cannotAddMorePieces ! !
+	^self error: game class cannotAddMorePieces ! !
 
 
 !classDefinition: #OIsPlacingState category: #TerniLapilli!
@@ -791,20 +789,21 @@ PlayingState subclass: #OIsPlacingState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!OIsPlacingState methodsFor: 'accessing' stamp: 'la 11/6/2018 00:35:17'!
+!OIsPlacingState methodsFor: 'testing' stamp: 'la 11/6/2018 00:35:17'!
 isFinished
 	
 	^ false! !
 
-!OIsPlacingState methodsFor: 'accessing' stamp: 'la 11/6/2018 02:52:54'!
+
+!OIsPlacingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
 moveFrom: fromPosition to:toPosition 
 
-	^self error: TerniLapilli class cannotMoveYetErrorDescription ! !
+	^self error: game class cannotMoveYetErrorDescription ! !
 
-!OIsPlacingState methodsFor: 'accessing' stamp: 'la 11/5/2018 23:35:29'!
+!OIsPlacingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
 place: aPoint 
 
-	TerniLapilli  placeOAt: aPoint ! !
+	game  placeOAt: aPoint ! !
 
 
 !classDefinition: #XIsMovingState category: #TerniLapilli!
@@ -814,21 +813,22 @@ PlayingState subclass: #XIsMovingState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!XIsMovingState methodsFor: 'as yet unclassified' stamp: 'la 11/6/2018 00:35:19'!
+!XIsMovingState methodsFor: 'testing' stamp: 'la 11/6/2018 00:35:19'!
 isFinished
 	
 	^ false! !
 
-!XIsMovingState methodsFor: 'as yet unclassified' stamp: 'la 11/6/2018 02:44:52'!
+
+!XIsMovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
 moveFrom: fromPosition to:toPosition 
 
-	TerniLapilli  checkXIn: fromPosition.
-	TerniLapilli  moveXFrom: fromPosition to: toPosition ! !
+	game  checkXIn: fromPosition.
+	game  moveXFrom: fromPosition to: toPosition ! !
 
-!XIsMovingState methodsFor: 'as yet unclassified' stamp: 'la 11/6/2018 00:49:40'!
+!XIsMovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
 place: aPoint 
 
-	^self error: TerniLapilli class cannotAddMorePieces ! !
+	^self error: game class cannotAddMorePieces ! !
 
 
 !classDefinition: #XIsPlacingState category: #TerniLapilli!
@@ -838,18 +838,19 @@ PlayingState subclass: #XIsPlacingState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!XIsPlacingState methodsFor: 'accessing' stamp: 'la 11/6/2018 00:35:22'!
+!XIsPlacingState methodsFor: 'testing' stamp: 'la 11/6/2018 00:35:22'!
 isFinished
 	
 	^ false! !
 
-!XIsPlacingState methodsFor: 'accessing' stamp: 'la 11/6/2018 02:53:00'!
+
+!XIsPlacingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
 moveFrom: fromPosition to:toPosition 
 
-	^self error: TerniLapilli class cannotMoveYetErrorDescription ! !
+	^self error: game class cannotMoveYetErrorDescription ! !
 
-!XIsPlacingState methodsFor: 'accessing' stamp: 'la 11/6/2018 00:49:09'!
+!XIsPlacingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
 place: aPoint 
 	
-	TerniLapilli  placeXAt: aPoint 
+	game  placeXAt: aPoint 
 ! !
