@@ -749,8 +749,16 @@ TerniLapilliState subclass: #PlayingState
 	category: 'TerniLapilli'!
 
 
+!classDefinition: #MovingState category: #TerniLapilli!
+PlayingState subclass: #MovingState
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+
 !classDefinition: #OIsMovingState category: #TerniLapilli!
-PlayingState subclass: #OIsMovingState
+MovingState subclass: #OIsMovingState
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -782,32 +790,8 @@ place: aPoint
 	^self error: game class cannotAddMorePieces ! !
 
 
-!classDefinition: #OIsPlacingState category: #TerniLapilli!
-PlayingState subclass: #OIsPlacingState
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'TerniLapilli'!
-
-!OIsPlacingState methodsFor: 'testing' stamp: 'la 11/6/2018 00:35:17'!
-isFinished
-	
-	^ false! !
-
-
-!OIsPlacingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
-moveFrom: fromPosition to:toPosition 
-
-	^self error: game class cannotMoveYetErrorDescription ! !
-
-!OIsPlacingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
-place: aPoint 
-
-	game  placeOAt: aPoint ! !
-
-
 !classDefinition: #XIsMovingState category: #TerniLapilli!
-PlayingState subclass: #XIsMovingState
+MovingState subclass: #XIsMovingState
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -831,8 +815,40 @@ place: aPoint
 	^self error: game class cannotAddMorePieces ! !
 
 
+!classDefinition: #PlacingState category: #TerniLapilli!
+PlayingState subclass: #PlacingState
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!PlacingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:49:35'!
+moveFrom: fromPosition to: toPosition 
+
+	^self error: game class cannotMoveYetErrorDescription! !
+
+
+!classDefinition: #OIsPlacingState category: #TerniLapilli!
+PlacingState subclass: #OIsPlacingState
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!OIsPlacingState methodsFor: 'testing' stamp: 'la 11/6/2018 00:35:17'!
+isFinished
+	
+	^ false! !
+
+
+!OIsPlacingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
+place: aPoint 
+
+	game  placeOAt: aPoint ! !
+
+
 !classDefinition: #XIsPlacingState category: #TerniLapilli!
-PlayingState subclass: #XIsPlacingState
+PlacingState subclass: #XIsPlacingState
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -843,11 +859,6 @@ isFinished
 	
 	^ false! !
 
-
-!XIsPlacingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
-moveFrom: fromPosition to:toPosition 
-
-	^self error: game class cannotMoveYetErrorDescription ! !
 
 !XIsPlacingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
 place: aPoint 
