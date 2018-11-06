@@ -373,7 +373,7 @@ boardIsEmpty: aGame
 
 !classDefinition: #TerniLapilli category: #TerniLapilli!
 Object subclass: #TerniLapilli
-	instanceVariableNames: 'board isXturn isFinished'
+	instanceVariableNames: 'board state'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
@@ -543,27 +543,17 @@ verticalDistanceBetween: fromPosition and: toPosition
 	^ (fromPosition y - toPosition y) abs! !
 
 
-!TerniLapilli methodsFor: 'initialization' stamp: 'jml 11/5/2018 21:11:52'!
+!TerniLapilli methodsFor: 'initialization' stamp: 'jml 11/5/2018 21:23:00'!
 initialize
 
 	board := Dictionary new.	
-	isXturn := true.
-	isFinished := false.! !
+	state := XIsPlacingState new.! !
 
 
-!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/5/2018 21:20:38'!
+!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/5/2018 21:24:47'!
 place: aPiece at: aPosition
-
-	self isFinished ifTrue: [ self error: self class finishedGameErrorDescription ].
-	self inInitialPhase ifFalse: [ self error: self class cannotAddMorePieces ].
-	(self isValidPosition: aPosition) ifFalse: [ self error: self class invalidPositionErrorDescription ].	
-	(self isEmpty: aPosition) ifFalse: [ self error: self class occupiedPositionErrorDescription ].
 	
-	board at: aPosition put: aPiece.
-	
-	isXturn := isXturn not.
-	
-	isFinished := self checkFinished.! !
+	self state place: aPiece at: aPosition! !
 
 
 !TerniLapilli methodsFor: 'accessing - private' stamp: 'jml 11/5/2018 18:59:53'!
@@ -620,7 +610,7 @@ occupiedPositionErrorDescription
 
 !classDefinition: #TerniLapilliState category: #TerniLapilli!
 Object subclass: #TerniLapilliState
-	instanceVariableNames: ''
+	instanceVariableNames: 'game'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
@@ -632,6 +622,11 @@ TerniLapilliState subclass: #GameOverState
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
+
+!GameOverState methodsFor: 'playing' stamp: 'jml 11/5/2018 21:29:49'!
+place: aPiece at: aPosition
+	
+	self error: TerniLapilli finishedGameErrorDescription! !
 
 
 !classDefinition: #OHasWonState category: #TerniLapilli!
@@ -658,16 +653,21 @@ TerniLapilliState subclass: #PlayingState
 	category: 'TerniLapilli'!
 
 
-!classDefinition: #OIsMovingState category: #TerniLapilli!
-PlayingState subclass: #OIsMovingState
+!classDefinition: #MovingState category: #TerniLapilli!
+PlayingState subclass: #MovingState
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
+!MovingState methodsFor: 'playing' stamp: 'jml 11/5/2018 21:29:39'!
+place: aPiece at: aPosition
+	
+	self error: TerniLapilli cannotAddMorePieces! !
+
 
-!classDefinition: #OIsPlacingState category: #TerniLapilli!
-PlayingState subclass: #OIsPlacingState
+!classDefinition: #OIsMovingState category: #TerniLapilli!
+MovingState subclass: #OIsMovingState
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -675,15 +675,36 @@ PlayingState subclass: #OIsPlacingState
 
 
 !classDefinition: #XIsMovingState category: #TerniLapilli!
-PlayingState subclass: #XIsMovingState
+MovingState subclass: #XIsMovingState
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
 
+!classDefinition: #PlacingState category: #TerniLapilli!
+PlayingState subclass: #PlacingState
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+
+!classDefinition: #OIsPlacingState category: #TerniLapilli!
+PlacingState subclass: #OIsPlacingState
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!OIsPlacingState methodsFor: 'playing' stamp: 'jml 11/5/2018 21:34:25'!
+place: aPiece at: aPosition
+	
+	game placeO: aPiece at: aPosition ! !
+
+
 !classDefinition: #XIsPlacingState category: #TerniLapilli!
-PlayingState subclass: #XIsPlacingState
+PlacingState subclass: #XIsPlacingState
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
