@@ -426,12 +426,12 @@ moveXFrom: fromPosition to: toPosition
 	ifTrue: [state := XHasWonState for: self ]
 	ifFalse: [state := OIsMovingState for: self]! !
 
-!TerniLapilli methodsFor: 'playing' stamp: 'la 11/5/2018 23:45:17'!
+!TerniLapilli methodsFor: 'playing' stamp: 'jml 11/6/2018 14:53:48'!
 placeAt: aPosition
 	
 	(self isValidPosition: aPosition) ifFalse: [ self error: self class invalidPositionErrorDescription ].
 	(self isEmpty: aPosition) ifFalse: [ self error: self class occupiedPositionErrorDescription ].
-	self state place:aPosition ! !
+	self state placePieceAt:aPosition ! !
 
 
 !TerniLapilli methodsFor: 'testing' stamp: 'jml 11/5/2018 17:38:14'!
@@ -697,10 +697,21 @@ TerniLapilliState subclass: #GameOverState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!GameOverState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:39:14'!
+!GameOverState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:55:59'!
 moveFrom: fromPosition to: toPosition 
 
-	^self error: game class finishedGameErrorDescription! !
+	^ self error: game class finishedGameErrorDescription! !
+
+!GameOverState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:55:32'!
+placePieceAt: aPosition
+
+	^ self error: game class finishedGameErrorDescription! !
+
+
+!GameOverState methodsFor: 'testing' stamp: 'jml 11/6/2018 14:56:11'!
+isFinished
+	
+	^ true! !
 
 
 !classDefinition: #OHasWonState category: #TerniLapilli!
@@ -710,17 +721,6 @@ GameOverState subclass: #OHasWonState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!OHasWonState methodsFor: 'testing' stamp: 'la 11/6/2018 00:35:38'!
-isFinished
-	
-	^ true! !
-
-
-!OHasWonState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
-place: aPoint 
-
-	^self error: game class finishedGameErrorDescription ! !
-
 
 !classDefinition: #XHasWonState category: #TerniLapilli!
 GameOverState subclass: #XHasWonState
@@ -729,17 +729,6 @@ GameOverState subclass: #XHasWonState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!XHasWonState methodsFor: 'testing' stamp: 'la 11/6/2018 00:35:31'!
-isFinished
-	
-	^ true! !
-
-
-!XHasWonState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
-place: aPoint 
-
-	^self error: game class finishedGameErrorDescription ! !
-
 
 !classDefinition: #PlayingState category: #TerniLapilli!
 TerniLapilliState subclass: #PlayingState
@@ -747,6 +736,11 @@ TerniLapilliState subclass: #PlayingState
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
+
+!PlayingState methodsFor: 'testing' stamp: 'jml 11/6/2018 14:57:45'!
+isFinished
+	
+	^ false! !
 
 
 !classDefinition: #MovingState category: #TerniLapilli!
@@ -764,12 +758,6 @@ MovingState subclass: #OIsMovingState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!OIsMovingState methodsFor: 'testing' stamp: 'la 11/6/2018 00:35:10'!
-isFinished
-	
-	^ false! !
-
-
 !OIsMovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
 moveFrom: fromPosition to:toPosition 
 
@@ -784,10 +772,10 @@ moveFrom: fromPosition to:toPosition
 	].
 "! !
 
-!OIsMovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
-place: aPoint 
-
-	^self error: game class cannotAddMorePieces ! !
+!OIsMovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:54:44'!
+placePieceAt: aPosition
+	
+	^ self error: game class cannotAddMorePieces! !
 
 
 !classDefinition: #XIsMovingState category: #TerniLapilli!
@@ -797,22 +785,16 @@ MovingState subclass: #XIsMovingState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!XIsMovingState methodsFor: 'testing' stamp: 'la 11/6/2018 00:35:19'!
-isFinished
-	
-	^ false! !
-
-
 !XIsMovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
 moveFrom: fromPosition to:toPosition 
 
 	game  checkXIn: fromPosition.
 	game  moveXFrom: fromPosition to: toPosition ! !
 
-!XIsMovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
-place: aPoint 
-
-	^self error: game class cannotAddMorePieces ! !
+!XIsMovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:55:12'!
+placePieceAt: aPosition
+	
+	^ self error: game class cannotAddMorePieces! !
 
 
 !classDefinition: #PlacingState category: #TerniLapilli!
@@ -835,16 +817,10 @@ PlacingState subclass: #OIsPlacingState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!OIsPlacingState methodsFor: 'testing' stamp: 'la 11/6/2018 00:35:17'!
-isFinished
-	
-	^ false! !
+!OIsPlacingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:54:15'!
+placePieceAt: aPosition
 
-
-!OIsPlacingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
-place: aPoint 
-
-	game  placeOAt: aPoint ! !
+	game placeOAt: aPosition! !
 
 
 !classDefinition: #XIsPlacingState category: #TerniLapilli!
@@ -854,14 +830,7 @@ PlacingState subclass: #XIsPlacingState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!XIsPlacingState methodsFor: 'testing' stamp: 'la 11/6/2018 00:35:22'!
-isFinished
+!XIsPlacingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:55:17'!
+placePieceAt: aPosition
 	
-	^ false! !
-
-
-!XIsPlacingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
-place: aPoint 
-	
-	game  placeXAt: aPoint 
-! !
+	game placeXAt: aPosition! !
