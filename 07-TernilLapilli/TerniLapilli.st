@@ -98,7 +98,7 @@ test08CannotPlayAtAnOccupiedPosition
 		self deny: (game positionIsEmpty: aPosition).
 	].! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/6/2018 15:00:01'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 00:49:44'!
 test09InitiallyWonGameForColumnsIsFinished
 	
 	| game |
@@ -112,10 +112,10 @@ test09InitiallyWonGameForColumnsIsFinished
 	game placePieceAt: 1@3.
 	
 	self assert: game isFinished.
-	self assert: game wonForX.
-	self deny: game wonForO.! !
+	self assert: game isWonForX.
+	self deny: game isWonForO.! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/6/2018 15:00:01'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 00:49:44'!
 test10InitiallyWonGameForRowIsFinished
 	
 	| game |
@@ -129,10 +129,10 @@ test10InitiallyWonGameForRowIsFinished
 	game placePieceAt: 3@1.
 
 	self assert: game isFinished.
-	self assert: game wonForX.
-	self deny: game wonForO.! !
+	self assert: game isWonForX.
+	self deny: game isWonForO.! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/6/2018 15:00:01'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 00:49:44'!
 test11InitiallyWonGameForDiagonalIsFinished
 	
 	| game |
@@ -146,8 +146,8 @@ test11InitiallyWonGameForDiagonalIsFinished
 	game placePieceAt: 3@3.
 	
 	self assert: game isFinished.
-	self assert: game wonForX.
-	self deny: game wonForO.! !
+	self assert: game isWonForX.
+	self deny: game isWonForO.! !
 
 !TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/6/2018 15:07:36'!
 test12CannotPlayWhenGameIsFinished
@@ -428,15 +428,15 @@ isFinished
 	
 	^ state isFinished ! !
 
-!TerniLapilli methodsFor: 'testing' stamp: 'jml 11/7/2018 00:12:48'!
-wonForO
+!TerniLapilli methodsFor: 'testing' stamp: 'jml 11/7/2018 00:49:32'!
+isWonForO
 	
-	^ self wonFor: $O! !
+	^ state isWonForO! !
 
-!TerniLapilli methodsFor: 'testing' stamp: 'jml 11/7/2018 00:12:55'!
-wonForX
+!TerniLapilli methodsFor: 'testing' stamp: 'jml 11/7/2018 00:49:44'!
+isWonForX
 	
-	^ self wonFor: $X! !
+	^ state isWonForX! !
 
 
 !TerniLapilli methodsFor: 'board' stamp: 'jml 11/6/2018 15:09:55'!
@@ -453,12 +453,6 @@ hasXAt: aPosition
 positionIsEmpty: aPosition 
 
 	^ (board includesKey: aPosition) not! !
-
-
-!TerniLapilli methodsFor: 'testing - private' stamp: 'jml 11/7/2018 00:12:19'!
-wonFor: aPlayer
-	
-	^ (self anyRowIsFullOf: aPlayer) or: [ (self anyColumnIsFullOf: aPlayer) or: [ self anyDiagonalIsFullOf: aPlayer ] ]! !
 
 
 !TerniLapilli methodsFor: 'initialization' stamp: 'jml 11/6/2018 14:33:16'!
@@ -495,19 +489,33 @@ move: aPiece from: fromPosition to: toPosition
 	board at: toPosition put: aPiece.
 	! !
 
-!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 00:00:11'!
+!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 00:48:27'!
 moveOFrom: fromPosition to: toPosition
+	
+	| newState |
 	
 	self move: $O from: fromPosition to: toPosition.
 	
-	state := (self wonForO ifTrue: [ OHasWonState ] ifFalse: [ XIsMovingState ]) for: self.! !
+	newState := (self isWinning: $O)
+		ifTrue: [ OHasWonState ]
+		ifFalse: [ XIsMovingState ]
+	.
+	
+	state := newState for: self.! !
 
-!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/6/2018 23:59:40'!
+!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 00:48:54'!
 moveXFrom: fromPosition to: toPosition
+	
+	| newState |
 	
 	self move: $X from: fromPosition to: toPosition.
 	
-	state := (self wonForX ifTrue: [ XHasWonState ] ifFalse: [ OIsMovingState ]) for: self.! !
+	newState := (self isWinning: $X)
+		ifTrue: [ XHasWonState ]
+		ifFalse: [ OIsMovingState ]
+	.
+	
+	state := newState for: self.! !
 
 !TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 00:18:39'!
 place: aPiece at: aPosition
@@ -522,14 +530,14 @@ place: aPiece at: aPosition
 	
 	board at: aPosition put: aPiece.! !
 
-!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 00:22:49'!
+!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 00:46:19'!
 placeOAt: aPosition 
 	
 	| newState |
 	
 	self place: $O at: aPosition.
 	
-	newState := self wonForO
+	newState := (self isWinning: $O)
 		ifTrue: [ OHasWonState ]
 		ifFalse: [ board size = 6
 			ifTrue: [ XIsMovingState ]
@@ -539,14 +547,14 @@ placeOAt: aPosition
 	
 	state := newState for: self.! !
 
-!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 00:25:55'!
+!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 00:46:34'!
 placeXAt: aPosition 
 	
 	| newState |
 	
 	self place: $X at: aPosition.
 	
-	newState := self wonForX
+	newState := (self isWinning: $X)
 		ifTrue: [ XHasWonState ]
 		ifFalse: [ OIsPlacingState ]
 	.
@@ -598,6 +606,11 @@ isValidCoordinate: aCoordinate
 isValidPosition: aPosition
 	
 	^ (self isValidCoordinate: aPosition x) and: [ self isValidCoordinate: aPosition y ]! !
+
+!TerniLapilli methodsFor: 'board - private' stamp: 'jml 11/7/2018 00:46:59'!
+isWinning: aPlayer
+	
+	^ (self anyRowIsFullOf: aPlayer) or: [ (self anyColumnIsFullOf: aPlayer) or: [ self anyDiagonalIsFullOf: aPlayer ] ]! !
 
 !TerniLapilli methodsFor: 'board - private' stamp: 'la 11/1/2018 21:07:34'!
 leftDiagonalIsFullOf: aPiece
@@ -703,6 +716,17 @@ initializeFor: aGame
 
 	game := aGame! !
 
+
+!TerniLapilliState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:39:56'!
+isWonForO
+	
+	self subclassResponsibility! !
+
+!TerniLapilliState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:39:52'!
+isWonForX
+	
+	self subclassResponsibility! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'TerniLapilliState class' category: #TerniLapilli!
@@ -746,6 +770,16 @@ GameOverState subclass: #OHasWonState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
+!OHasWonState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:40:41'!
+isWonForO
+	
+	^ true! !
+
+!OHasWonState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:40:36'!
+isWonForX
+	
+	^ false! !
+
 
 !classDefinition: #XHasWonState category: #TerniLapilli!
 GameOverState subclass: #XHasWonState
@@ -753,6 +787,16 @@ GameOverState subclass: #XHasWonState
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
+
+!XHasWonState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:42:59'!
+isWonForO
+	
+	^ false! !
+
+!XHasWonState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:42:54'!
+isWonForX
+	
+	^ true! !
 
 
 !classDefinition: #PlayingState category: #TerniLapilli!
@@ -764,6 +808,16 @@ TerniLapilliState subclass: #PlayingState
 
 !PlayingState methodsFor: 'testing' stamp: 'jml 11/6/2018 14:57:45'!
 isFinished
+	
+	^ false! !
+
+!PlayingState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:43:13'!
+isWonForO
+	
+	^ false! !
+
+!PlayingState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:43:12'!
+isWonForX
 	
 	^ false! !
 
