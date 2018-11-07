@@ -41,10 +41,10 @@ test01BoardIsInitiallyEmpty
 
 	self assert: (self boardIsEmpty: emptyGame).! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 01:58:40'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:38:39'!
 test02_01XHasPosition
 
-	| game position|
+	| game position |
 	
 	position := 1@1.
 	game := TerniLapilli new.
@@ -53,10 +53,10 @@ test02_01XHasPosition
 	self assert: (game hasXAt: position).
 	! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 02:01:44'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:38:42'!
 test02_02XhasntPositionAt
 
-	| game position|
+	| game position |
 	
 	position := 1@1.
 	game := TerniLapilli new.
@@ -65,10 +65,10 @@ test02_02XhasntPositionAt
 	self deny: (game hasOAt: position).
 	! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 02:02:16'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:38:47'!
 test02_03PositionIsNotEmpty
 
-	| game position|
+	| game position |
 	
 	position := 1@1.
 	game := TerniLapilli new.
@@ -155,8 +155,9 @@ test03OCanPlayAfterX
 	self deny: (game positionIsEmpty: oPosition).
 	! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 02:04:19'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:39:09'!
 test07_01CannotPlayAtLeftInvalidPosition
+
 	|game anInvalidPosition |
 	
 	anInvalidPosition := 0@1.
@@ -168,8 +169,9 @@ test07_01CannotPlayAtLeftInvalidPosition
 		self assert: (self boardIsEmpty: game).
 	].! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 02:04:31'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:39:14'!
 test07_02CannotPlayAtRightInvalidPosition
+
 	|game anInvalidPosition |
 	
 	anInvalidPosition := 5@1.
@@ -181,8 +183,9 @@ test07_02CannotPlayAtRightInvalidPosition
 		self assert: (self boardIsEmpty: game).
 	].! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 02:05:07'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:39:17'!
 test07_03CannotPlayAtLowerInvalidPosition
+
 	|game anInvalidPosition |
 	
 	anInvalidPosition := 1@5.
@@ -194,8 +197,9 @@ test07_03CannotPlayAtLowerInvalidPosition
 		self assert: (self boardIsEmpty: game).
 	].! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 02:05:19'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:39:21'!
 test07_04CannotPlayAtUpperInvalidPosition
+
 	|game anInvalidPosition |
 	
 	anInvalidPosition := 1@0.
@@ -288,8 +292,9 @@ test11_01OcanWin
 	self assert: oWinGame isFinished.
 	self assert: oWinGame isWonForO.! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/6/2018 15:07:36'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:39:35'!
 test12CannotPlayWhenGameIsFinished
+
 	| game |
 	
 	game := TerniLapilli new.
@@ -490,9 +495,11 @@ test20WonAfterAMove
 	self assert: game isFinished
 ! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/6/2018 15:09:55'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:40:20'!
 test21CannotMoveWhenGameIsFinished
+
 	| game |
+	
 	game := TerniLapilli new.
 	
 	game placePieceAt: 1@1.
@@ -509,10 +516,11 @@ test21CannotMoveWhenGameIsFinished
 		self assert: (game positionIsEmpty: 2@1).
 	].! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 13:44:58'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:40:31'!
 test21_01CannotMoveWhenGameIsFinished
 	
 	| game |
+	
 	game := TerniLapilli new.
 	
 	game placePieceAt: 1@1.
@@ -529,9 +537,11 @@ test21_01CannotMoveWhenGameIsFinished
 		self assert: (game positionIsEmpty: 2@1).
 	].! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 13:45:40'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:40:37'!
 test21_01XHasWinInMovePhase
+
 	| game |
+	
 	game := TerniLapilli new.
 	
 	game placePieceAt: 1@1.
@@ -545,9 +555,11 @@ test21_01XHasWinInMovePhase
 	self assert:  game isWonForX.
 	self deny: game isWonForO.! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 13:53:04'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:40:43'!
 test21_03OHasWinInMovePhase
+	
 	| game |
+	
 	game := TerniLapilli new.
 	
 	game placePieceAt: 1@1.
@@ -562,10 +574,11 @@ test21_03OHasWinInMovePhase
 	self assert:  game isWonForO.
 	self deny: game isWonForX.! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/6/2018 15:00:01'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:40:49'!
 test22CannontMoveDuringInitialPhase
 
-	| game |	
+	| game |
+	
 	game := TerniLapilli new.
 	game placePieceAt: 1@1.
 	game placePieceAt: 1@2.
@@ -575,69 +588,76 @@ test22CannontMoveDuringInitialPhase
 	].
 	! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 02:36:56'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:36:25'!
 test90PutXTurn
 
 	| game |	
+	
 	game := TerniLapilli new.
 	
-	self assert: game turn = 'X turn'! !
+	self assert: TerniLapilli xPlayer equals: game turn.! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 02:37:08'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:36:39'!
 test91PutOTurn
 
 	| game |	
+
 	game := TerniLapilli new.
 	game placePieceAt: 1@1.	
-	self assert: game turn = 'O turn'! !
+	
+	self assert: TerniLapilli oPlayer equals: game turn.! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 03:02:46'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:40:57'!
 test92MoveXTurn
 
-		
-	self assert: moveGame turn = 'X turn'! !
+	self assert: TerniLapilli xPlayer equals: moveGame turn.! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 03:02:46'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:37:09'!
 test93MoveOTurn
 
 	moveGame moveFrom: 1@1 to: 2@2.
 	
-	self assert: moveGame turn = 'O turn'! !
+	self assert: TerniLapilli oPlayer equals: moveGame turn.! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 03:17:02'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:34:25'!
 test94CanAddMorePiecesInAEmptyBoard
 	
-	self assert: emptyGame canAddMorePieces = 'Can add more pieces'! !
+	self assert: emptyGame canAddMorePieces.! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 03:16:58'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:34:18'!
 test95CanAddMorePiecesInANotEmptyBoard
 	
 	emptyGame placePieceAt: 1@1.
 
-	self assert: emptyGame canAddMorePieces = 'Can add more pieces'! !
+	self assert: emptyGame canAddMorePieces.! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 03:22:33'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:34:03'!
 test96CannotAddMorePiecesInACompleteBoard
 	
-	self assert: moveGame canAddMorePieces = 'Cannot add more pieces'! !
+	self deny: moveGame canAddMorePieces.! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 03:25:02'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:34:00'!
 test97CannotAddMorePiecesInACompleteBoardAfterAMove
 	
 	moveGame moveFrom: 1@1 to: 2@2.
 	
-	self assert: moveGame canAddMorePieces = 'Cannot add more pieces'! !
+	self deny: moveGame canAddMorePieces.! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 14:31:56'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:24:29'!
 test98XwinTurn
-
-	self assert: xWinGame turn = 'The game is over'
+	
+	self should: [ xWinGame turn ] raise: Error withExceptionDo: [ :exception |
+		self assert: exception messageText = TerniLapilli finishedGameErrorDescription
+	].
 	! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 14:33:06'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 18:24:46'!
 test99OwinTurn
-
-	self assert: oWinGame turn = 'The game is over'
+	
+	self should: [ oWinGame turn ] raise: Error withExceptionDo: [ :exception |
+		self assert: exception messageText = TerniLapilli finishedGameErrorDescription
+	].
+	
 	! !
 
 

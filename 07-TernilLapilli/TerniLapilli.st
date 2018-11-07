@@ -5,11 +5,6 @@ Object subclass: #TerniLapilli
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!TerniLapilli methodsFor: 'playing' stamp: 'la 11/7/2018 03:16:42'!
-canAddMorePieces
-	
-	^ state canAddMorePieces ! !
-
 !TerniLapilli methodsFor: 'playing' stamp: 'jml 11/7/2018 00:33:28'!
 moveFrom: fromPosition to: toPosition 
 	
@@ -20,11 +15,11 @@ placePieceAt: aPosition
 	
 	state placePieceAt: aPosition! !
 
-!TerniLapilli methodsFor: 'playing' stamp: 'la 11/7/2018 02:32:14'!
-turn
-	
-	^state turn! !
 
+!TerniLapilli methodsFor: 'testing' stamp: 'la 11/7/2018 03:16:42'!
+canAddMorePieces
+	
+	^ state canAddMorePieces ! !
 
 !TerniLapilli methodsFor: 'testing' stamp: 'jml 11/7/2018 00:13:05'!
 isFinished
@@ -42,20 +37,25 @@ isWonForX
 	^ state isWonForX! !
 
 
-!TerniLapilli methodsFor: 'accessing' stamp: 'jml 11/7/2018 01:10:00'!
+!TerniLapilli methodsFor: 'accessing' stamp: 'jml 11/7/2018 18:47:19'!
 hasOAt: aPosition
 
-	^ board hasOAt: aPosition! !
+	^ board has: TerniLapilli oPlayer at: aPosition! !
 
-!TerniLapilli methodsFor: 'accessing' stamp: 'jml 11/7/2018 01:10:11'!
+!TerniLapilli methodsFor: 'accessing' stamp: 'jml 11/7/2018 18:47:34'!
 hasXAt: aPosition
 
-	^ board hasXAt: aPosition! !
+	^ board has: TerniLapilli xPlayer at: aPosition! !
 
 !TerniLapilli methodsFor: 'accessing' stamp: 'jml 11/7/2018 01:11:02'!
 positionIsEmpty: aPosition 
 
 	^ board positionIsEmpty: aPosition! !
+
+!TerniLapilli methodsFor: 'accessing' stamp: 'jml 11/7/2018 18:32:02'!
+turn
+	
+	^ state turn! !
 
 
 !TerniLapilli methodsFor: 'initialization' stamp: 'jml 11/7/2018 01:05:02'!
@@ -65,42 +65,42 @@ initialize
 	state := XIsPlacingState for: self.! !
 
 
-!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 01:31:59'!
+!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 18:43:42'!
 moveOFrom: fromPosition to: toPosition
 	
 	| newState |
 	
-	board move: $O from: fromPosition to: toPosition.
+	board move: TerniLapilli oPlayer from: fromPosition to: toPosition.
 	
-	newState := (board isWinning: $O)
+	newState := (board isWinning: TerniLapilli oPlayer)
 		ifTrue: [ OHasWonState ]
 		ifFalse: [ XIsMovingState ]
 	.
 	
 	state := newState for: self.! !
 
-!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 01:32:04'!
+!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 18:44:09'!
 moveXFrom: fromPosition to: toPosition
 	
 	| newState |
 	
-	board move: $X from: fromPosition to: toPosition.
+	board move: TerniLapilli xPlayer from: fromPosition to: toPosition.
 	
-	newState := (board isWinning: $X)
+	newState := (board isWinning: TerniLapilli xPlayer)
 		ifTrue: [ XHasWonState ]
 		ifFalse: [ OIsMovingState ]
 	.
 	
 	state := newState for: self.! !
 
-!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 01:30:26'!
+!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 18:44:32'!
 placeOAt: aPosition 
 	
 	| newState |
 	
-	board place: $O at: aPosition.
+	board place: TerniLapilli oPlayer at: aPosition.
 	
-	newState := (board isWinning: $O)
+	newState := (board isWinning: TerniLapilli oPlayer)
 		ifTrue: [ OHasWonState ]
 		ifFalse: [ board numberOfPieces = 6
 			ifTrue: [ XIsMovingState ]
@@ -110,14 +110,14 @@ placeOAt: aPosition
 	
 	state := newState for: self.! !
 
-!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 01:30:07'!
+!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 18:44:19'!
 placeXAt: aPosition 
 	
 	| newState |
 	
-	board place: $X at: aPosition.
+	board place: TerniLapilli xPlayer at: aPosition.
 	
-	newState := (board isWinning: $X)
+	newState := (board isWinning: TerniLapilli xPlayer)
 		ifTrue: [ XHasWonState ]
 		ifFalse: [ OIsPlacingState ]
 	.
@@ -170,6 +170,17 @@ occupiedPositionErrorDescription
 	
 	^ 'occupied position'! !
 
+
+!TerniLapilli class methodsFor: 'players' stamp: 'jml 11/7/2018 18:22:30'!
+oPlayer
+	
+	^ $O! !
+
+!TerniLapilli class methodsFor: 'players' stamp: 'jml 11/7/2018 18:22:23'!
+xPlayer
+	
+	^ $X! !
+
 
 !classDefinition: #TerniLapilliBoard category: #TerniLapilli!
 Object subclass: #TerniLapilliBoard
@@ -204,11 +215,6 @@ col: col isFullOf: aPiece
 	
 	^ #(1 2 3) allSatisfy: [ :row | self has: aPiece at: col@row ]! !
 
-!TerniLapilliBoard methodsFor: 'testing - private' stamp: 'jml 11/7/2018 01:09:36'!
-has: aPiece at: aPosition
-	
-	^ (pieces includesKey: aPosition) and: [ (pieces at: aPosition) = aPiece ]! !
-
 !TerniLapilliBoard methodsFor: 'testing - private' stamp: 'jml 11/7/2018 01:18:16'!
 leftDiagonalIsFullOf: aPiece
 	
@@ -231,15 +237,10 @@ isWinning: aPlayer
 	^ (self anyRowIsFullOf: aPlayer) or: [ (self anyColumnIsFullOf: aPlayer) or: [ self anyDiagonalIsFullOf: aPlayer ] ]! !
 
 
-!TerniLapilliBoard methodsFor: 'accessing' stamp: 'jml 11/7/2018 01:07:19'!
-hasOAt: aPosition
-
-	^ self has: $O at: aPosition! !
-
-!TerniLapilliBoard methodsFor: 'accessing' stamp: 'jml 11/7/2018 01:07:29'!
-hasXAt: aPosition
-
-	^ self has: $X at: aPosition! !
+!TerniLapilliBoard methodsFor: 'accessing' stamp: 'jml 11/7/2018 01:09:36'!
+has: aPiece at: aPosition
+	
+	^ (pieces includesKey: aPosition) and: [ (pieces at: aPosition) = aPiece ]! !
 
 !TerniLapilliBoard methodsFor: 'accessing' stamp: 'jml 11/7/2018 01:31:36'!
 numberOfPieces
@@ -372,11 +373,11 @@ placePieceAt: aPosition
 
 	self subclassResponsibility! !
 
-!TerniLapilliState methodsFor: 'playing' stamp: 'la 11/7/2018 03:15:31'!
-turn
 
+!TerniLapilliState methodsFor: 'testing' stamp: 'jml 11/7/2018 18:28:24'!
+canAddMorePieces
+	
 	self subclassResponsibility! !
-
 
 !TerniLapilliState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:51:59'!
 isFinished
@@ -391,6 +392,12 @@ isWonForO
 !TerniLapilliState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:39:52'!
 isWonForX
 	
+	self subclassResponsibility! !
+
+
+!TerniLapilliState methodsFor: 'accessing' stamp: 'la 11/7/2018 03:15:31'!
+turn
+
 	self subclassResponsibility! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
@@ -423,15 +430,21 @@ placePieceAt: aPosition
 	^ self error: game class finishedGameErrorDescription! !
 
 
+!GameOverState methodsFor: 'testing' stamp: 'jml 11/7/2018 18:32:34'!
+canAddMorePieces
+	
+	self error: game class finishedGameErrorDescription! !
+
 !GameOverState methodsFor: 'testing' stamp: 'jml 11/6/2018 14:56:11'!
 isFinished
 	
 	^ true! !
 
-!GameOverState methodsFor: 'testing' stamp: 'la 11/7/2018 14:36:19'!
+
+!GameOverState methodsFor: 'accessing' stamp: 'jml 11/7/2018 18:20:18'!
 turn
 
-	^'The game is over'! !
+	self error: game class finishedGameErrorDescription! !
 
 
 !classDefinition: #OHasWonState category: #TerniLapilli!
@@ -500,15 +513,16 @@ PlayingState subclass: #MovingState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!MovingState methodsFor: 'playing' stamp: 'la 11/7/2018 03:26:58'!
-canAddMorePieces
-
-	^'Cannot add more pieces'! !
-
 !MovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 15:02:32'!
 placePieceAt: aPosition
 	
 	^ self error: game class cannotAddMorePieces! !
+
+
+!MovingState methodsFor: 'testing' stamp: 'jml 11/7/2018 18:30:51'!
+canAddMorePieces
+
+	^ false! !
 
 
 !classDefinition: #OIsMovingState category: #TerniLapilli!
@@ -523,10 +537,11 @@ moveFrom: fromPosition to: toPosition
 	
 	game moveOFrom: fromPosition to: toPosition ! !
 
-!OIsMovingState methodsFor: 'playing' stamp: 'la 11/7/2018 02:58:05'!
-turn
 
-	^ 'O turn'! !
+!OIsMovingState methodsFor: 'accessing' stamp: 'jml 11/7/2018 18:21:51'!
+turn
+	
+	^ game class oPlayer! !
 
 
 !classDefinition: #XIsMovingState category: #TerniLapilli!
@@ -541,10 +556,11 @@ moveFrom: fromPosition to: toPosition
 	
 	game moveXFrom: fromPosition to: toPosition! !
 
-!XIsMovingState methodsFor: 'playing' stamp: 'la 11/7/2018 02:57:07'!
+
+!XIsMovingState methodsFor: 'accessing' stamp: 'jml 11/7/2018 18:21:45'!
 turn
 	
-	^'X turn'! !
+	^ game class xPlayer! !
 
 
 !classDefinition: #PlacingState category: #TerniLapilli!
@@ -554,15 +570,16 @@ PlayingState subclass: #PlacingState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!PlacingState methodsFor: 'playing' stamp: 'la 11/7/2018 03:16:41'!
-canAddMorePieces
-
-	^'Can add more pieces'! !
-
 !PlacingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:49:35'!
 moveFrom: fromPosition to: toPosition 
 
 	^self error: game class cannotMoveYetErrorDescription! !
+
+
+!PlacingState methodsFor: 'testing' stamp: 'jml 11/7/2018 18:30:33'!
+canAddMorePieces
+
+	^ true! !
 
 
 !classDefinition: #OIsPlacingState category: #TerniLapilli!
@@ -577,10 +594,11 @@ placePieceAt: aPosition
 
 	game placeOAt: aPosition! !
 
-!OIsPlacingState methodsFor: 'playing' stamp: 'la 11/7/2018 02:34:14'!
+
+!OIsPlacingState methodsFor: 'accessing' stamp: 'jml 11/7/2018 18:21:59'!
 turn
 	
-	^'O turn'! !
+	^ game class oPlayer! !
 
 
 !classDefinition: #XIsPlacingState category: #TerniLapilli!
@@ -595,7 +613,8 @@ placePieceAt: aPosition
 	
 	game placeXAt: aPosition! !
 
-!XIsPlacingState methodsFor: 'playing' stamp: 'la 11/7/2018 02:33:17'!
+
+!XIsPlacingState methodsFor: 'accessing' stamp: 'jml 11/7/2018 18:21:37'!
 turn
 	
-	^'X turn'! !
+	^ game class xPlayer! !
