@@ -273,6 +273,26 @@ test17InvalidMovementBecauseOfUnconnectedPositions
 		self assert: (game positionIsEmpty: 2@3)	
 	].! !
 
+!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/7/2018 00:08:03'!
+test17_02InvalidMovementBecauseOfOccupiedDestination
+	
+	| game |
+	
+	game := TerniLapilli new.
+	
+	game placePieceAt: 1@1.
+	game placePieceAt: 3@1.
+	game placePieceAt: 1@2.
+	game placePieceAt: 3@2.
+	game placePieceAt: 3@3.
+	game placePieceAt: 2@3.
+	
+	self should: [ game moveFrom: 3@3 to: 2@3 ] raise: Error withExceptionDo: [ : anException |
+		self assert: anException messageText equals: TerniLapilli occupiedPositionErrorDescription.
+		self assert: (game hasXAt: 3@3).
+		self assert: (game hasOAt: 2@3).
+	].! !
+
 !TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/6/2018 15:09:45'!
 test18CanMove
 	
@@ -392,38 +412,10 @@ Object subclass: #TerniLapilli
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!TerniLapilli methodsFor: 'playing' stamp: 'jml 11/6/2018 15:01:59'!
+!TerniLapilli methodsFor: 'playing' stamp: 'jml 11/7/2018 00:04:19'!
 moveFrom: fromPosition to: toPosition 
-
-	((self isValidPosition: fromPosition) and: [ self isValidPosition: toPosition ]) ifFalse: [
-		self error: self class invalidPositionErrorDescription
-	].
-
-	(self positionsAreConnected: fromPosition and: toPosition) ifFalse: [
-		self error: self class invalidMoveErrorDescription
-	].
-
-	self state moveFrom: fromPosition to: toPosition 	! !
-
-!TerniLapilli methodsFor: 'playing' stamp: 'jml 11/6/2018 14:33:16'!
-moveOFrom: fromPosition to: toPosition 
-
-	board removeKey: fromPosition.
-	self place: $O at: toPosition.
 	
-	(self checkFinished)
-	ifTrue: [state := OHasWonState for: self ]
-	ifFalse: [state := XIsMovingState for: self]! !
-
-!TerniLapilli methodsFor: 'playing' stamp: 'jml 11/6/2018 14:33:16'!
-moveXFrom: fromPosition to: toPosition 
-
-	board removeKey: fromPosition.
-	self place: $X at: toPosition.
-	
-	(self checkFinished)
-	ifTrue: [state := XHasWonState for: self ]
-	ifFalse: [state := OIsMovingState for: self]! !
+	self state moveFrom: fromPosition to: toPosition! !
 
 !TerniLapilli methodsFor: 'playing' stamp: 'jml 11/6/2018 15:07:35'!
 placePieceAt: aPosition
@@ -575,10 +567,46 @@ initialize
 	state := XIsPlacingState for: self.! !
 
 
-!TerniLapilli methodsFor: 'playing - private' stamp: 'la 11/6/2018 02:54:05'!
-place: aPiece at: aPosition
+!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 00:08:45'!
+move: aPiece from: fromPosition to: toPosition
+	
+	(self isValidPosition: fromPosition) ifFalse: [
+		self error: self class invalidPositionErrorDescription
+	].
+	
+	(self isValidPosition: toPosition) ifFalse: [
+		self error: self class invalidPositionErrorDescription
+	].
+	
+	(self positionsAreConnected: fromPosition and: toPosition) ifFalse: [
+		self error: self class invalidMoveErrorDescription
+	].
+	
+	(self has: aPiece at: fromPosition) ifFalse: [
+		self error: self class missingPieceErrorDescription
+	].
+	
+	(self positionIsEmpty: toPosition) ifFalse: [
+		self error: self class occupiedPositionErrorDescription
+	].
+	
+	board removeKey: fromPosition.
+	board at: toPosition put: aPiece.
+	! !
 
-	board at: aPosition put: aPiece.! !
+!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 00:00:11'!
+moveOFrom: fromPosition to: toPosition
+	
+	self move: $O from: fromPosition to: toPosition.
+	
+	state := (self wonForO ifTrue: [ OHasWonState ] ifFalse: [ XIsMovingState ]) for: self.! !
+
+!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/6/2018 23:59:40'!
+moveXFrom: fromPosition to: toPosition
+	
+	self move: $X from: fromPosition to: toPosition.
+	
+	state := (self wonForX ifTrue: [ XHasWonState ] ifFalse: [ OIsMovingState ]) for: self.! !
 
 !TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/6/2018 14:33:16'!
 placeOAt: aPosition 
@@ -759,19 +787,10 @@ MovingState subclass: #OIsMovingState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!OIsMovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
-moveFrom: fromPosition to:toPosition 
-
-
-
-	game  checkOIn: fromPosition.
-	game  moveOFrom: fromPosition to: toPosition 
+!OIsMovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 23:36:10'!
+moveFrom: fromPosition to: toPosition 
 	
-	
-"	(self has: self currentPiece at: fromPosition) ifFalse: [
-		self error: self class missingPieceErrorDescription
-	].
-"! !
+	game moveOFrom: fromPosition to: toPosition ! !
 
 
 !classDefinition: #XIsMovingState category: #TerniLapilli!
@@ -781,11 +800,10 @@ MovingState subclass: #XIsMovingState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!XIsMovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:34:23'!
-moveFrom: fromPosition to:toPosition 
-
-	game  checkXIn: fromPosition.
-	game  moveXFrom: fromPosition to: toPosition ! !
+!XIsMovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 23:36:02'!
+moveFrom: fromPosition to: toPosition 
+	
+	game moveXFrom: fromPosition to: toPosition! !
 
 
 !classDefinition: #PlacingState category: #TerniLapilli!
