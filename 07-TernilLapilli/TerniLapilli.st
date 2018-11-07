@@ -717,6 +717,22 @@ initializeFor: aGame
 	game := aGame! !
 
 
+!TerniLapilliState methodsFor: 'playing' stamp: 'jml 11/7/2018 00:52:28'!
+moveFrom: fromPosition to: toPosition 
+
+	self subclassResponsibility! !
+
+!TerniLapilliState methodsFor: 'playing' stamp: 'jml 11/7/2018 00:52:43'!
+placePieceAt: aPosition
+
+	self subclassResponsibility! !
+
+
+!TerniLapilliState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:51:59'!
+isFinished
+	
+	self subclassResponsibility! !
+
 !TerniLapilliState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:39:56'!
 isWonForO
 	
