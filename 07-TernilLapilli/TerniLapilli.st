@@ -5,10 +5,10 @@ Object subclass: #TerniLapilli
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!TerniLapilli methodsFor: 'playing' stamp: 'la 11/7/2018 03:06:42'!
-canAddMorePIeces
+!TerniLapilli methodsFor: 'playing' stamp: 'la 11/7/2018 03:16:42'!
+canAddMorePieces
 	
-	^ state canAddMorePIeces ! !
+	^ state canAddMorePieces ! !
 
 !TerniLapilli methodsFor: 'playing' stamp: 'jml 11/7/2018 00:33:28'!
 moveFrom: fromPosition to: toPosition 
@@ -173,7 +173,7 @@ occupiedPositionErrorDescription
 
 !classDefinition: #TerniLapilliBoard category: #TerniLapilli!
 Object subclass: #TerniLapilliBoard
-	instanceVariableNames: 'board state pieces'
+	instanceVariableNames: 'pieces'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
@@ -372,6 +372,11 @@ placePieceAt: aPosition
 
 	self subclassResponsibility! !
 
+!TerniLapilliState methodsFor: 'playing' stamp: 'la 11/7/2018 03:15:31'!
+turn
+
+	self subclassResponsibility! !
+
 
 !TerniLapilliState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:51:59'!
 isFinished
@@ -422,6 +427,11 @@ placePieceAt: aPosition
 isFinished
 	
 	^ true! !
+
+!GameOverState methodsFor: 'testing' stamp: 'la 11/7/2018 14:36:19'!
+turn
+
+	^'The game is over'! !
 
 
 !classDefinition: #OHasWonState category: #TerniLapilli!
@@ -490,6 +500,11 @@ PlayingState subclass: #MovingState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
+!MovingState methodsFor: 'playing' stamp: 'la 11/7/2018 03:26:58'!
+canAddMorePieces
+
+	^'Cannot add more pieces'! !
+
 !MovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 15:02:32'!
 placePieceAt: aPosition
 	
@@ -508,8 +523,7 @@ moveFrom: fromPosition to: toPosition
 	
 	game moveOFrom: fromPosition to: toPosition ! !
 
-
-!OIsMovingState methodsFor: 'as yet unclassified' stamp: 'la 11/7/2018 02:58:05'!
+!OIsMovingState methodsFor: 'playing' stamp: 'la 11/7/2018 02:58:05'!
 turn
 
 	^ 'O turn'! !
@@ -527,8 +541,7 @@ moveFrom: fromPosition to: toPosition
 	
 	game moveXFrom: fromPosition to: toPosition! !
 
-
-!XIsMovingState methodsFor: 'as yet unclassified' stamp: 'la 11/7/2018 02:57:07'!
+!XIsMovingState methodsFor: 'playing' stamp: 'la 11/7/2018 02:57:07'!
 turn
 	
 	^'X turn'! !
@@ -541,8 +554,8 @@ PlayingState subclass: #PlacingState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!PlacingState methodsFor: 'playing' stamp: 'la 11/7/2018 03:10:44'!
-canAddMorePIeces
+!PlacingState methodsFor: 'playing' stamp: 'la 11/7/2018 03:16:41'!
+canAddMorePieces
 
 	^'Can add more pieces'! !
 

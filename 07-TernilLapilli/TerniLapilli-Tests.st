@@ -1,11 +1,11 @@
 !classDefinition: #TerniLapilliTest category: #'TerniLapilli-Tests'!
 TestCase subclass: #TerniLapilliTest
-	instanceVariableNames: 'emptyGame moveGame'
+	instanceVariableNames: 'xWinGame emptyGame moveGame oWinGame'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli-Tests'!
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 03:02:46'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 14:34:46'!
 setUp
 
 	moveGame := TerniLapilli new.
@@ -16,7 +16,25 @@ setUp
 	moveGame placePieceAt: 3@3.
 	moveGame placePieceAt: 1@3.
 	
-	emptyGame := TerniLapilli new.! !
+	emptyGame := TerniLapilli new.
+	
+	
+	xWinGame := TerniLapilli new.
+	xWinGame placePieceAt: 1@1.
+	xWinGame placePieceAt: 1@2.
+	xWinGame placePieceAt: 2@1.
+	xWinGame placePieceAt: 2@2.
+	xWinGame placePieceAt: 3@1.
+	
+	
+	oWinGame := TerniLapilli new.	
+	oWinGame placePieceAt: 1@2.
+	oWinGame placePieceAt: 1@1.
+	oWinGame placePieceAt: 2@1.
+	oWinGame placePieceAt: 2@2.
+	oWinGame placePieceAt: 1@3.
+	oWinGame placePieceAt: 3@3.
+		! !
 
 !TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 03:03:47'!
 test01BoardIsInitiallyEmpty
@@ -257,39 +275,18 @@ test11InitiallyWonGameForDiagonalIsFinished
 	self assert: game isWonForX.
 	self deny: game isWonForO.! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 02:01:12'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 14:33:57'!
 test11_01InitiallyWonGameForColumnsIsFinished
 	
-	| game |
-	
-	game := TerniLapilli new.
-	
-	game placePieceAt: 1@1.
-	game placePieceAt: 2@2.
-	game placePieceAt: 1@2.
-	game placePieceAt: 3@3.
-	game placePieceAt: 1@3.
-	
-	self assert: game isFinished.
-	self assert: game isWonForX.
-	self deny: game isWonForO.! !
+	self assert: xWinGame isFinished.
+	self assert: xWinGame isWonForX.
+	self deny: xWinGame isWonForO.! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 02:24:46'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 14:35:29'!
 test11_01OcanWin
 	
-	| game |
-	
-	game := TerniLapilli new.
-	
-	game placePieceAt: 1@2.
-	game placePieceAt: 1@1.
-	game placePieceAt: 2@1.
-	game placePieceAt: 2@2.
-	game placePieceAt: 1@3.
-	game placePieceAt: 3@3.
-		
-	self assert: game isFinished.
-	self assert: game isWonForO.! !
+	self assert: oWinGame isFinished.
+	self assert: oWinGame isWonForO.! !
 
 !TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/6/2018 15:07:36'!
 test12CannotPlayWhenGameIsFinished
@@ -512,6 +509,59 @@ test21CannotMoveWhenGameIsFinished
 		self assert: (game positionIsEmpty: 2@1).
 	].! !
 
+!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 13:44:58'!
+test21_01CannotMoveWhenGameIsFinished
+	
+	| game |
+	game := TerniLapilli new.
+	
+	game placePieceAt: 1@1.
+	game placePieceAt: 3@1.
+	game placePieceAt: 1@2.
+	game placePieceAt: 3@2.
+	game placePieceAt: 3@3.
+	game placePieceAt: 1@3.
+	game moveFrom: 1@2 to: 2@2.
+	
+	self should: [ game moveFrom: 3@1 to: 2@1 ] raise: Error withExceptionDo: [ : anException |
+		self assert: anException messageText equals: TerniLapilli finishedGameErrorDescription.
+		self assert: (game hasOAt: 3@1).
+		self assert: (game positionIsEmpty: 2@1).
+	].! !
+
+!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 13:45:40'!
+test21_01XHasWinInMovePhase
+	| game |
+	game := TerniLapilli new.
+	
+	game placePieceAt: 1@1.
+	game placePieceAt: 3@1.
+	game placePieceAt: 1@2.
+	game placePieceAt: 3@2.
+	game placePieceAt: 3@3.
+	game placePieceAt: 1@3.
+	game moveFrom: 1@2 to: 2@2.
+	
+	self assert:  game isWonForX.
+	self deny: game isWonForO.! !
+
+!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 13:53:04'!
+test21_03OHasWinInMovePhase
+	| game |
+	game := TerniLapilli new.
+	
+	game placePieceAt: 1@1.
+	game placePieceAt: 1@2.
+	game placePieceAt: 1@3.
+	game placePieceAt: 2@2.
+	game placePieceAt: 2@1.
+	game placePieceAt: 3@3.
+	game moveFrom: 2@1 to: 3@1.
+	game moveFrom: 3@3 to: 3@2.
+
+	self assert:  game isWonForO.
+	self deny: game isWonForX.! !
+
 !TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/6/2018 15:00:01'!
 test22CannontMoveDuringInitialPhase
 
@@ -554,17 +604,41 @@ test93MoveOTurn
 	
 	self assert: moveGame turn = 'O turn'! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 03:08:14'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 03:17:02'!
 test94CanAddMorePiecesInAEmptyBoard
 	
-	self assert: emptyGame canAddMorePIeces = 'Can add more pieces'! !
+	self assert: emptyGame canAddMorePieces = 'Can add more pieces'! !
 
-!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 03:09:17'!
+!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 03:16:58'!
 test95CanAddMorePiecesInANotEmptyBoard
 	
 	emptyGame placePieceAt: 1@1.
 
-	self assert: emptyGame canAddMorePIeces = 'Can add more pieces'! !
+	self assert: emptyGame canAddMorePieces = 'Can add more pieces'! !
+
+!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 03:22:33'!
+test96CannotAddMorePiecesInACompleteBoard
+	
+	self assert: moveGame canAddMorePieces = 'Cannot add more pieces'! !
+
+!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 03:25:02'!
+test97CannotAddMorePiecesInACompleteBoardAfterAMove
+	
+	moveGame moveFrom: 1@1 to: 2@2.
+	
+	self assert: moveGame canAddMorePieces = 'Cannot add more pieces'! !
+
+!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 14:31:56'!
+test98XwinTurn
+
+	self assert: xWinGame turn = 'The game is over'
+	! !
+
+!TerniLapilliTest methodsFor: 'tests' stamp: 'la 11/7/2018 14:33:06'!
+test99OwinTurn
+
+	self assert: oWinGame turn = 'The game is over'
+	! !
 
 
 !TerniLapilliTest methodsFor: 'positions' stamp: 'jml 11/5/2018 19:14:42'!
