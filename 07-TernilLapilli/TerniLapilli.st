@@ -253,45 +253,55 @@ positionIsEmpty: aPosition
 	^ (pieces includesKey: aPosition) not! !
 
 
-!TerniLapilliBoard methodsFor: 'playing' stamp: 'jml 11/7/2018 01:27:24'!
+!TerniLapilliBoard methodsFor: 'playing' stamp: 'jml 11/7/2018 19:15:35'!
 move: aPiece from: fromPosition to: toPosition
 	
-	(self class isValidPosition: fromPosition) ifFalse: [
-		self error: TerniLapilli invalidPositionErrorDescription
-	].
+	self checkValidPosition: fromPosition.
+	self checkValidPosition: toPosition.
+	self checkPositionsAreConnected: fromPosition and: toPosition.
+	self checkPiece: aPiece at: fromPosition.
+	self checkEmptyPosition: toPosition.
 	
-	(self class isValidPosition: toPosition) ifFalse: [
-		self error: TerniLapilli invalidPositionErrorDescription
-	].
+	pieces removeKey: fromPosition.
+	pieces at: toPosition put: aPiece.! !
+
+!TerniLapilliBoard methodsFor: 'playing' stamp: 'jml 11/7/2018 19:07:47'!
+place: aPiece at: aPosition
+	
+	self checkValidPosition: aPosition.
+	self checkEmptyPosition: aPosition.
+	
+	pieces at: aPosition put: aPiece.! !
+
+
+!TerniLapilliBoard methodsFor: 'checking' stamp: 'jml 11/7/2018 19:08:49'!
+checkEmptyPosition: aPosition
+
+	(self positionIsEmpty: aPosition) ifFalse: [
+		self error: TerniLapilli occupiedPositionErrorDescription
+	].! !
+
+!TerniLapilliBoard methodsFor: 'checking' stamp: 'jml 11/7/2018 19:15:12'!
+checkPiece: aPiece at: aPosition
+	
+	(self has: aPiece at: aPosition) ifFalse: [
+		self error: TerniLapilli missingPieceErrorDescription
+	].! !
+
+!TerniLapilliBoard methodsFor: 'checking' stamp: 'jml 11/7/2018 19:14:09'!
+checkPositionsAreConnected: fromPosition and: toPosition
 	
 	(self class positionsAreConnected: fromPosition and: toPosition) ifFalse: [
 		self error: TerniLapilli invalidMoveErrorDescription
 	].
-	
-	(self has: aPiece at: fromPosition) ifFalse: [
-		self error: TerniLapilli missingPieceErrorDescription
-	].
-	
-	(self positionIsEmpty: toPosition) ifFalse: [
-		self error: TerniLapilli occupiedPositionErrorDescription
-	].
-	
-	pieces removeKey: fromPosition.
-	pieces at: toPosition put: aPiece.
 	! !
 
-!TerniLapilliBoard methodsFor: 'playing' stamp: 'jml 11/7/2018 01:24:02'!
-place: aPiece at: aPosition
+!TerniLapilliBoard methodsFor: 'checking' stamp: 'jml 11/7/2018 19:08:43'!
+checkValidPosition: aPosition
 	
 	(self class isValidPosition: aPosition) ifFalse: [
 		self error: TerniLapilli invalidPositionErrorDescription
-	].
-
-	(self positionIsEmpty: aPosition) ifFalse: [
-		self error: TerniLapilli occupiedPositionErrorDescription
-	].
-	
-	pieces at: aPosition put: aPiece.! !
+	].! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
