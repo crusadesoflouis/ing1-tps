@@ -872,7 +872,7 @@ test40CanNotSlideOWhenPlayingX
 
 !classDefinition: #TerniLapilli category: #TerniLapilli!
 Object subclass: #TerniLapilli
-	instanceVariableNames: 'state playerOPositions playerXPositions'
+	instanceVariableNames: 'state playerOPositions playerXPositions console'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
@@ -980,14 +980,15 @@ changeStateAfterAdding: aPosition to: positions
 	state := TerniLapilliState for: self
 	! !
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'HAW 11/8/2018 11:53:04'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/8/2018 20:50:01'!
 putOWhenPlacingOAt: aPosition
 
 	self playerOHasPiecesToPlace.
 	self assertIsFree: aPosition.
 
-	self changeStateAfterAdding: aPosition to: playerOPositions
-		! !
+	self changeStateAfterAdding: aPosition to: playerOPositions.
+	
+	console ifNotNil: [ console oHasPlacedAt: aPosition. ].! !
 
 !TerniLapilli methodsFor: 'marking board - private' stamp: 'JG 10/28/2018 12:39:41'!
 putOWhenPlacingXAt: aPosition
@@ -1009,14 +1010,15 @@ putXWhenPlacingOAt: aPoint
 	
 	self error: self class notXTurnErrorMessage! !
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'HAW 11/8/2018 11:53:04'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/8/2018 20:50:10'!
 putXWhenPlacingXAt: aPosition
 
 	self playerXHasPiecesToPlace.
 	self assertIsFree: aPosition.
 	
-	self changeStateAfterAdding: aPosition to: playerXPositions
-	! !
+	self changeStateAfterAdding: aPosition to: playerXPositions.
+	
+	console ifNotNil: [ console xHasPlacedAt: aPosition. ].! !
 
 !TerniLapilli methodsFor: 'marking board - private' stamp: 'JG 10/28/2018 12:38:49'!
 putXWhenSlidingOAt: aPoint 
@@ -1171,6 +1173,12 @@ isPlayingX
 isSlidingX
 	
 	^state isSlidingX! !
+
+
+!TerniLapilli methodsFor: 'console' stamp: 'jml 11/8/2018 19:46:05'!
+setConsole: aConsole
+	
+	console _ aConsole .! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
