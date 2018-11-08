@@ -416,10 +416,10 @@ turn
 TerniLapilliState class
 	instanceVariableNames: ''!
 
-!TerniLapilliState class methodsFor: 'instance creation' stamp: 'jml 11/6/2018 14:33:33'!
-for: aTerniLapilli
-
-	^ self new initializeFor: aTerniLapilli! !
+!TerniLapilliState class methodsFor: 'instance creation' stamp: 'jml 11/8/2018 00:56:15'!
+for: aGame
+	
+	^ self new initializeFor: aGame! !
 
 
 !classDefinition: #GameOverState category: #TerniLapilli!
