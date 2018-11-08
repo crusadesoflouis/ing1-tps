@@ -1,376 +1,3 @@
-!classDefinition: #TerniLapilliTest category: #TerniLapilli!
-TestCase subclass: #TerniLapilliTest
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'TerniLapilli'!
-
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 19:23:17'!
-test01BoardIsInitiallyEmpty
-	
-	| game |
-	
-	game := TerniLapilli new.
-	
-	self assert: (self boardIsEmpty: game).! !
-
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 21:20:19'!
-test02XCanPlayAtSomePosition
-
-	| game position restOfPositions |
-	
-	position := 1@1.
-	restOfPositions := self allPositions.
-	restOfPositions remove: position.
-
-	game := TerniLapilli new.
-	game placeAt: position.
-	
-	self assert: (game hasX: position).
-	self deny: (game hasO: position).
-	self deny: (game isEmpty: position).	
-	self assert: (restOfPositions allSatisfy: [ :aPosition | game isEmpty: aPosition ]).
-	! !
-
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 21:20:19'!
-test03OCanPlayAfterX
-
-	| game xPosition oPosition |
-	
-	xPosition := 1@1.
-	oPosition := 1@3.
-	
-	game := TerniLapilli new.
-	game placeAt: xPosition.
-	game placeAt: oPosition.
-
-	self assert: (game hasO: oPosition).
-	self deny: (game hasX: oPosition).
-	self deny: (game isEmpty: oPosition).
-	! !
-
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 21:20:19'!
-test07CannotPlayAtInvalidPosition
-	|game anInvalidPosition |
-	
-	"TODO hacer cuatro tests separados"
-	
-	anInvalidPosition := 0@1.
-	
-	game := TerniLapilli new.
-	
-	self should: [game placeAt: anInvalidPosition ] raise: Exception withExceptionDo: [ :exception |
-		self assert:  (exception messageText ) equals: (TerniLapilli invalidPositionErrorDescription).
-		self assert: (self boardIsEmpty: game).
-	].! !
-
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 21:20:19'!
-test08CannotPlayAtAnOccupiedPosition
-	
-	| aPosition game |
-	
-	game := TerniLapilli new.
-	aPosition := 2@2.
-	
-	game placeAt: aPosition.
-	
-	self should: [ game placeAt: aPosition ] raise: Error withExceptionDo: [ :anException |
-		self assert: anException messageText equals: TerniLapilli occupiedPositionErrorDescription.
-		self assert: (game hasX: aPosition).
-		self deny: (game hasO: aPosition).
-		self deny: (game isEmpty: aPosition).
-	].! !
-
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 21:20:19'!
-test09InitiallyWonGameForColumnsIsFinished
-	
-	| game |
-	
-	game := TerniLapilli new.
-	
-	game placeAt: 1@1.
-	game placeAt: 2@2.
-	game placeAt: 1@2.
-	game placeAt: 3@3.
-	game placeAt: 1@3.
-	
-	self assert: game isFinished.
-	self assert: game wonForX.
-	self deny: game wonForO.! !
-
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 21:20:19'!
-test10InitiallyWonGameForRowIsFinished
-	
-	| game |
-	
-	game := TerniLapilli new.
-	
-	game placeAt: 1@1.
-	game placeAt: 2@2.
-	game placeAt: 2@1.
-	game placeAt: 3@3.
-	game placeAt: 3@1.
-
-	self assert: game isFinished.
-	self assert: game wonForX.
-	self deny: game wonForO.! !
-
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 21:20:19'!
-test11InitiallyWonGameForDiagonalIsFinished
-	
-	| game |
-	
-	game := TerniLapilli new.
-	
-	game placeAt: 1@1.
-	game placeAt: 1@3.
-	game placeAt: 2@2.
-	game placeAt: 3@1.
-	game placeAt: 3@3.
-	
-	self assert: game isFinished.
-	self assert: game wonForX.
-	self deny: game wonForO.! !
-
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 21:20:19'!
-test12CannotPlayWhenGameIsFinished
-	
-	| game |
-	
-	game := TerniLapilli new.
-	
-	game placeAt: 1@1.
-	game placeAt: 2@1.
-	game placeAt: 1@2.
-	game placeAt: 2@2.
-	game placeAt: 1@3.
-	
-	self should: [ game placeAt: 2@3 ] raise: Error withExceptionDo: [ : anException |
-		self assert: anException messageText equals: TerniLapilli finishedGameErrorDescription.
-		self assert: (game isEmpty: 2@3).
-	].
-! !
-
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 21:20:19'!
-test13GameInitialPhaseFinishedWhitoutWinner
-	
-	| game |
-	
-	game := TerniLapilli new.
-	
-	game placeAt: 1@1.
-	game placeAt: 2@1.
-	game placeAt: 1@2.
-	game placeAt: 2@2.
-	game placeAt: 2@3.
-	game placeAt: 1@3.
-	
-	self deny: game isFinished.
-	self deny: game inInitialPhase.
-	
-	self should: [ game placeAt: 3@3 ] raise: Error withExceptionDo: [ : anException |
-		self assert: anException messageText equals: TerniLapilli cannotAddMorePieces.
-		self assert: (game isEmpty: 3@3).
-	].! !
-
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 21:20:19'!
-test14gameInitialPhaseNotFinished
-	
-	| game |
-	
-	game := TerniLapilli new.
-	game placeAt: 1@1.
-	
-	self deny: game isFinished.
-	self assert: game inInitialPhase.! !
-
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 21:20:19'!
-test15InvalidMovementBecauseOfInvalidPositions
-	
-	| game |
-	
-	game := TerniLapilli new.
-	
-	game placeAt: 1@1.
-	game placeAt: 3@1.
-	game placeAt: 1@2.
-	game placeAt: 3@2.
-	game placeAt: 3@3.
-	game placeAt: 1@3.
-	
-	self should: [game moveFrom: 1@1 to: 0@0] raise: Error withExceptionDo: [ : anException |
-		self assert: anException messageText equals: TerniLapilli invalidPositionErrorDescription.
-		self assert: (game hasX: 1@1).
-	].
-	
-	self should: [game moveFrom: 4@3 to: 2@2] raise: Error withExceptionDo: [ : anException |
-		self assert: anException messageText equals: TerniLapilli invalidPositionErrorDescription.
-		self assert: (game isEmpty: 2@2).	
-	].! !
-
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 21:20:19'!
-test16InvalidMovementBecauseOfMissingPiece
-	
-	| game |
-	
-	game := TerniLapilli new.
-	
-	game placeAt: 1@1.
-	game placeAt: 3@1.
-	game placeAt: 1@2.
-	game placeAt: 3@2.
-	game placeAt: 3@3.
-	game placeAt: 1@3.
-	
-	self should: [game moveFrom: 3@1 to: 2@1 ] raise: Error withExceptionDo: [ : anException |
-		self assert: anException messageText equals: TerniLapilli missingPieceErrorDescription.
-		self assert: (game hasO: 3@1).
-		self assert: (game isEmpty: 2@1).
-	].
-	
-	self should: [game moveFrom: 2@2 to: 2@1] raise: Error withExceptionDo: [ : anException |
-		self assert: anException messageText equals: TerniLapilli missingPieceErrorDescription.
-		self assert: (game isEmpty: 2@2).
-		self assert: (game isEmpty: 2@1)
-	].! !
-
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 21:20:19'!
-test17InvalidMovementBecauseOfUnconnectedPositions
-	
-	| game |
-	
-	game := TerniLapilli new.
-	
-	game placeAt: 1@1.
-	game placeAt: 3@1.
-	game placeAt: 1@2.
-	game placeAt: 3@2.
-	game placeAt: 3@3.
-	game placeAt: 1@3.
-	
-	self should: [ game moveFrom: 1@2 to: 2@1 ] raise: Error withExceptionDo: [ : anException |
-		self assert: anException messageText equals: TerniLapilli invalidMoveErrorDescription.
-		self assert: (game hasX: 1@2).
-		self assert: (game isEmpty: 2@1)
-	].
-	
-	self should: [ game moveFrom: 1@1 to: 2@3 ] raise: Error withExceptionDo: [ : anException |
-		self assert: anException messageText equals: TerniLapilli invalidMoveErrorDescription.
-		self assert: (game hasX: 1@1).
-		self assert: (game isEmpty: 2@3)	
-	].! !
-
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 21:20:19'!
-test18CanMove
-	
-	| game |
-	
-	game := TerniLapilli new.
-	
-	game placeAt: 1@1.
-	game placeAt: 3@1.
-	game placeAt: 1@2.
-	game placeAt: 3@2.
-	game placeAt: 3@3.
-	game placeAt: 1@3.
-	game moveFrom: 1@1 to: 2@2.
-
-	self assert: (game isEmpty: 1@1).
-	self assert: (game hasX: 2@2).
-	self deny: game isFinished
-! !
-
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 21:20:19'!
-test19OCanMoveAfterX
-	
-	| game |
-	
-	game := TerniLapilli new.
-	
-	game placeAt: 1@1.
-	game placeAt: 3@1.
-	game placeAt: 1@2.
-	game placeAt: 3@2.
-	game placeAt: 3@3.
-	game placeAt: 1@3.
-	game moveFrom: 1@1 to: 2@2.
-	game moveFrom: 1@3 to: 2@3.
-
-	self assert: (game isEmpty: 1@3).
-	self assert: (game hasO: 2@3).
-	self deny: game isFinished.! !
-
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 21:20:19'!
-test20WonAfterAMove
-	
-	| game |
-	
-	game := TerniLapilli new.
-	
-	game placeAt: 1@1.
-	game placeAt: 3@1.
-	game placeAt: 1@2.
-	game placeAt: 3@2.
-	game placeAt: 3@3.
-	game placeAt: 1@3.
-	game moveFrom: 1@2 to: 2@2.
-	
-	self assert: game isFinished
-! !
-
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 21:20:19'!
-test21CannotMoveWhenGameIsFinished
-	| game |
-	game := TerniLapilli new.
-	
-	game placeAt: 1@1.
-	game placeAt: 3@1.
-	game placeAt: 1@2.
-	game placeAt: 3@2.
-	game placeAt: 3@3.
-	game placeAt: 1@3.
-	game moveFrom: 1@2 to: 2@2.
-	
-	self should: [ game moveFrom: 3@1 to: 2@1 ] raise: Error withExceptionDo: [ : anException |
-		self assert: anException messageText equals: TerniLapilli finishedGameErrorDescription.
-		self assert: (game hasO: 3@1).
-		self assert: (game isEmpty: 2@1).
-	].! !
-
-!TerniLapilliTest methodsFor: 'tests' stamp: 'jml 11/5/2018 21:20:19'!
-test22CannontMoveDuringInitialPhase
-
-	| game |	
-	game := TerniLapilli new.
-	game placeAt: 1@1.
-	game placeAt: 1@2.
-	
-	self should: [ game moveFrom: 1@1 to: 2@1. ] raise: Error withExceptionDo: [ :anException |
-		self assert: anException messageText equals: TerniLapilli cannotMoveYetErrorDescription.
-	].
-	! !
-
-
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'jml 11/5/2018 19:14:42'!
-allPositions
-	| positions |
-	
-	positions := Set new.
-	
-	(1 to: 3) do: [ :row |
-		(1 to: 3) do: [ :col |
-			positions add: (Point x: col y: row)
-		]
-	].
-	
-	^ positions! !
-
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'jml 11/5/2018 19:23:36'!
-boardIsEmpty: aGame
-	
-	^ self allPositions allSatisfy: [ :aPosition | aGame isEmpty: aPosition ]! !
-
-
 !classDefinition: #TerniLapilli category: #TerniLapilli!
 Object subclass: #TerniLapilli
 	instanceVariableNames: 'board state'
@@ -378,188 +5,124 @@ Object subclass: #TerniLapilli
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!TerniLapilli methodsFor: 'playing' stamp: 'jml 11/5/2018 21:20:38'!
+!TerniLapilli methodsFor: 'playing' stamp: 'jml 11/7/2018 00:33:28'!
 moveFrom: fromPosition to: toPosition 
 	
-	self isFinished ifTrue: [
-		self error: self class finishedGameErrorDescription 
-	].
+	state moveFrom: fromPosition to: toPosition! !
+
+!TerniLapilli methodsFor: 'playing' stamp: 'jml 11/7/2018 00:33:35'!
+placePieceAt: aPosition
 	
-	self inInitialPhase ifTrue: [
-		self error: self class cannotMoveYetErrorDescription 
-	].
+	state placePieceAt: aPosition! !
+
+
+!TerniLapilli methodsFor: 'testing' stamp: 'la 11/7/2018 03:16:42'!
+canAddMorePieces
 	
-	((self isValidPosition: fromPosition) and: [ self isValidPosition: toPosition ]) ifFalse: [
-		self error: self class invalidPositionErrorDescription
-	].
-	
-	(self has: self currentPiece at: fromPosition) ifFalse: [
-		self error: self class missingPieceErrorDescription
-	].
-	
-	(self positionsAreConnected: fromPosition and: toPosition) ifFalse: [
-		self error: self class invalidMoveErrorDescription
-	].
-	
-	board removeKey: fromPosition.
-	self place: self currentPiece at: toPosition 
-! !
+	^ state canAddMorePieces ! !
 
-!TerniLapilli methodsFor: 'playing' stamp: 'jml 11/5/2018 21:20:38'!
-placeAt: aPosition
-	
-	self place: self currentPiece at: aPosition.! !
-
-
-!TerniLapilli methodsFor: 'testing' stamp: 'jml 11/5/2018 17:38:14'!
-hasO: aPosition
-
-	^ self has: $O at: aPosition! !
-
-!TerniLapilli methodsFor: 'testing' stamp: 'jml 11/5/2018 17:38:02'!
-hasX: aPosition
-	
-	^ self has: $X at: aPosition! !
-
-!TerniLapilli methodsFor: 'testing' stamp: 'jml 11/5/2018 17:05:43'!
-inInitialPhase
-	
-	^ board size < 6! !
-
-!TerniLapilli methodsFor: 'testing' stamp: 'la 11/1/2018 19:57:05'!
-isEmpty: aPosition 
-
-	^(board includesKey: aPosition) not! !
-
-!TerniLapilli methodsFor: 'testing' stamp: 'jml 11/5/2018 20:56:11'!
+!TerniLapilli methodsFor: 'testing' stamp: 'jml 11/7/2018 00:13:05'!
 isFinished
 	
-	^ isFinished! !
+	^ state isFinished ! !
 
-!TerniLapilli methodsFor: 'testing' stamp: 'la 11/1/2018 20:54:37'!
-wonForO
+!TerniLapilli methodsFor: 'testing' stamp: 'jml 11/7/2018 00:49:32'!
+isWonForO
 	
-	^ (self anyRowIsFullOf: $O) or: [ (self anyColumnIsFullOf: $O) or: [ self anyDiagonalIsFullOf: $O ] ]! !
+	^ state isWonForO! !
 
-!TerniLapilli methodsFor: 'testing' stamp: 'la 11/1/2018 20:54:01'!
-wonForX
+!TerniLapilli methodsFor: 'testing' stamp: 'jml 11/7/2018 00:49:44'!
+isWonForX
 	
-	^ (self anyRowIsFullOf: $X) or: [ (self anyColumnIsFullOf: $X) or: [ self anyDiagonalIsFullOf: $X ] ]! !
-
-
-!TerniLapilli methodsFor: 'testing - private' stamp: 'la 11/1/2018 20:55:39'!
-anyColumnIsFullOf: aPiece
-	
-	 ^ #(1 2 3) anySatisfy: [ :col | self col: col isFullOf: aPiece ]! !
-
-!TerniLapilli methodsFor: 'testing - private' stamp: 'la 11/1/2018 21:02:02'!
-anyDiagonalIsFullOf: aPiece
-	
-	^ (self leftDiagonalIsFullOf: aPiece) or: [ self rightDiagonalIsFullOf: aPiece ]! !
-
-!TerniLapilli methodsFor: 'testing - private' stamp: 'la 11/1/2018 20:51:52'!
-anyRowIsFullOf: aPiece
-	
-	^ #(1 2 3) anySatisfy: [ :row | self row: row isFullOf: aPiece ]! !
-
-!TerniLapilli methodsFor: 'testing - private' stamp: 'jml 11/5/2018 20:55:48'!
-checkFinished
-	
-	^ self wonForX or: [ self wonForO]! !
-
-!TerniLapilli methodsFor: 'testing - private' stamp: 'la 11/1/2018 20:56:05'!
-col: col isFullOf: aPiece
-	
-	^ #(1 2 3) allSatisfy: [ :row | self has: aPiece at: col@row ]! !
-
-!TerniLapilli methodsFor: 'testing - private' stamp: 'la 11/1/2018 20:52:31'!
-has: aPiece at: aPosition
-	
-	^ (board includesKey: aPosition) and: [ (board at: aPosition) = aPiece ]! !
-
-!TerniLapilli methodsFor: 'testing - private' stamp: 'jml 11/5/2018 18:09:25'!
-horizontalDistanceBetween: fromPosition and: toPosition
-	
-	^ (fromPosition x - toPosition x) abs! !
-
-!TerniLapilli methodsFor: 'testing - private' stamp: 'jml 11/5/2018 18:13:37'!
-isNotDiamondPosition: aPosition
-	
-	^ (aPosition x + aPosition y) even! !
-
-!TerniLapilli methodsFor: 'testing - private' stamp: 'la 11/1/2018 20:16:41'!
-isValidCoordinate: aCoordinate
-	
-	^ aCoordinate between: 1 and: 3! !
-
-!TerniLapilli methodsFor: 'testing - private' stamp: 'la 11/1/2018 20:17:49'!
-isValidPosition: aPosition
-	
-	^ (self isValidCoordinate: aPosition x) and: [ self isValidCoordinate: aPosition y ]! !
-
-!TerniLapilli methodsFor: 'testing - private' stamp: 'la 11/1/2018 21:07:34'!
-leftDiagonalIsFullOf: aPiece
-	
-	^ (Array with: 1@1 with: 2@2 with: 3@3) allSatisfy: [ :pos | self has: aPiece at: pos ]! !
-
-!TerniLapilli methodsFor: 'testing - private' stamp: 'jml 11/5/2018 18:09:43'!
-positionsAreAdjacent: fromPosition and: toPosition
-	
-	| horizontalDistance verticalDistance |
-	
-	horizontalDistance := self horizontalDistanceBetween: fromPosition and: toPosition.
-	verticalDistance := self verticalDistanceBetween: fromPosition and: toPosition.
-	
-	^ horizontalDistance + verticalDistance = 1! !
-
-!TerniLapilli methodsFor: 'testing - private' stamp: 'jml 11/5/2018 18:05:54'!
-positionsAreConnected: fromPosition and: toPosition
-	
-	^ (self positionsAreAdjacent: fromPosition and: toPosition) or: [ self positionsAreDiagonallyConnected: fromPosition and: toPosition ]! !
-
-!TerniLapilli methodsFor: 'testing - private' stamp: 'jml 11/5/2018 18:11:01'!
-positionsAreDiagonallyConnected: fromPosition and: toPosition
-	
-	| horizontalDistance verticalDistance |
-	
-	horizontalDistance := self horizontalDistanceBetween: fromPosition and: toPosition.
-	verticalDistance := self verticalDistanceBetween: fromPosition and: toPosition.
-	
-	^ (horizontalDistance = 1) and: [ verticalDistance = 1 and: [ self isNotDiamondPosition: fromPosition ] ]! !
-
-!TerniLapilli methodsFor: 'testing - private' stamp: 'la 11/1/2018 21:08:09'!
-rightDiagonalIsFullOf: aPiece
-	
-	^ (Array with: 1@3 with: 2@2 with: 3@1) allSatisfy: [ :pos | self has: aPiece at: pos ]! !
-
-!TerniLapilli methodsFor: 'testing - private' stamp: 'la 11/1/2018 20:48:18'!
-row: row isFullOf: aPiece
-	
-	^ #(1 2 3) allSatisfy: [ :col | self has: aPiece at: col@row ]! !
-
-!TerniLapilli methodsFor: 'testing - private' stamp: 'jml 11/5/2018 18:09:34'!
-verticalDistanceBetween: fromPosition and: toPosition
-	
-	^ (fromPosition y - toPosition y) abs! !
+	^ state isWonForX! !
 
 
-!TerniLapilli methodsFor: 'initialization' stamp: 'jml 11/5/2018 21:23:00'!
+!TerniLapilli methodsFor: 'accessing' stamp: 'jml 11/7/2018 18:47:19'!
+hasOAt: aPosition
+
+	^ board has: TerniLapilli oPlayer at: aPosition! !
+
+!TerniLapilli methodsFor: 'accessing' stamp: 'jml 11/7/2018 18:47:34'!
+hasXAt: aPosition
+
+	^ board has: TerniLapilli xPlayer at: aPosition! !
+
+!TerniLapilli methodsFor: 'accessing' stamp: 'jml 11/7/2018 01:11:02'!
+positionIsEmpty: aPosition 
+
+	^ board positionIsEmpty: aPosition! !
+
+!TerniLapilli methodsFor: 'accessing' stamp: 'jml 11/7/2018 18:32:02'!
+turn
+	
+	^ state turn! !
+
+
+!TerniLapilli methodsFor: 'initialization' stamp: 'jml 11/7/2018 01:05:02'!
 initialize
 
-	board := Dictionary new.	
-	state := XIsPlacingState new.! !
+	board := TerniLapilliBoard new.
+	state := XIsPlacingState for: self.! !
 
 
-!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/5/2018 21:24:47'!
-place: aPiece at: aPosition
+!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 18:43:42'!
+moveOFrom: fromPosition to: toPosition
 	
-	self state place: aPiece at: aPosition! !
-
-
-!TerniLapilli methodsFor: 'accessing - private' stamp: 'jml 11/5/2018 18:59:53'!
-currentPiece
+	| newState |
 	
-	^ isXturn ifTrue: [ $X ] ifFalse: [ $O ]! !
+	board move: TerniLapilli oPlayer from: fromPosition to: toPosition.
+	
+	newState := (board isWinning: TerniLapilli oPlayer)
+		ifTrue: [ OHasWonState ]
+		ifFalse: [ XIsMovingState ]
+	.
+	
+	state := newState for: self.! !
+
+!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 18:44:09'!
+moveXFrom: fromPosition to: toPosition
+	
+	| newState |
+	
+	board move: TerniLapilli xPlayer from: fromPosition to: toPosition.
+	
+	newState := (board isWinning: TerniLapilli xPlayer)
+		ifTrue: [ XHasWonState ]
+		ifFalse: [ OIsMovingState ]
+	.
+	
+	state := newState for: self.! !
+
+!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 18:44:32'!
+placeOAt: aPosition 
+	
+	| newState |
+	
+	board place: TerniLapilli oPlayer at: aPosition.
+	
+	newState := (board isWinning: TerniLapilli oPlayer)
+		ifTrue: [ OHasWonState ]
+		ifFalse: [ board numberOfPieces = 6
+			ifTrue: [ XIsMovingState ]
+			ifFalse: [ XIsPlacingState ]
+		]
+	.
+	
+	state := newState for: self.! !
+
+!TerniLapilli methodsFor: 'playing - private' stamp: 'jml 11/7/2018 18:44:19'!
+placeXAt: aPosition 
+	
+	| newState |
+	
+	board place: TerniLapilli xPlayer at: aPosition.
+	
+	newState := (board isWinning: TerniLapilli xPlayer)
+		ifTrue: [ XHasWonState ]
+		ifFalse: [ OIsPlacingState ]
+	.
+	
+	state := newState for: self.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -607,6 +170,195 @@ occupiedPositionErrorDescription
 	
 	^ 'occupied position'! !
 
+
+!TerniLapilli class methodsFor: 'players' stamp: 'jml 11/7/2018 18:22:30'!
+oPlayer
+	
+	^ $O! !
+
+!TerniLapilli class methodsFor: 'players' stamp: 'jml 11/7/2018 18:22:23'!
+xPlayer
+	
+	^ $X! !
+
+
+!classDefinition: #TerniLapilliBoard category: #TerniLapilli!
+Object subclass: #TerniLapilliBoard
+	instanceVariableNames: 'pieces'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!TerniLapilliBoard methodsFor: 'initialization' stamp: 'jml 11/7/2018 01:02:59'!
+initialize
+	
+	pieces := Dictionary new.! !
+
+
+!TerniLapilliBoard methodsFor: 'testing - private' stamp: 'jml 11/7/2018 01:06:36'!
+anyColumnIsFullOf: aPiece
+	
+	 ^ #(1 2 3) anySatisfy: [ :col | self col: col isFullOf: aPiece ]! !
+
+!TerniLapilliBoard methodsFor: 'testing - private' stamp: 'jml 11/7/2018 01:11:36'!
+anyDiagonalIsFullOf: aPiece
+	
+	^ (self leftDiagonalIsFullOf: aPiece) or: [ self rightDiagonalIsFullOf: aPiece ]! !
+
+!TerniLapilliBoard methodsFor: 'testing - private' stamp: 'jml 11/7/2018 01:12:02'!
+anyRowIsFullOf: aPiece
+	
+	^ #(1 2 3) anySatisfy: [ :row | self row: row isFullOf: aPiece ]! !
+
+!TerniLapilliBoard methodsFor: 'testing - private' stamp: 'jml 11/7/2018 01:12:20'!
+col: col isFullOf: aPiece
+	
+	^ #(1 2 3) allSatisfy: [ :row | self has: aPiece at: col@row ]! !
+
+!TerniLapilliBoard methodsFor: 'testing - private' stamp: 'jml 11/7/2018 01:18:16'!
+leftDiagonalIsFullOf: aPiece
+	
+	^ (Array with: 1@1 with: 2@2 with: 3@3) allSatisfy: [ :pos | self has: aPiece at: pos ]! !
+
+!TerniLapilliBoard methodsFor: 'testing - private' stamp: 'jml 11/7/2018 01:19:25'!
+rightDiagonalIsFullOf: aPiece
+	
+	^ (Array with: 1@3 with: 2@2 with: 3@1) allSatisfy: [ :pos | self has: aPiece at: pos ]! !
+
+!TerniLapilliBoard methodsFor: 'testing - private' stamp: 'jml 11/7/2018 01:20:02'!
+row: row isFullOf: aPiece
+	
+	^ #(1 2 3) allSatisfy: [ :col | self has: aPiece at: col@row ]! !
+
+
+!TerniLapilliBoard methodsFor: 'testing' stamp: 'jml 11/7/2018 01:17:52'!
+isWinning: aPlayer
+	
+	^ (self anyRowIsFullOf: aPlayer) or: [ (self anyColumnIsFullOf: aPlayer) or: [ self anyDiagonalIsFullOf: aPlayer ] ]! !
+
+
+!TerniLapilliBoard methodsFor: 'accessing' stamp: 'jml 11/7/2018 01:09:36'!
+has: aPiece at: aPosition
+	
+	^ (pieces includesKey: aPosition) and: [ (pieces at: aPosition) = aPiece ]! !
+
+!TerniLapilliBoard methodsFor: 'accessing' stamp: 'jml 11/7/2018 01:31:36'!
+numberOfPieces
+	
+	^ pieces size! !
+
+!TerniLapilliBoard methodsFor: 'accessing' stamp: 'jml 11/7/2018 01:10:30'!
+positionIsEmpty: aPosition 
+
+	^ (pieces includesKey: aPosition) not! !
+
+
+!TerniLapilliBoard methodsFor: 'playing' stamp: 'jml 11/7/2018 19:15:35'!
+move: aPiece from: fromPosition to: toPosition
+	
+	self checkValidPosition: fromPosition.
+	self checkValidPosition: toPosition.
+	self checkPositionsAreConnected: fromPosition and: toPosition.
+	self checkPiece: aPiece at: fromPosition.
+	self checkEmptyPosition: toPosition.
+	
+	pieces removeKey: fromPosition.
+	pieces at: toPosition put: aPiece.! !
+
+!TerniLapilliBoard methodsFor: 'playing' stamp: 'jml 11/7/2018 19:07:47'!
+place: aPiece at: aPosition
+	
+	self checkValidPosition: aPosition.
+	self checkEmptyPosition: aPosition.
+	
+	pieces at: aPosition put: aPiece.! !
+
+
+!TerniLapilliBoard methodsFor: 'checking' stamp: 'jml 11/7/2018 19:08:49'!
+checkEmptyPosition: aPosition
+
+	(self positionIsEmpty: aPosition) ifFalse: [
+		self error: TerniLapilli occupiedPositionErrorDescription
+	].! !
+
+!TerniLapilliBoard methodsFor: 'checking' stamp: 'jml 11/7/2018 19:15:12'!
+checkPiece: aPiece at: aPosition
+	
+	(self has: aPiece at: aPosition) ifFalse: [
+		self error: TerniLapilli missingPieceErrorDescription
+	].! !
+
+!TerniLapilliBoard methodsFor: 'checking' stamp: 'jml 11/7/2018 19:14:09'!
+checkPositionsAreConnected: fromPosition and: toPosition
+	
+	(self class positionsAreConnected: fromPosition and: toPosition) ifFalse: [
+		self error: TerniLapilli invalidMoveErrorDescription
+	].
+	! !
+
+!TerniLapilliBoard methodsFor: 'checking' stamp: 'jml 11/7/2018 19:08:43'!
+checkValidPosition: aPosition
+	
+	(self class isValidPosition: aPosition) ifFalse: [
+		self error: TerniLapilli invalidPositionErrorDescription
+	].! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'TerniLapilliBoard class' category: #TerniLapilli!
+TerniLapilliBoard class
+	instanceVariableNames: ''!
+
+!TerniLapilliBoard class methodsFor: 'positions' stamp: 'jml 11/7/2018 01:15:12'!
+horizontalDistanceBetween: fromPosition and: toPosition
+	
+	^ (fromPosition x - toPosition x) abs! !
+
+!TerniLapilliBoard class methodsFor: 'positions' stamp: 'jml 11/7/2018 01:15:32'!
+isNotDiamondPosition: aPosition
+	
+	^ (aPosition x + aPosition y) even! !
+
+!TerniLapilliBoard class methodsFor: 'positions' stamp: 'jml 11/7/2018 01:15:49'!
+isValidCoordinate: aCoordinate
+	
+	^ aCoordinate between: 1 and: 3! !
+
+!TerniLapilliBoard class methodsFor: 'positions' stamp: 'jml 11/7/2018 01:16:14'!
+isValidPosition: aPosition
+	
+	^ (self isValidCoordinate: aPosition x) and: [ self isValidCoordinate: aPosition y ]! !
+
+!TerniLapilliBoard class methodsFor: 'positions' stamp: 'jml 11/7/2018 01:20:56'!
+positionsAreAdjacent: fromPosition and: toPosition
+	
+	| horizontalDistance verticalDistance |
+	
+	horizontalDistance := self horizontalDistanceBetween: fromPosition and: toPosition.
+	verticalDistance := self verticalDistanceBetween: fromPosition and: toPosition.
+	
+	^ horizontalDistance + verticalDistance = 1! !
+
+!TerniLapilliBoard class methodsFor: 'positions' stamp: 'jml 11/7/2018 01:20:44'!
+positionsAreConnected: fromPosition and: toPosition
+	
+	^ (self positionsAreAdjacent: fromPosition and: toPosition) or: [ self positionsAreDiagonallyConnected: fromPosition and: toPosition ]! !
+
+!TerniLapilliBoard class methodsFor: 'positions' stamp: 'jml 11/7/2018 01:20:22'!
+positionsAreDiagonallyConnected: fromPosition and: toPosition
+	
+	| horizontalDistance verticalDistance |
+	
+	horizontalDistance := self horizontalDistanceBetween: fromPosition and: toPosition.
+	verticalDistance := self verticalDistanceBetween: fromPosition and: toPosition.
+	
+	^ (horizontalDistance = 1) and: [ verticalDistance = 1 and: [ self isNotDiamondPosition: fromPosition ] ]! !
+
+!TerniLapilliBoard class methodsFor: 'positions' stamp: 'jml 11/7/2018 01:19:44'!
+verticalDistanceBetween: fromPosition and: toPosition
+	
+	^ (fromPosition y - toPosition y) abs! !
+
 
 !classDefinition: #TerniLapilliState category: #TerniLapilli!
 Object subclass: #TerniLapilliState
@@ -614,6 +366,60 @@ Object subclass: #TerniLapilliState
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
+
+!TerniLapilliState methodsFor: 'initialization' stamp: 'jml 11/6/2018 14:34:23'!
+initializeFor: aGame
+
+	game := aGame! !
+
+
+!TerniLapilliState methodsFor: 'playing' stamp: 'jml 11/7/2018 00:52:28'!
+moveFrom: fromPosition to: toPosition 
+
+	self subclassResponsibility! !
+
+!TerniLapilliState methodsFor: 'playing' stamp: 'jml 11/7/2018 00:52:43'!
+placePieceAt: aPosition
+
+	self subclassResponsibility! !
+
+
+!TerniLapilliState methodsFor: 'testing' stamp: 'jml 11/7/2018 18:28:24'!
+canAddMorePieces
+	
+	self subclassResponsibility! !
+
+!TerniLapilliState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:51:59'!
+isFinished
+	
+	self subclassResponsibility! !
+
+!TerniLapilliState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:39:56'!
+isWonForO
+	
+	self subclassResponsibility! !
+
+!TerniLapilliState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:39:52'!
+isWonForX
+	
+	self subclassResponsibility! !
+
+
+!TerniLapilliState methodsFor: 'accessing' stamp: 'la 11/7/2018 03:15:31'!
+turn
+
+	self subclassResponsibility! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'TerniLapilliState class' category: #TerniLapilli!
+TerniLapilliState class
+	instanceVariableNames: ''!
+
+!TerniLapilliState class methodsFor: 'instance creation' stamp: 'jml 11/8/2018 00:56:15'!
+for: aGame
+	
+	^ self new initializeFor: aGame! !
 
 
 !classDefinition: #GameOverState category: #TerniLapilli!
@@ -623,10 +429,32 @@ TerniLapilliState subclass: #GameOverState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!GameOverState methodsFor: 'playing' stamp: 'jml 11/5/2018 21:29:49'!
-place: aPiece at: aPosition
+!GameOverState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:55:59'!
+moveFrom: fromPosition to: toPosition 
+
+	^ self error: game class finishedGameErrorDescription! !
+
+!GameOverState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:55:32'!
+placePieceAt: aPosition
+
+	^ self error: game class finishedGameErrorDescription! !
+
+
+!GameOverState methodsFor: 'testing' stamp: 'jml 11/7/2018 18:32:34'!
+canAddMorePieces
 	
-	self error: TerniLapilli finishedGameErrorDescription! !
+	self error: game class finishedGameErrorDescription! !
+
+!GameOverState methodsFor: 'testing' stamp: 'jml 11/6/2018 14:56:11'!
+isFinished
+	
+	^ true! !
+
+
+!GameOverState methodsFor: 'accessing' stamp: 'jml 11/7/2018 18:20:18'!
+turn
+
+	self error: game class finishedGameErrorDescription! !
 
 
 !classDefinition: #OHasWonState category: #TerniLapilli!
@@ -636,6 +464,16 @@ GameOverState subclass: #OHasWonState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
+!OHasWonState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:40:41'!
+isWonForO
+	
+	^ true! !
+
+!OHasWonState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:40:36'!
+isWonForX
+	
+	^ false! !
+
 
 !classDefinition: #XHasWonState category: #TerniLapilli!
 GameOverState subclass: #XHasWonState
@@ -643,6 +481,16 @@ GameOverState subclass: #XHasWonState
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
+
+!XHasWonState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:42:59'!
+isWonForO
+	
+	^ false! !
+
+!XHasWonState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:42:54'!
+isWonForX
+	
+	^ true! !
 
 
 !classDefinition: #PlayingState category: #TerniLapilli!
@@ -652,6 +500,21 @@ TerniLapilliState subclass: #PlayingState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
+!PlayingState methodsFor: 'testing' stamp: 'jml 11/6/2018 14:57:45'!
+isFinished
+	
+	^ false! !
+
+!PlayingState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:43:13'!
+isWonForO
+	
+	^ false! !
+
+!PlayingState methodsFor: 'testing' stamp: 'jml 11/7/2018 00:43:12'!
+isWonForX
+	
+	^ false! !
+
 
 !classDefinition: #MovingState category: #TerniLapilli!
 PlayingState subclass: #MovingState
@@ -660,10 +523,16 @@ PlayingState subclass: #MovingState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!MovingState methodsFor: 'playing' stamp: 'jml 11/5/2018 21:29:39'!
-place: aPiece at: aPosition
+!MovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 15:02:32'!
+placePieceAt: aPosition
 	
-	self error: TerniLapilli cannotAddMorePieces! !
+	^ self error: game class cannotAddMorePieces! !
+
+
+!MovingState methodsFor: 'testing' stamp: 'jml 11/7/2018 18:30:51'!
+canAddMorePieces
+
+	^ false! !
 
 
 !classDefinition: #OIsMovingState category: #TerniLapilli!
@@ -673,6 +542,17 @@ MovingState subclass: #OIsMovingState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
+!OIsMovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 23:36:10'!
+moveFrom: fromPosition to: toPosition 
+	
+	game moveOFrom: fromPosition to: toPosition ! !
+
+
+!OIsMovingState methodsFor: 'accessing' stamp: 'jml 11/7/2018 18:21:51'!
+turn
+	
+	^ game class oPlayer! !
+
 
 !classDefinition: #XIsMovingState category: #TerniLapilli!
 MovingState subclass: #XIsMovingState
@@ -680,6 +560,17 @@ MovingState subclass: #XIsMovingState
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
+
+!XIsMovingState methodsFor: 'playing' stamp: 'jml 11/6/2018 23:36:02'!
+moveFrom: fromPosition to: toPosition 
+	
+	game moveXFrom: fromPosition to: toPosition! !
+
+
+!XIsMovingState methodsFor: 'accessing' stamp: 'jml 11/7/2018 18:21:45'!
+turn
+	
+	^ game class xPlayer! !
 
 
 !classDefinition: #PlacingState category: #TerniLapilli!
@@ -689,6 +580,17 @@ PlayingState subclass: #PlacingState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
+!PlacingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:49:35'!
+moveFrom: fromPosition to: toPosition 
+
+	^self error: game class cannotMoveYetErrorDescription! !
+
+
+!PlacingState methodsFor: 'testing' stamp: 'jml 11/7/2018 18:30:33'!
+canAddMorePieces
+
+	^ true! !
+
 
 !classDefinition: #OIsPlacingState category: #TerniLapilli!
 PlacingState subclass: #OIsPlacingState
@@ -697,10 +599,16 @@ PlacingState subclass: #OIsPlacingState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!OIsPlacingState methodsFor: 'playing' stamp: 'jml 11/5/2018 21:34:25'!
-place: aPiece at: aPosition
+!OIsPlacingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:54:15'!
+placePieceAt: aPosition
+
+	game placeOAt: aPosition! !
+
+
+!OIsPlacingState methodsFor: 'accessing' stamp: 'jml 11/7/2018 18:21:59'!
+turn
 	
-	game placeO: aPiece at: aPosition ! !
+	^ game class oPlayer! !
 
 
 !classDefinition: #XIsPlacingState category: #TerniLapilli!
@@ -709,3 +617,14 @@ PlacingState subclass: #XIsPlacingState
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
+
+!XIsPlacingState methodsFor: 'playing' stamp: 'jml 11/6/2018 14:55:17'!
+placePieceAt: aPosition
+	
+	game placeXAt: aPosition! !
+
+
+!XIsPlacingState methodsFor: 'accessing' stamp: 'jml 11/7/2018 18:21:37'!
+turn
+	
+	^ game class xPlayer! !
