@@ -973,22 +973,23 @@ putXAt: aPosition
 	state putXAt: aPosition! !
 
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'HAW 11/8/2018 11:53:04'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/9/2018 13:29:06'!
 changeStateAfterAdding: aPosition to: positions  
 
 	positions add: aPosition.
-	state := TerniLapilliState for: self
-	! !
+	state := TerniLapilliState for: self.
+	
+	console ifNotNil: [ console stateChangedTo: state ].! !
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/8/2018 20:50:01'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/9/2018 13:26:41'!
 putOWhenPlacingOAt: aPosition
 
 	self playerOHasPiecesToPlace.
 	self assertIsFree: aPosition.
-
-	self changeStateAfterAdding: aPosition to: playerOPositions.
 	
-	console ifNotNil: [ console oHasPlacedAt: aPosition. ].! !
+	console ifNotNil: [ console oHasPlacedAt: aPosition. ].
+	
+	self changeStateAfterAdding: aPosition to: playerOPositions.! !
 
 !TerniLapilli methodsFor: 'marking board - private' stamp: 'JG 10/28/2018 12:39:41'!
 putOWhenPlacingXAt: aPosition
@@ -1010,15 +1011,15 @@ putXWhenPlacingOAt: aPoint
 	
 	self error: self class notXTurnErrorMessage! !
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/8/2018 20:50:10'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/9/2018 13:26:53'!
 putXWhenPlacingXAt: aPosition
 
 	self playerXHasPiecesToPlace.
 	self assertIsFree: aPosition.
 	
-	self changeStateAfterAdding: aPosition to: playerXPositions.
+	console ifNotNil: [ console xHasPlacedAt: aPosition. ].
 	
-	console ifNotNil: [ console xHasPlacedAt: aPosition. ].! !
+	self changeStateAfterAdding: aPosition to: playerXPositions.! !
 
 !TerniLapilli methodsFor: 'marking board - private' stamp: 'JG 10/28/2018 12:38:49'!
 putXWhenSlidingOAt: aPoint 

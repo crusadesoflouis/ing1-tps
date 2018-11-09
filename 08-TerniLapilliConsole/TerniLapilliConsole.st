@@ -5,7 +5,7 @@ TestCase subclass: #TerniLapilliBoardViewTest
 	poolDictionaries: ''
 	category: 'TerniLapilliConsole'!
 
-!TerniLapilliBoardViewTest methodsFor: 'Testing' stamp: 'jml 11/9/2018 12:24:06'!
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/9/2018 12:24:06'!
 test01EmptyBoard
 	
 	| game boardView |
@@ -22,7 +22,7 @@ test01EmptyBoard
  | | '
 	equals: boardView output.! !
 
-!TerniLapilliBoardViewTest methodsFor: 'Testing' stamp: 'jml 11/9/2018 12:24:10'!
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/9/2018 12:24:10'!
 test02XPlacing
 	
 	| game boardView |
@@ -424,6 +424,26 @@ oHasPlacedAt: aPosition
 	
 	self player: 'O' hasPlacedAt: aPosition.! !
 
+!TerniLapilliConsole methodsFor: 'logging' stamp: 'jml 11/9/2018 13:45:50'!
+stateChangedTo: newState
+	
+	(newState isKindOf: PlacingO) ifTrue: [
+		lines add: 'Estado: Jugando O'
+	].
+	
+	(newState isKindOf: PlayingX) ifTrue: [
+		lines add: 'Estado: Jugando X'
+	].
+	
+	(newState isKindOf: GameOverState) ifTrue: [
+		game hasPlayerXWon ifTrue: [
+			lines add: 'Estado: Juego terminado - ¡Ganó X!!'.
+		] ifFalse: [
+			lines add: 'Estado: Juego terminado - ¡Ganó O!!'.
+		].
+	].
+	! !
+
 !TerniLapilliConsole methodsFor: 'logging' stamp: 'jml 11/8/2018 20:48:09'!
 xHasPlacedAt: aPosition
 	
@@ -446,13 +466,6 @@ addSlidingLine
 	game isSlidingX 
 		ifTrue:[lines add: 'Estado: Jugando X']
 		ifFalse:[lines add: 'Estado: Jugando O']! !
-
-!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/8/2018 20:40:59'!
-addStateLine
-	
-	game isOver
-		ifTrue: [ self addWonLine ]
-		ifFalse: [ self addTurnLine ].! !
 
 !TerniLapilliConsole methodsFor: 'logging - private' stamp: 'la 11/9/2018 03:12:49'!
 addTurnLine
@@ -481,11 +494,11 @@ player: aPlayer hasMovedFrom: aPosition to: anotherPosition
 	self addSlidingLIneFor: aPlayer at: aPosition to: anotherPosition.
 	self addStateLine.! !
 
-!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/8/2018 20:46:36'!
+!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/9/2018 13:31:03'!
 player: aPlayer hasPlacedAt: aPosition
-	
+
 	self addMarkingLineFor: aPlayer at: aPosition.
-	self addStateLine.! !
+! !
 
 !TerniLapilliConsole methodsFor: 'logging - private' stamp: 'la 11/9/2018 03:14:21'!
 xHasSlideFrom: aPosition to: anotherPosition 
