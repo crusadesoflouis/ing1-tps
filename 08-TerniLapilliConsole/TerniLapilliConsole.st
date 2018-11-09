@@ -455,10 +455,10 @@ addMarkingLineFor: aPlayer at: aPosition
 	
 	lines add: aPlayer, ' marcó en ', aPosition printString.! !
 
-!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'la 11/9/2018 03:09:19'!
-addSlidingLIneFor: aPlayer at: aPosition to: anotherPosition 
+!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/9/2018 13:49:25'!
+addPlacingLineFor: aPlayer at: aPosition
 	
-	lines add: aPlayer , ' deslizó hasta ',anotherPosition printString, ' desde ', aPosition printString.! !
+	lines add: aPlayer, ' marcó en ', aPosition printString.! !
 
 !TerniLapilliConsole methodsFor: 'logging - private' stamp: 'la 11/9/2018 03:12:49'!
 addSlidingLine
@@ -466,6 +466,11 @@ addSlidingLine
 	game isSlidingX 
 		ifTrue:[lines add: 'Estado: Jugando X']
 		ifFalse:[lines add: 'Estado: Jugando O']! !
+
+!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/9/2018 13:49:54'!
+addSlidingLineFor: aPlayer at: aPosition to: anotherPosition 
+	
+	lines add: aPlayer , ' deslizó hasta ',anotherPosition printString, ' desde ', aPosition printString.! !
 
 !TerniLapilliConsole methodsFor: 'logging - private' stamp: 'la 11/9/2018 03:12:49'!
 addTurnLine
@@ -488,10 +493,10 @@ oHasSlideFrom: aPosition to: anotherPosition
 	
 	self player: 'O' hasMovedFrom: aPosition to:anotherPosition.! !
 
-!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'la 11/9/2018 03:14:59'!
+!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/9/2018 13:49:54'!
 player: aPlayer hasMovedFrom: aPosition to: anotherPosition 
 	
-	self addSlidingLIneFor: aPlayer at: aPosition to: anotherPosition.
+	self addSlidingLineFor: aPlayer at: aPosition to: anotherPosition.
 	self addStateLine.! !
 
 !TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/9/2018 13:31:03'!
