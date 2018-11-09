@@ -1,11 +1,39 @@
-!classDefinition: #TerniLapilliBoardViewTest category: #TerniLapilliConsole!
-TestCase subclass: #TerniLapilliBoardViewTest
+!classDefinition: #StreamTest category: #TerniLapilliConsole!
+TestCase subclass: #StreamTest
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilliConsole'!
 
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/9/2018 12:24:06'!
+!StreamTest methodsFor: 'assertion - private' stamp: 'jml 11/9/2018 16:06:10'!
+skip: aNumberOfLines in: aStream
+	
+	aNumberOfLines timesRepeat: [ aStream next ].! !
+
+
+!StreamTest methodsFor: 'assertions' stamp: 'jml 11/9/2018 16:06:10'!
+assertLinesIn: aStream equals: lines
+	
+	lines do: [ :line | self assert: line equals: aStream next ].
+	
+	self assert: aStream atEnd.! !
+
+!StreamTest methodsFor: 'assertions' stamp: 'jml 11/9/2018 16:06:10'!
+assertLinesIn: aStream skipping: aNumberOfLines equals: lines
+	
+	self skip: aNumberOfLines in: aStream.
+	
+	self assertLinesIn: aStream equals: lines.! !
+
+
+!classDefinition: #TerniLapilliBoardViewTest category: #TerniLapilliConsole!
+StreamTest subclass: #TerniLapilliBoardViewTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilliConsole'!
+
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/9/2018 16:28:38'!
 test01EmptyBoard
 	
 	| game boardView |
@@ -14,15 +42,15 @@ test01EmptyBoard
 	
 	boardView _ TerniLapilliBoardView for: game.
 	
-	self assert: 
+	self assert: boardView output equals: 
 ' | | 
 -----
  | | 
 -----
- | | '
-	equals: boardView output.! !
+ | | 
+Playing X'.! !
 
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/9/2018 12:24:10'!
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/9/2018 16:30:33'!
 test02XPlacing
 	
 	| game boardView |
@@ -31,44 +59,119 @@ test02XPlacing
 	
 	boardView _ TerniLapilliBoardView for: game.
 	
-	game putXAt: 2@2.
+	game putXAt: 3@1.
 	
-	self assert: 
+	self assert: boardView output equals:
 ' | | 
+-----
+ | | 
+-----
+X| | 
+Playing O'.! !
+
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/9/2018 16:52:10'!
+test03OPlacing
+	
+	| game boardView |
+	
+	game _ TerniLapilli new.
+	
+	boardView _ TerniLapilliBoardView for: game.
+	
+	game 
+		putXAt: 3@1;
+		putOAt: 3@2.
+	
+	self assert: boardView output equals:
+' | | 
+-----
+ | | 
+-----
+X|O| 
+Playing X'.! !
+
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/9/2018 16:55:47'!
+test04XWins
+	
+	| game boardView |
+	
+	game _ TerniLapilli new.
+	
+	boardView _ TerniLapilliBoardView for: game.
+	
+	game
+		putXAt: 2@2;
+		putOAt: 1@1;
+		putXAt: 1@2;
+		putOAt: 3@3;
+		putXAt: 3@2.
+		
+	self assert: boardView output equals:
+'O|X| 
 -----
  |X| 
 -----
- | | '
-	equals: boardView output.! !
+ |X|O
+X Won!!'.! !
+
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/9/2018 16:57:28'!
+test05OWins
+	
+	| game boardView |
+	
+	game _ TerniLapilli new.
+	
+	boardView _ TerniLapilliBoardView for: game.
+	
+	game
+		putXAt: 2@2;
+		putOAt: 1@1;
+		putXAt: 1@2;
+		putOAt: 2@1;
+		putXAt: 3@3;
+		putOAt: 3@1.
+		
+	self assert: boardView output equals:
+'O|X| 
+-----
+O|X| 
+-----
+O| |X
+O Won!!'.! !
+
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/9/2018 17:00:30'!
+test06XSliding
+	
+	| game boardView |
+	
+	game _ TerniLapilli new.
+	
+	boardView _ TerniLapilliBoardView for: game.
+	
+	game
+		putXAt: 2@2;
+		putOAt: 1@1;
+		putXAt: 1@2;
+		putOAt: 2@1;
+		putXAt: 3@3;
+		putOAt: 3@2;
+		slideXFrom: 3@3 to: 2@3.
+		
+	self assert: boardView output equals:
+' | | 
+-----
+ | | 
+-----
+ | | 
+Playing O'.! !
 
 
 !classDefinition: #TerniLapilliConsoleTest category: #TerniLapilliConsole!
-TestCase subclass: #TerniLapilliConsoleTest
+StreamTest subclass: #TerniLapilliConsoleTest
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilliConsole'!
-
-!TerniLapilliConsoleTest methodsFor: 'assertion - private' stamp: 'jml 11/9/2018 12:51:29'!
-skip: aNumberOfLines in: aStream
-	
-	aNumberOfLines timesRepeat: [ aStream next ].! !
-
-
-!TerniLapilliConsoleTest methodsFor: 'assertions' stamp: 'jml 11/9/2018 12:49:28'!
-assertLinesIn: aStream equals: lines
-	
-	lines do: [ :line | self assert: line equals: aStream next ].
-	
-	self assert: aStream atEnd.! !
-
-!TerniLapilliConsoleTest methodsFor: 'assertions' stamp: 'jml 11/9/2018 12:51:22'!
-assertLinesIn: aStream skipping: aNumberOfLines equals: lines
-	
-	self skip: aNumberOfLines in: aStream.
-	
-	self assertLinesIn: aStream equals: lines.! !
-
 
 !TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/9/2018 12:49:28'!
 test01XPlacing
@@ -159,8 +262,8 @@ test04OPlacingAtDifferentPositions
 	}.
 	! !
 
-!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/9/2018 13:00:18'!
-test05XWinsByPlacing
+!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/9/2018 16:51:06'!
+test05XWins
 	
 	| game console |
 	
@@ -191,8 +294,8 @@ test05XWinsByPlacing
 	self assert: 'Estado: Jugando X' equals: outputStream next.
 	"! !
 
-!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/9/2018 13:00:40'!
-test06OWinsByPlacing
+!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/9/2018 16:51:22'!
+test06OWins
 	
 	| game console |
 	
@@ -363,27 +466,102 @@ test09OSliding
 	"! !
 
 
-!classDefinition: #TerniLapilliBoardView category: #TerniLapilliConsole!
-Object subclass: #TerniLapilliBoardView
-	instanceVariableNames: 'game'
+!classDefinition: #TerniLapilliObserver category: #TerniLapilliConsole!
+Object subclass: #TerniLapilliObserver
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilliConsole'!
 
-!TerniLapilliBoardView methodsFor: 'initialization' stamp: 'la 11/9/2018 03:26:58'!
+
+!classDefinition: #TerniLapilliBoardView category: #TerniLapilliConsole!
+TerniLapilliObserver subclass: #TerniLapilliBoardView
+	instanceVariableNames: 'game board currentState'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilliConsole'!
+
+!TerniLapilliBoardView methodsFor: 'initialization' stamp: 'jml 11/9/2018 16:48:06'!
 initializeFor: aGame 
 	
-	game _ aGame.! !
+	game _ aGame.
+	
+	aGame addObserver: self.
+	
+	" TODO check this"
+	currentState := self turnLineFor: 'X'.
+	
+	board := Array
+		with: (Array with: ' ' with: ' ' with: ' ')
+		with: (Array with: ' ' with: ' ' with: ' ')
+		with: (Array with: ' ' with: ' ' with: ' ')
+	.! !
 
 
-!TerniLapilliBoardView methodsFor: 'accessing' stamp: 'jml 11/9/2018 12:23:41'!
+!TerniLapilliBoardView methodsFor: 'accessing' stamp: 'jml 11/9/2018 16:48:45'!
 output
 	
-	^' | | 
+	^ (self at: (1@1)), '|', (self at: (1@2)), '|', (self at: (1@3)), '
+-----
+', (self at: (2@1)), '|', (self at: (2@2)), '|', (self at: (2@3)), '
+-----
+', (self at: (3@1)), '|', (self at: (3@2)), '|', (self at: (3@3)), '
+', currentState 
+		 
+	
+	"
+	^ ' | | 
 -----
  | | 
 -----
- | | '! !
+ | | 
+Playing X'.
+"! !
+
+
+!TerniLapilliBoardView methodsFor: 'observing' stamp: 'jml 11/9/2018 16:50:46'!
+oHasPlacedAt: aPosition
+	
+	(board at: aPosition x) at: aPosition y put: 'O'.! !
+
+!TerniLapilliBoardView methodsFor: 'observing' stamp: 'jml 11/9/2018 16:36:33'!
+xHasPlacedAt: aPosition
+	
+	(board at: aPosition x) at: aPosition y put: 'X'.! !
+
+
+!TerniLapilliBoardView methodsFor: 'as yet unclassified' stamp: 'jml 11/9/2018 16:40:06'!
+at: aPosition
+	
+	^ (board at: aPosition x) at: aPosition y! !
+
+!TerniLapilliBoardView methodsFor: 'as yet unclassified' stamp: 'jml 11/9/2018 16:45:21'!
+stateChangedTo: aState
+	
+	currentState := self stateLineFor: aState.! !
+
+!TerniLapilliBoardView methodsFor: 'as yet unclassified' stamp: 'jml 11/9/2018 16:57:41'!
+stateLineFor: aState
+	
+	(aState isKindOf: PlayingO) ifTrue: [ ^ self turnLineFor: 'O' ].
+	(aState isKindOf: PlayingX) ifTrue: [ ^ self turnLineFor: 'X' ].
+	
+	(aState isKindOf: GameOverState) ifTrue: [
+		^ self winningLineFor: (game hasPlayerXWon ifTrue: [ 'X' ] ifFalse: [ 'O' ])
+	].
+	
+	self error: 'State not recognized'.
+	! !
+
+!TerniLapilliBoardView methodsFor: 'as yet unclassified' stamp: 'jml 11/9/2018 16:46:29'!
+turnLineFor: aPlayer
+	
+	^ 'Playing ', aPlayer! !
+
+!TerniLapilliBoardView methodsFor: 'as yet unclassified' stamp: 'jml 11/9/2018 16:54:37'!
+winningLineFor: aPlayer
+	
+	^ aPlayer, ' Won!!'! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -398,19 +576,19 @@ for: aGame
 
 
 !classDefinition: #TerniLapilliConsole category: #TerniLapilliConsole!
-Object subclass: #TerniLapilliConsole
+TerniLapilliObserver subclass: #TerniLapilliConsole
 	instanceVariableNames: 'lines game'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilliConsole'!
 
-!TerniLapilliConsole methodsFor: 'initialization' stamp: 'jml 11/8/2018 20:09:21'!
+!TerniLapilliConsole methodsFor: 'initialization' stamp: 'jml 11/9/2018 16:17:45'!
 initializeFor: aGame
 	
 	game _ aGame.
 	lines _ OrderedCollection new.
 	
-	aGame setConsole: self.! !
+	aGame addObserver: self.! !
 
 
 !TerniLapilliConsole methodsFor: 'accessing' stamp: 'jml 11/8/2018 19:54:55'!
@@ -423,6 +601,11 @@ output
 oHasPlacedAt: aPosition
 	
 	self addLine: (self placingLineFor: 'O' at: aPosition).! !
+
+!TerniLapilliConsole methodsFor: 'logging' stamp: 'jml 11/9/2018 16:01:48'!
+oHasSlidFrom: fromPosition to: toPosition
+	
+	self addLine: (self slidingLineFor: 'O' from: fromPosition to: toPosition).! !
 
 !TerniLapilliConsole methodsFor: 'logging' stamp: 'jml 11/9/2018 13:58:10'!
 stateChangedTo: newState
@@ -446,6 +629,11 @@ stateLineFor: newState
 xHasPlacedAt: aPosition
 	
 	self addLine: (self placingLineFor: 'X' at: aPosition).! !
+
+!TerniLapilliConsole methodsFor: 'logging' stamp: 'jml 11/9/2018 16:01:55'!
+xHasSlidFrom: fromPosition to: toPosition
+	
+	self addLine: (self slidingLineFor: 'X' from: fromPosition to: toPosition).! !
 
 
 !TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/9/2018 13:56:26'!

@@ -872,7 +872,7 @@ test40CanNotSlideOWhenPlayingX
 
 !classDefinition: #TerniLapilli category: #TerniLapilli!
 Object subclass: #TerniLapilli
-	instanceVariableNames: 'state playerOPositions playerXPositions console'
+	instanceVariableNames: 'state playerOPositions playerXPositions console observers'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
@@ -952,12 +952,14 @@ hasWin: positions
 		or: [ self hasDownDiagonal: positions ]]].! !
 
 
-!TerniLapilli methodsFor: 'initialization' stamp: 'HAW 11/8/2018 11:27:32'!
+!TerniLapilli methodsFor: 'initialization' stamp: 'jml 11/9/2018 16:13:51'!
 initialize
 
 	playerXPositions := OrderedCollection new.
 	playerOPositions := OrderedCollection new.
-	state := PlacingX new initializeFor: self.! !
+	state := PlacingX new initializeFor: self.
+	
+	observers := OrderedCollection new.! !
 
 
 !TerniLapilli methodsFor: 'marking board' stamp: 'JG 11/6/2018 20:34:26'!
@@ -973,21 +975,21 @@ putXAt: aPosition
 	state putXAt: aPosition! !
 
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/9/2018 13:29:06'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/9/2018 16:16:25'!
 changeStateAfterAdding: aPosition to: positions  
 
 	positions add: aPosition.
 	state := TerniLapilliState for: self.
 	
-	console ifNotNil: [ console stateChangedTo: state ].! !
+	observers do: [ :observer | observer stateChangedTo: state ].! !
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/9/2018 13:26:41'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/9/2018 16:15:13'!
 putOWhenPlacingOAt: aPosition
 
 	self playerOHasPiecesToPlace.
 	self assertIsFree: aPosition.
 	
-	console ifNotNil: [ console oHasPlacedAt: aPosition. ].
+	observers do: [ :observer | observer oHasPlacedAt: aPosition ].
 	
 	self changeStateAfterAdding: aPosition to: playerOPositions.! !
 
@@ -1011,13 +1013,13 @@ putXWhenPlacingOAt: aPoint
 	
 	self error: self class notXTurnErrorMessage! !
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/9/2018 13:26:53'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/9/2018 16:15:25'!
 putXWhenPlacingXAt: aPosition
 
 	self playerXHasPiecesToPlace.
 	self assertIsFree: aPosition.
 	
-	console ifNotNil: [ console xHasPlacedAt: aPosition. ].
+	observers do: [ :observer | observer xHasPlacedAt: aPosition ].
 	
 	self changeStateAfterAdding: aPosition to: playerXPositions.! !
 
@@ -1082,13 +1084,16 @@ slideOWhenPlayingXFrom: aPosition to: anotherPosition
 
 	self error: self class notOTurnErrorMessage ! !
 
-!TerniLapilli methodsFor: 'sliding - private' stamp: 'HAW 11/8/2018 11:53:04'!
+!TerniLapilli methodsFor: 'sliding - private' stamp: 'jml 11/9/2018 16:16:00'!
 slideOWhenSlidingOFrom: aPosition to: anotherPosition
 	
 	self assertIsFree: anotherPosition .
 	self assertIsLegalMovementFrom: aPosition to: anotherPosition.
 	
 	playerOPositions remove: aPosition.
+	
+	observers do: [ :observer | observer oHasSlidFrom: aPosition to: anotherPosition ].
+	
 	self changeStateAfterAdding: anotherPosition to: playerOPositions
 	 ! !
 
@@ -1102,13 +1107,16 @@ slideXWhenPlayingOFrom: aPosition to: anotherPosition
 
 	self error: self class notXTurnErrorMessage! !
 
-!TerniLapilli methodsFor: 'sliding - private' stamp: 'HAW 11/8/2018 11:53:04'!
+!TerniLapilli methodsFor: 'sliding - private' stamp: 'jml 11/9/2018 16:15:48'!
 slideXWhenSlidingXFrom: aPosition to: anotherPosition
 	
 	self assertIsFree: anotherPosition .
 	self assertIsLegalMovementFrom: aPosition to: anotherPosition.
 	
 	playerXPositions remove: aPosition.
+	
+	observers do: [ :observer | observer xHasSlidFrom: aPosition to: anotherPosition ].
+	
 	self changeStateAfterAdding: anotherPosition to: playerXPositions! !
 
 
@@ -1176,10 +1184,10 @@ isSlidingX
 	^state isSlidingX! !
 
 
-!TerniLapilli methodsFor: 'console' stamp: 'jml 11/8/2018 19:46:05'!
-setConsole: aConsole
+!TerniLapilli methodsFor: 'observing' stamp: 'jml 11/9/2018 16:14:22'!
+addObserver: anObserver
 	
-	console _ aConsole .! !
+	observers add: anObserver.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
