@@ -5,8 +5,25 @@ TestCase subclass: #TerniLapilliBoardViewTest
 	poolDictionaries: ''
 	category: 'TerniLapilliConsole'!
 
-!TerniLapilliBoardViewTest methodsFor: 'Testing' stamp: 'jml 11/9/2018 12:07:41'!
-test01BoardViewAMoveOfX
+!TerniLapilliBoardViewTest methodsFor: 'Testing' stamp: 'jml 11/9/2018 12:16:49'!
+test01EmptyBoard
+	
+	| game boardView |
+	
+	game _ TerniLapilli new.
+	
+	boardView _ TerniLapilliBoardView for: game.
+	
+	self assert: 
+' | | 
+-----
+ | | 
+-----
+ | | '
+	equals: boardView view.! !
+
+!TerniLapilliBoardViewTest methodsFor: 'Testing' stamp: 'jml 11/9/2018 12:16:59'!
+test02XPlacing
 	
 	| game boardView |
 	
@@ -32,8 +49,8 @@ TestCase subclass: #TerniLapilliConsoleTest
 	poolDictionaries: ''
 	category: 'TerniLapilliConsole'!
 
-!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'jml 11/8/2018 20:31:19'!
-test01ConsoleLogsAMoveOfX
+!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'jml 11/9/2018 12:10:06'!
+test01XPlacing
 	
 	| game console outputStream |
 	
@@ -50,8 +67,8 @@ test01ConsoleLogsAMoveOfX
 	self assert: outputStream atEnd.
 	! !
 
-!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'jml 11/8/2018 20:32:14'!
-test02ConsoleLogsAMoveOfO
+!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'jml 11/9/2018 12:10:21'!
+test02OPlacing
 	
 	| game console outputStream |
 	
@@ -70,8 +87,8 @@ test02ConsoleLogsAMoveOfO
 	self assert: outputStream atEnd.
 	! !
 
-!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'jml 11/8/2018 20:33:02'!
-test03ConsoleLogsXMovesAtDifferentPositions
+!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'jml 11/9/2018 12:14:07'!
+test03XPlacingAtDifferentPositions
 	
 	| game console outputStream |
 	
@@ -94,8 +111,8 @@ test03ConsoleLogsXMovesAtDifferentPositions
 	self assert: outputStream atEnd.
 	! !
 
-!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'jml 11/8/2018 20:32:54'!
-test04ConsoleLogsOMovesAtDifferentPositions
+!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'jml 11/9/2018 12:14:39'!
+test04OPlacingAtDifferentPositions
 	
 	| game console outputStream |
 	
@@ -121,8 +138,8 @@ test04ConsoleLogsOMovesAtDifferentPositions
 	self assert: outputStream atEnd.
 	! !
 
-!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'jml 11/8/2018 20:39:02'!
-test05ConsoleLogsThatXWon
+!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'jml 11/9/2018 12:14:15'!
+test05XWinsByPlacing
 	
 	| game console outputStream |
 	
@@ -151,8 +168,8 @@ test05ConsoleLogsThatXWon
 	self assert: outputStream atEnd.
 	! !
 
-!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'jml 11/8/2018 20:39:10'!
-test06ConsoleLogsThatOWon
+!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'jml 11/9/2018 12:14:23'!
+test06OWinsByPlacing
 	
 	| game console outputStream |
 	
@@ -190,8 +207,8 @@ test06ConsoleLogsThatOWon
 	self assert: outputStream atEnd.
 	! !
 
-!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'la 11/9/2018 02:56:23'!
-test07ConsoleLogsStateXAfterLastPiece
+!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'jml 11/9/2018 12:15:17'!
+test07IsXTurnAfterLastPiece
 	
 	| game console outputStream |
 	
@@ -228,8 +245,8 @@ test07ConsoleLogsStateXAfterLastPiece
 	self assert: outputStream atEnd.
 	! !
 
-!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'la 11/9/2018 03:00:57'!
-test08ConsoleLogsASlidingOfX
+!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'jml 11/9/2018 12:15:28'!
+test08XSliding
 	
 	| game console outputStream |
 	
@@ -271,8 +288,8 @@ test08ConsoleLogsASlidingOfX
 	self assert: outputStream atEnd.
 	! !
 
-!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'la 11/9/2018 03:01:24'!
-test09ConsoleLogsASlidingOfO
+!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'jml 11/9/2018 12:15:39'!
+test09OSliding
 	
 	| game console outputStream |
 	
@@ -344,12 +361,12 @@ for: aGame
 	! !
 
 
-!TerniLapilliBoardView class methodsFor: 'accessing' stamp: 'la 11/9/2018 03:27:18'!
+!TerniLapilliBoardView class methodsFor: 'accessing' stamp: 'jml 11/9/2018 12:20:18'!
 view
 	
 	^' | | 
 -----
- |X| 
+ | | 
 -----
  | | '! !
 
