@@ -450,11 +450,6 @@ xHasPlacedAt: aPosition
 	self player: 'X' hasPlacedAt: aPosition.! !
 
 
-!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/8/2018 20:43:49'!
-addMarkingLineFor: aPlayer at: aPosition
-	
-	lines add: aPlayer, ' marcó en ', aPosition printString.! !
-
 !TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/9/2018 13:49:25'!
 addPlacingLineFor: aPlayer at: aPosition
 	
@@ -493,16 +488,15 @@ oHasSlideFrom: aPosition to: anotherPosition
 	
 	self player: 'O' hasMovedFrom: aPosition to:anotherPosition.! !
 
-!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/9/2018 13:49:54'!
+!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/9/2018 13:51:46'!
 player: aPlayer hasMovedFrom: aPosition to: anotherPosition 
 	
-	self addSlidingLineFor: aPlayer at: aPosition to: anotherPosition.
-	self addStateLine.! !
+	self addSlidingLineFor: aPlayer at: aPosition to: anotherPosition.! !
 
-!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/9/2018 13:31:03'!
+!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/9/2018 13:51:56'!
 player: aPlayer hasPlacedAt: aPosition
 
-	self addMarkingLineFor: aPlayer at: aPosition.
+	self addPlacingLineFor: aPlayer at: aPosition.
 ! !
 
 !TerniLapilliConsole methodsFor: 'logging - private' stamp: 'la 11/9/2018 03:14:21'!
