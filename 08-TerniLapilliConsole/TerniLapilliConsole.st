@@ -419,91 +419,60 @@ output
 	^ ReadStream on: lines! !
 
 
-!TerniLapilliConsole methodsFor: 'logging' stamp: 'jml 11/8/2018 20:47:56'!
+!TerniLapilliConsole methodsFor: 'logging' stamp: 'jml 11/9/2018 14:10:18'!
 oHasPlacedAt: aPosition
 	
-	self player: 'O' hasPlacedAt: aPosition.! !
+	self addLine: (self placingLineFor: 'O' at: aPosition).! !
 
-!TerniLapilliConsole methodsFor: 'logging' stamp: 'jml 11/9/2018 13:45:50'!
+!TerniLapilliConsole methodsFor: 'logging' stamp: 'jml 11/9/2018 13:58:10'!
 stateChangedTo: newState
-	
-	(newState isKindOf: PlacingO) ifTrue: [
-		lines add: 'Estado: Jugando O'
-	].
-	
-	(newState isKindOf: PlayingX) ifTrue: [
-		lines add: 'Estado: Jugando X'
-	].
-	
-	(newState isKindOf: GameOverState) ifTrue: [
-		game hasPlayerXWon ifTrue: [
-			lines add: 'Estado: Juego terminado - ¡Ganó X!!'.
-		] ifFalse: [
-			lines add: 'Estado: Juego terminado - ¡Ganó O!!'.
-		].
-	].
+
+	self addLine: (self stateLineFor: newState)
 	! !
 
-!TerniLapilliConsole methodsFor: 'logging' stamp: 'jml 11/8/2018 20:48:09'!
+!TerniLapilliConsole methodsFor: 'logging' stamp: 'jml 11/9/2018 14:04:14'!
+stateLineFor: newState
+	
+	(newState isKindOf: PlacingO) ifTrue: [ ^ self turnLineFor: 'O' ].
+	(newState isKindOf: PlayingX) ifTrue: [ ^ self turnLineFor: 'X' ].
+	
+	(newState isKindOf: GameOverState) ifTrue: [
+		^ self winningLineFor: (game hasPlayerXWon ifTrue: [ 'X' ] ifFalse: [ 'O' ])
+	].
+	
+	! !
+
+!TerniLapilliConsole methodsFor: 'logging' stamp: 'jml 11/9/2018 14:10:30'!
 xHasPlacedAt: aPosition
 	
-	self player: 'X' hasPlacedAt: aPosition.! !
+	self addLine: (self placingLineFor: 'X' at: aPosition).! !
 
 
-!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/9/2018 13:49:25'!
-addPlacingLineFor: aPlayer at: aPosition
+!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/9/2018 13:56:26'!
+addLine: aLine
 	
-	lines add: aPlayer, ' marcó en ', aPosition printString.! !
+	lines add: aLine! !
 
-!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'la 11/9/2018 03:12:49'!
-addSlidingLine
 
-	game isSlidingX 
-		ifTrue:[lines add: 'Estado: Jugando X']
-		ifFalse:[lines add: 'Estado: Jugando O']! !
-
-!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/9/2018 13:49:54'!
-addSlidingLineFor: aPlayer at: aPosition to: anotherPosition 
+!TerniLapilliConsole methodsFor: 'messages' stamp: 'jml 11/9/2018 13:59:56'!
+placingLineFor: aPlayer at: aPosition
 	
-	lines add: aPlayer , ' deslizó hasta ',anotherPosition printString, ' desde ', aPosition printString.! !
+	^ aPlayer, ' marcó en ', aPosition printString.! !
 
-!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'la 11/9/2018 03:12:49'!
-addTurnLine
-
-	game isPlacingX
-		ifTrue: [ lines add: 'Estado: Jugando X'. ]
-		ifFalse: [ game isSlidingX ifTrue: [self addSlidingLine] 
-		ifFalse: [ lines add: 'Estado: Jugando O'. ]
-		].! !
-
-!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/8/2018 20:40:34'!
-addWonLine
-
-	game hasPlayerXWon
-		ifTrue: [ lines add: 'Estado: Juego terminado - ¡Ganó X!!' ]
-		ifFalse: [ lines add: 'Estado: Juego terminado - ¡Ganó O!!' ]! !
-
-!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'la 11/9/2018 03:15:19'!
-oHasSlideFrom: aPosition to: anotherPosition 
+!TerniLapilliConsole methodsFor: 'messages' stamp: 'jml 11/9/2018 14:06:48'!
+slidingLineFor: aPlayer from: fromPosition to: toPosition 
 	
-	self player: 'O' hasMovedFrom: aPosition to:anotherPosition.! !
+	^ aPlayer , ' deslizó hasta ', toPosition printString, ' desde ', fromPosition printString! !
 
-!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/9/2018 13:51:46'!
-player: aPlayer hasMovedFrom: aPosition to: anotherPosition 
+!TerniLapilliConsole methodsFor: 'messages' stamp: 'jml 11/9/2018 14:00:58'!
+turnLineFor: aPlayer
 	
-	self addSlidingLineFor: aPlayer at: aPosition to: anotherPosition.! !
+	^ 'Estado: Jugando ', aPlayer! !
 
-!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/9/2018 13:51:56'!
-player: aPlayer hasPlacedAt: aPosition
+!TerniLapilliConsole methodsFor: 'messages' stamp: 'jml 11/9/2018 14:01:40'!
+winningLineFor: aPlayer
 
-	self addPlacingLineFor: aPlayer at: aPosition.
-! !
-
-!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'la 11/9/2018 03:14:21'!
-xHasSlideFrom: aPosition to: anotherPosition 
-	
-	self player: 'X' hasMovedFrom: aPosition to:anotherPosition.
-! !
+	^ 'Estado: Juego terminado - ¡Ganó ', aPlayer, '!!'! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
