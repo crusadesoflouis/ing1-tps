@@ -5,7 +5,7 @@ TestCase subclass: #TerniLapilliBoardViewTest
 	poolDictionaries: ''
 	category: 'TerniLapilliConsole'!
 
-!TerniLapilliBoardViewTest methodsFor: 'Testing' stamp: 'jml 11/9/2018 12:16:49'!
+!TerniLapilliBoardViewTest methodsFor: 'Testing' stamp: 'jml 11/9/2018 12:24:06'!
 test01EmptyBoard
 	
 	| game boardView |
@@ -20,9 +20,9 @@ test01EmptyBoard
  | | 
 -----
  | | '
-	equals: boardView view.! !
+	equals: boardView output.! !
 
-!TerniLapilliBoardViewTest methodsFor: 'Testing' stamp: 'jml 11/9/2018 12:16:59'!
+!TerniLapilliBoardViewTest methodsFor: 'Testing' stamp: 'jml 11/9/2018 12:24:10'!
 test02XPlacing
 	
 	| game boardView |
@@ -39,7 +39,7 @@ test02XPlacing
  |X| 
 -----
  | | '
-	equals: boardView view.! !
+	equals: boardView output.! !
 
 
 !classDefinition: #TerniLapilliConsoleTest category: #TerniLapilliConsole!
@@ -342,10 +342,20 @@ Object subclass: #TerniLapilliBoardView
 	poolDictionaries: ''
 	category: 'TerniLapilliConsole'!
 
-!TerniLapilliBoardView methodsFor: 'instance creation' stamp: 'la 11/9/2018 03:26:58'!
+!TerniLapilliBoardView methodsFor: 'initialization' stamp: 'la 11/9/2018 03:26:58'!
 initializeFor: aGame 
 	
 	game _ aGame.! !
+
+
+!TerniLapilliBoardView methodsFor: 'accessing' stamp: 'jml 11/9/2018 12:23:41'!
+output
+	
+	^' | | 
+-----
+ | | 
+-----
+ | | '! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -353,22 +363,10 @@ initializeFor: aGame
 TerniLapilliBoardView class
 	instanceVariableNames: ''!
 
-!TerniLapilliBoardView class methodsFor: 'instance creation' stamp: 'la 11/9/2018 03:26:20'!
+!TerniLapilliBoardView class methodsFor: 'instance creation' stamp: 'jml 11/9/2018 12:25:51'!
 for: aGame
 
-	self new initializeFor: aGame 
-	
-	! !
-
-
-!TerniLapilliBoardView class methodsFor: 'accessing' stamp: 'jml 11/9/2018 12:20:18'!
-view
-	
-	^' | | 
------
- | | 
------
- | | '! !
+	^ self new initializeFor: aGame! !
 
 
 !classDefinition: #TerniLapilliConsole category: #TerniLapilliConsole!
