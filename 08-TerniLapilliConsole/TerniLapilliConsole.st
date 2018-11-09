@@ -5,6 +5,25 @@ TestCase subclass: #TerniLapilliConsoleTest
 	poolDictionaries: ''
 	category: 'TerniLapilliConsole'!
 
+!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'la 11/9/2018 03:27:59'!
+test001BoardViewAMoveOfX
+	
+	| game boardView |
+	
+	game _ TerniLapilli new.
+	
+	boardView _ TerniLapilliBoardView for: game.
+	
+	game putXAt: 2@2.
+	
+	self assert: 
+' | | 
+-----
+ |X| 
+-----
+ | | '
+	equals: boardView view.! !
+
 !TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'jml 11/8/2018 20:31:19'!
 test01ConsoleLogsAMoveOfX
 	
@@ -163,8 +182,46 @@ test06ConsoleLogsThatOWon
 	self assert: outputStream atEnd.
 	! !
 
-!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'jml 11/8/2018 20:58:43'!
-test07ConsoleLogsASlidingOfX
+!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'la 11/9/2018 02:56:23'!
+test07ConsoleLogsStateXAfterLastPiece
+	
+	| game console outputStream |
+	
+	game _ TerniLapilli new.
+	
+	console _ TerniLapilliConsole for: game.
+	
+	game putXAt: 2@2.
+	game putOAt: 1@1.
+	game putXAt: 1@2.
+	game putOAt: 2@1.
+	game putXAt: 3@3.
+	game putOAt: 3@2.
+	
+	outputStream := console output.
+	
+	self assert: 'X marcó en 2@2' equals: outputStream next.
+	self assert: 'Estado: Jugando O' equals: outputStream next.
+	
+	self assert: 'O marcó en 1@1' equals: outputStream next.
+	self assert: 'Estado: Jugando X' equals: outputStream next.
+	
+	self assert: 'X marcó en 1@2' equals: outputStream next.
+	self assert: 'Estado: Jugando O' equals: outputStream next.
+	
+	self assert: 'O marcó en 2@1' equals: outputStream next.
+	self assert: 'Estado: Jugando X' equals: outputStream next.
+	
+	self assert: 'X marcó en 3@3' equals: outputStream next.
+	self assert: 'Estado: Jugando O' equals: outputStream next.
+	
+	self assert: 'O marcó en 3@2' equals: outputStream next.
+	self assert: 'Estado: Jugando X' equals: outputStream next.
+	self assert: outputStream atEnd.
+	! !
+
+!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'la 11/9/2018 03:00:57'!
+test08ConsoleLogsASlidingOfX
 	
 	| game console outputStream |
 	
@@ -206,6 +263,88 @@ test07ConsoleLogsASlidingOfX
 	self assert: outputStream atEnd.
 	! !
 
+!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'la 11/9/2018 03:01:24'!
+test09ConsoleLogsASlidingOfO
+	
+	| game console outputStream |
+	
+	game _ TerniLapilli new.
+	
+	console _ TerniLapilliConsole for: game.
+	
+	game putXAt: 2@2.
+	game putOAt: 1@1.
+	game putXAt: 1@2.
+	game putOAt: 2@1.
+	game putXAt: 3@3.
+	game putOAt: 3@2.
+	game slideXFrom: 3@3 to: 2@3.
+	game slideOFrom: 3@2 to: 3@3.	
+	outputStream := console output.
+	
+	self assert: 'X marcó en 2@2' equals: outputStream next.
+	self assert: 'Estado: Jugando O' equals: outputStream next.
+	
+	self assert: 'O marcó en 1@1' equals: outputStream next.
+	self assert: 'Estado: Jugando X' equals: outputStream next.
+	
+	self assert: 'X marcó en 1@2' equals: outputStream next.
+	self assert: 'Estado: Jugando O' equals: outputStream next.
+	
+	self assert: 'O marcó en 2@1' equals: outputStream next.
+	self assert: 'Estado: Jugando X' equals: outputStream next.
+	
+	self assert: 'X marcó en 3@3' equals: outputStream next.
+	self assert: 'Estado: Jugando O' equals: outputStream next.
+	
+	self assert: 'O marcó en 3@2' equals: outputStream next.
+	self assert: 'Estado: Jugando X' equals: outputStream next.
+	
+	self assert: 'X deslizó hasta 2@3 desde 3@3' equals: outputStream next.
+	self assert: 'Estado: Jugando O' equals: outputStream next.
+	
+	self assert: 'O deslizó hasta 3@3 desde 3@2' equals: outputStream next.
+	self assert: 'Estado: Jugando X' equals: outputStream next.
+	
+	self assert: outputStream atEnd.
+	! !
+
+
+!classDefinition: #TerniLapilliBoardView category: #TerniLapilliConsole!
+Object subclass: #TerniLapilliBoardView
+	instanceVariableNames: 'game'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilliConsole'!
+
+!TerniLapilliBoardView methodsFor: 'instance creation' stamp: 'la 11/9/2018 03:26:58'!
+initializeFor: aGame 
+	
+	game _ aGame.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'TerniLapilliBoardView class' category: #TerniLapilliConsole!
+TerniLapilliBoardView class
+	instanceVariableNames: ''!
+
+!TerniLapilliBoardView class methodsFor: 'instance creation' stamp: 'la 11/9/2018 03:26:20'!
+for: aGame
+
+	self new initializeFor: aGame 
+	
+	! !
+
+
+!TerniLapilliBoardView class methodsFor: 'accessing' stamp: 'la 11/9/2018 03:27:18'!
+view
+	
+	^' | | 
+-----
+ |X| 
+-----
+ | | '! !
+
 
 !classDefinition: #TerniLapilliConsole category: #TerniLapilliConsole!
 Object subclass: #TerniLapilliConsole
@@ -245,6 +384,18 @@ addMarkingLineFor: aPlayer at: aPosition
 	
 	lines add: aPlayer, ' marcó en ', aPosition printString.! !
 
+!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'la 11/9/2018 03:09:19'!
+addSlidingLIneFor: aPlayer at: aPosition to: anotherPosition 
+	
+	lines add: aPlayer , ' deslizó hasta ',anotherPosition printString, ' desde ', aPosition printString.! !
+
+!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'la 11/9/2018 03:12:49'!
+addSlidingLine
+
+	game isSlidingX 
+		ifTrue:[lines add: 'Estado: Jugando X']
+		ifFalse:[lines add: 'Estado: Jugando O']! !
+
 !TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/8/2018 20:40:59'!
 addStateLine
 	
@@ -252,12 +403,14 @@ addStateLine
 		ifTrue: [ self addWonLine ]
 		ifFalse: [ self addTurnLine ].! !
 
-!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/8/2018 20:41:27'!
+!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'la 11/9/2018 03:12:49'!
 addTurnLine
 
 	game isPlacingX
 		ifTrue: [ lines add: 'Estado: Jugando X'. ]
-		ifFalse: [ lines add: 'Estado: Jugando O'. ].! !
+		ifFalse: [ game isSlidingX ifTrue: [self addSlidingLine] 
+		ifFalse: [ lines add: 'Estado: Jugando O'. ]
+		].! !
 
 !TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/8/2018 20:40:34'!
 addWonLine
@@ -266,11 +419,28 @@ addWonLine
 		ifTrue: [ lines add: 'Estado: Juego terminado - ¡Ganó X!!' ]
 		ifFalse: [ lines add: 'Estado: Juego terminado - ¡Ganó O!!' ]! !
 
+!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'la 11/9/2018 03:15:19'!
+oHasSlideFrom: aPosition to: anotherPosition 
+	
+	self player: 'O' hasMovedFrom: aPosition to:anotherPosition.! !
+
+!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'la 11/9/2018 03:14:59'!
+player: aPlayer hasMovedFrom: aPosition to: anotherPosition 
+	
+	self addSlidingLIneFor: aPlayer at: aPosition to: anotherPosition.
+	self addStateLine.! !
+
 !TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/8/2018 20:46:36'!
 player: aPlayer hasPlacedAt: aPosition
 	
 	self addMarkingLineFor: aPlayer at: aPosition.
 	self addStateLine.! !
+
+!TerniLapilliConsole methodsFor: 'logging - private' stamp: 'la 11/9/2018 03:14:21'!
+xHasSlideFrom: aPosition to: anotherPosition 
+	
+	self player: 'X' hasMovedFrom: aPosition to:anotherPosition.
+! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
