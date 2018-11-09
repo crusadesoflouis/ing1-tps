@@ -430,17 +430,17 @@ stateChangedTo: newState
 	self addLine: (self stateLineFor: newState)
 	! !
 
-!TerniLapilliConsole methodsFor: 'logging' stamp: 'jml 11/9/2018 14:04:14'!
+!TerniLapilliConsole methodsFor: 'logging' stamp: 'jml 11/9/2018 14:16:00'!
 stateLineFor: newState
 	
-	(newState isKindOf: PlacingO) ifTrue: [ ^ self turnLineFor: 'O' ].
+	(newState isKindOf: PlayingO) ifTrue: [ ^ self turnLineFor: 'O' ].
 	(newState isKindOf: PlayingX) ifTrue: [ ^ self turnLineFor: 'X' ].
 	
 	(newState isKindOf: GameOverState) ifTrue: [
 		^ self winningLineFor: (game hasPlayerXWon ifTrue: [ 'X' ] ifFalse: [ 'O' ])
 	].
 	
-	! !
+	self error: 'State not recognized'.! !
 
 !TerniLapilliConsole methodsFor: 'logging' stamp: 'jml 11/9/2018 14:10:30'!
 xHasPlacedAt: aPosition
