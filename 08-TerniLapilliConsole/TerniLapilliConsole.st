@@ -1,12 +1,12 @@
-!classDefinition: #TerniLapilliConsoleTest category: #TerniLapilliConsole!
-TestCase subclass: #TerniLapilliConsoleTest
+!classDefinition: #TerniLapilliBoardViewTest category: #TerniLapilliConsole!
+TestCase subclass: #TerniLapilliBoardViewTest
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilliConsole'!
 
-!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'la 11/9/2018 03:27:59'!
-test001BoardViewAMoveOfX
+!TerniLapilliBoardViewTest methodsFor: 'Testing' stamp: 'jml 11/9/2018 12:07:41'!
+test01BoardViewAMoveOfX
 	
 	| game boardView |
 	
@@ -23,6 +23,14 @@ test001BoardViewAMoveOfX
 -----
  | | '
 	equals: boardView view.! !
+
+
+!classDefinition: #TerniLapilliConsoleTest category: #TerniLapilliConsole!
+TestCase subclass: #TerniLapilliConsoleTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilliConsole'!
 
 !TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'jml 11/8/2018 20:31:19'!
 test01ConsoleLogsAMoveOfX
