@@ -163,6 +163,49 @@ test06ConsoleLogsThatOWon
 	self assert: outputStream atEnd.
 	! !
 
+!TerniLapilliConsoleTest methodsFor: 'Testing' stamp: 'jml 11/8/2018 20:58:43'!
+test07ConsoleLogsASlidingOfX
+	
+	| game console outputStream |
+	
+	game _ TerniLapilli new.
+	
+	console _ TerniLapilliConsole for: game.
+	
+	game putXAt: 2@2.
+	game putOAt: 1@1.
+	game putXAt: 1@2.
+	game putOAt: 2@1.
+	game putXAt: 3@3.
+	game putOAt: 3@2.
+	game slideXFrom: 3@3 to: 2@3.
+	
+	outputStream := console output.
+	
+	self assert: 'X marcó en 2@2' equals: outputStream next.
+	self assert: 'Estado: Jugando O' equals: outputStream next.
+	
+	self assert: 'O marcó en 1@1' equals: outputStream next.
+	self assert: 'Estado: Jugando X' equals: outputStream next.
+	
+	self assert: 'X marcó en 1@2' equals: outputStream next.
+	self assert: 'Estado: Jugando O' equals: outputStream next.
+	
+	self assert: 'O marcó en 2@1' equals: outputStream next.
+	self assert: 'Estado: Jugando X' equals: outputStream next.
+	
+	self assert: 'X marcó en 3@3' equals: outputStream next.
+	self assert: 'Estado: Jugando O' equals: outputStream next.
+	
+	self assert: 'O marcó en 3@2' equals: outputStream next.
+	self assert: 'Estado: Jugando X' equals: outputStream next.
+	
+	self assert: 'X deslizó hasta 2@3 desde 3@3' equals: outputStream next.
+	self assert: 'Estado: Jugando O' equals: outputStream next.
+	
+	self assert: outputStream atEnd.
+	! !
+
 
 !classDefinition: #TerniLapilliConsole category: #TerniLapilliConsole!
 Object subclass: #TerniLapilliConsole
