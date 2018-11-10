@@ -241,7 +241,7 @@ TestCase subclass: #TerniLapilliBoardViewTest
 	poolDictionaries: ''
 	category: 'TerniLapilli-Tests'!
 
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/9/2018 16:28:38'!
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/10/2018 14:24:02'!
 test01EmptyBoard
 	
 	| game boardView |
@@ -250,15 +250,16 @@ test01EmptyBoard
 	
 	boardView _ TerniLapilliBoardView for: game.
 	
-	self assert: boardView output equals: 
+	self assert:
 ' | | 
 -----
  | | 
 -----
  | | 
-Playing X'.! !
+Playing X'
+	equals: boardView output.! !
 
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/9/2018 16:30:33'!
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/10/2018 14:24:24'!
 test02XPlacing
 	
 	| game boardView |
@@ -269,15 +270,16 @@ test02XPlacing
 	
 	game putXAt: 3@1.
 	
-	self assert: boardView output equals:
+	self assert:
 ' | | 
 -----
  | | 
 -----
 X| | 
-Playing O'.! !
+Playing O'
+	equals: boardView output.! !
 
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/9/2018 16:52:10'!
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/10/2018 14:24:38'!
 test03OPlacing
 	
 	| game boardView |
@@ -290,15 +292,16 @@ test03OPlacing
 		putXAt: 3@1;
 		putOAt: 3@2.
 	
-	self assert: boardView output equals:
+	self assert:
 ' | | 
 -----
  | | 
 -----
 X|O| 
-Playing X'.! !
+Playing X'
+	equals: boardView output.! !
 
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/9/2018 16:55:47'!
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/10/2018 14:24:50'!
 test04XWins
 	
 	| game boardView |
@@ -314,15 +317,16 @@ test04XWins
 		putOAt: 3@3;
 		putXAt: 3@2.
 		
-	self assert: boardView output equals:
+	self assert:
 'O|X| 
 -----
  |X| 
 -----
  |X|O
-X Won!!'.! !
+X Won!!'
+	equals: boardView output.! !
 
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/9/2018 16:57:28'!
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/10/2018 14:25:00'!
 test05OWins
 	
 	| game boardView |
@@ -339,15 +343,16 @@ test05OWins
 		putXAt: 3@3;
 		putOAt: 3@1.
 		
-	self assert: boardView output equals:
+	self assert:
 'O|X| 
 -----
 O|X| 
 -----
 O| |X
-O Won!!'.! !
+O Won!!'
+	equals: boardView output.! !
 
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/9/2018 22:50:29'!
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/10/2018 14:25:08'!
 test06XSliding
 	
 	| game boardView |
@@ -365,15 +370,16 @@ test06XSliding
 		putOAt: 3@2;
 		slideXFrom: 3@3 to: 2@3.
 		
-	self assert: boardView output equals:
+	self assert:
 'O|X| 
 -----
 O|X|X
 -----
  |O| 
-Playing O'.! !
+Playing O'
+	equals: boardView output.! !
 
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/9/2018 23:15:44'!
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/10/2018 14:25:17'!
 test07OSliding
 	
 	| game boardView |
@@ -392,13 +398,14 @@ test07OSliding
 		slideXFrom: 3@3 to: 2@3;
 		slideOFrom: 3@2 to: 3@3.
 		
-	self assert: boardView output equals:
+	self assert:
 'O|X| 
 -----
 O|X|X
 -----
  | |O
-Playing X'.! !
+Playing X'
+	equals: boardView output.! !
 
 
 !classDefinition: #TerniLapilliTest category: #'TerniLapilli-Tests'!
