@@ -1038,7 +1038,7 @@ putXAt: aPosition
 	state putXAt: aPosition! !
 
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/10/2018 05:44:24'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/10/2018 06:04:15'!
 putOWhenPlacingOAt: aPosition
 
 	self playerOHasPiecesToPlace.
@@ -1050,7 +1050,6 @@ putOWhenPlacingOAt: aPosition
 	
 	state _ TerniLapilliState for: self.
 	
-	observers do: [ :observer | observer oHasPlacedAt: aPosition ].
 	observers do: [ :observer | observer stateChangedTo: state ].! !
 
 !TerniLapilli methodsFor: 'marking board - private' stamp: 'JG 10/28/2018 12:39:41'!
@@ -1073,7 +1072,7 @@ putXWhenPlacingOAt: aPoint
 	
 	self error: self class notXTurnErrorMessage! !
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/10/2018 04:59:06'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/10/2018 06:04:20'!
 putXWhenPlacingXAt: aPosition
 
 	self playerXHasPiecesToPlace.
@@ -1085,7 +1084,6 @@ putXWhenPlacingXAt: aPosition
 	
 	state _ TerniLapilliState for: self.
 	
-	observers do: [ :observer | observer xHasPlacedAt: aPosition ].
 	observers do: [ :observer | observer stateChangedTo: state ].! !
 
 !TerniLapilli methodsFor: 'marking board - private' stamp: 'JG 10/28/2018 12:38:49'!
@@ -1149,7 +1147,7 @@ slideOWhenPlayingXFrom: aPosition to: anotherPosition
 
 	self error: self class notOTurnErrorMessage ! !
 
-!TerniLapilli methodsFor: 'sliding - private' stamp: 'jml 11/10/2018 04:57:36'!
+!TerniLapilli methodsFor: 'sliding - private' stamp: 'jml 11/10/2018 06:04:24'!
 slideOWhenSlidingOFrom: origin to: destination
 	
 	self assertIsFree: destination .
@@ -1163,7 +1161,6 @@ slideOWhenSlidingOFrom: origin to: destination
 	
 	state _ TerniLapilliState for: self.
 	
-	observers do: [ :observer | observer oHasSlidFrom: origin to: destination ].
 	observers do: [ :observer | observer stateChangedTo: state ].! !
 
 !TerniLapilli methodsFor: 'sliding - private' stamp: 'HAW 11/8/2018 11:16:01'!
@@ -1176,7 +1173,7 @@ slideXWhenPlayingOFrom: aPosition to: anotherPosition
 
 	self error: self class notXTurnErrorMessage! !
 
-!TerniLapilli methodsFor: 'sliding - private' stamp: 'jml 11/10/2018 05:00:36'!
+!TerniLapilli methodsFor: 'sliding - private' stamp: 'jml 11/10/2018 06:04:28'!
 slideXWhenSlidingXFrom: origin to: destination
 	
 	self assertIsFree: destination.
@@ -1190,7 +1187,6 @@ slideXWhenSlidingXFrom: origin to: destination
 	
 	state _ TerniLapilliState for: self.
 	
-	observers do: [ :observer | observer oHasSlidFrom: origin to: destination ].
 	observers do: [ :observer | observer stateChangedTo: state ].! !
 
 
@@ -1363,6 +1359,12 @@ hash
 	
 	self subclassResponsibility! !
 
+
+!TerniLapilliPlay methodsFor: 'visiting' stamp: 'jml 11/10/2018 06:07:18'!
+accept: aVisitor
+	
+	self subclassResponsibility! !
+
 
 !classDefinition: #Movement category: #TerniLapilli!
 TerniLapilliPlay subclass: #Movement
@@ -1418,6 +1420,11 @@ Movement subclass: #OMovement
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
+!OMovement methodsFor: 'visiting' stamp: 'jml 11/10/2018 06:07:54'!
+accept: aVisitor
+	
+	aVisitor oHasSlidFrom: origin to: destination! !
+
 
 !classDefinition: #XMovement category: #TerniLapilli!
 Movement subclass: #XMovement
@@ -1425,6 +1432,11 @@ Movement subclass: #XMovement
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
+
+!XMovement methodsFor: 'visiting' stamp: 'jml 11/10/2018 06:08:08'!
+accept: aVisitor
+	
+	aVisitor xHasSlidFrom: origin to: destination! !
 
 
 !classDefinition: #NoPlay category: #TerniLapilli!
@@ -1493,6 +1505,11 @@ Placement subclass: #OPlacement
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
+!OPlacement methodsFor: 'visiting' stamp: 'jml 11/10/2018 06:08:27'!
+accept: aVisitor
+	
+	aVisitor oHasPlacedAt: position! !
+
 
 !classDefinition: #XPlacement category: #TerniLapilli!
 Placement subclass: #XPlacement
@@ -1500,6 +1517,11 @@ Placement subclass: #XPlacement
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
+
+!XPlacement methodsFor: 'visiting' stamp: 'jml 11/10/2018 06:08:35'!
+accept: aVisitor
+	
+	aVisitor xHasPlacedAt: position! !
 
 
 !classDefinition: #TerniLapilliState category: #TerniLapilli!

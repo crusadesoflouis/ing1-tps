@@ -500,6 +500,11 @@ Object subclass: #TerniLapilliObserver
 	poolDictionaries: ''
 	category: 'TerniLapilliConsole'!
 
+!TerniLapilliObserver methodsFor: 'state' stamp: 'jml 11/10/2018 06:15:03'!
+stateChangedTo: aState
+	
+	self subclassResponsibility! !
+
 
 !classDefinition: #TerniLapilliBoardView category: #TerniLapilliConsole!
 TerniLapilliObserver subclass: #TerniLapilliBoardView
@@ -525,7 +530,7 @@ initializeFor: aGame
 	.! !
 
 
-!TerniLapilliBoardView methodsFor: 'accessing' stamp: 'jml 11/9/2018 16:48:45'!
+!TerniLapilliBoardView methodsFor: 'accessing' stamp: 'jml 11/10/2018 06:23:17'!
 output
 	
 	^ (self at: (1@1)), '|', (self at: (1@2)), '|', (self at: (1@3)), '
@@ -533,53 +538,51 @@ output
 ', (self at: (2@1)), '|', (self at: (2@2)), '|', (self at: (2@3)), '
 -----
 ', (self at: (3@1)), '|', (self at: (3@2)), '|', (self at: (3@3)), '
-', currentState 
-		 
-	
-	"
-	^ ' | | 
------
- | | 
------
- | | 
-Playing X'.
-"! !
+', currentState! !
 
 
-!TerniLapilliBoardView methodsFor: 'observing' stamp: 'jml 11/9/2018 16:50:46'!
+!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'jml 11/10/2018 06:16:53'!
 oHasPlacedAt: aPosition
 	
-	(board at: aPosition x) at: aPosition y put: 'O'.! !
+	self at: aPosition put: 'O'.! !
 
-!TerniLapilliBoardView methodsFor: 'observing' stamp: 'la 11/9/2018 23:20:08'!
-oHasSlidFrom: aPosition to: anoterPosition 
+!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'jml 11/10/2018 06:20:29'!
+oHasSlidFrom: origin to: destination
 
-	(board at: aPosition x) at: aPosition y put: ' '.
-	(board at: anoterPosition x) at: anoterPosition y put: 'O'.	! !
+	self move: 'O' from: origin to: destination.
+	! !
 
-!TerniLapilliBoardView methodsFor: 'observing' stamp: 'jml 11/9/2018 16:36:33'!
+!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'jml 11/10/2018 06:17:45'!
 xHasPlacedAt: aPosition
 	
-	(board at: aPosition x) at: aPosition y put: 'X'.! !
+	self at: aPosition put: 'X'.! !
 
-!TerniLapilliBoardView methodsFor: 'observing' stamp: 'la 11/9/2018 23:11:30'!
-xHasSlidFrom: aPosition to: anoterPosition 
+!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'jml 11/10/2018 06:20:35'!
+xHasSlidFrom: origin to: destination
 
-	(board at: aPosition x) at: aPosition y put: ' '.
-	(board at: anoterPosition x) at: anoterPosition y put: 'X'.	! !
+	self move: 'X' from: origin to: destination.
+	! !
 
 
-!TerniLapilliBoardView methodsFor: 'as yet unclassified' stamp: 'jml 11/9/2018 16:40:06'!
+!TerniLapilliBoardView methodsFor: 'board' stamp: 'jml 11/9/2018 16:40:06'!
 at: aPosition
 	
 	^ (board at: aPosition x) at: aPosition y! !
 
-!TerniLapilliBoardView methodsFor: 'as yet unclassified' stamp: 'jml 11/9/2018 16:45:21'!
-stateChangedTo: aState
+!TerniLapilliBoardView methodsFor: 'board' stamp: 'jml 11/10/2018 06:17:24'!
+at: aPosition put: aPlayer
 	
-	currentState := self stateLineFor: aState.! !
+	(board at: aPosition x) at: aPosition y put: aPlayer.! !
 
-!TerniLapilliBoardView methodsFor: 'as yet unclassified' stamp: 'jml 11/9/2018 16:57:41'!
+!TerniLapilliBoardView methodsFor: 'board' stamp: 'jml 11/10/2018 06:20:12'!
+move: player from: origin to: destination
+	
+	self
+		at: origin put: ' ';
+		at: destination put: player.! !
+
+
+!TerniLapilliBoardView methodsFor: 'messages' stamp: 'jml 11/9/2018 16:57:41'!
 stateLineFor: aState
 	
 	(aState isKindOf: PlayingO) ifTrue: [ ^ self turnLineFor: 'O' ].
@@ -592,15 +595,23 @@ stateLineFor: aState
 	self error: 'State not recognized'.
 	! !
 
-!TerniLapilliBoardView methodsFor: 'as yet unclassified' stamp: 'jml 11/9/2018 16:46:29'!
+!TerniLapilliBoardView methodsFor: 'messages' stamp: 'jml 11/9/2018 16:46:29'!
 turnLineFor: aPlayer
 	
 	^ 'Playing ', aPlayer! !
 
-!TerniLapilliBoardView methodsFor: 'as yet unclassified' stamp: 'jml 11/9/2018 16:54:37'!
+!TerniLapilliBoardView methodsFor: 'messages' stamp: 'jml 11/9/2018 16:54:37'!
 winningLineFor: aPlayer
 	
 	^ aPlayer, ' Won!!'! !
+
+
+!TerniLapilliBoardView methodsFor: 'state' stamp: 'jml 11/10/2018 06:15:47'!
+stateChangedTo: aState
+	
+	game lastPlay accept: self.
+	
+	currentState := self stateLineFor: aState.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -636,40 +647,22 @@ output
 	^ ReadStream on: lines! !
 
 
-!TerniLapilliConsole methodsFor: 'logging' stamp: 'jml 11/9/2018 14:10:18'!
+!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'jml 11/10/2018 06:03:25'!
 oHasPlacedAt: aPosition
 	
 	self addLine: (self placingLineFor: 'O' at: aPosition).! !
 
-!TerniLapilliConsole methodsFor: 'logging' stamp: 'jml 11/9/2018 16:01:48'!
+!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'jml 11/10/2018 06:03:20'!
 oHasSlidFrom: fromPosition to: toPosition
 	
 	self addLine: (self slidingLineFor: 'O' from: fromPosition to: toPosition).! !
 
-!TerniLapilliConsole methodsFor: 'logging' stamp: 'jml 11/9/2018 13:58:10'!
-stateChangedTo: newState
-
-	self addLine: (self stateLineFor: newState)
-	! !
-
-!TerniLapilliConsole methodsFor: 'logging' stamp: 'jml 11/9/2018 14:16:00'!
-stateLineFor: newState
-	
-	(newState isKindOf: PlayingO) ifTrue: [ ^ self turnLineFor: 'O' ].
-	(newState isKindOf: PlayingX) ifTrue: [ ^ self turnLineFor: 'X' ].
-	
-	(newState isKindOf: GameOverState) ifTrue: [
-		^ self winningLineFor: (game hasPlayerXWon ifTrue: [ 'X' ] ifFalse: [ 'O' ])
-	].
-	
-	self error: 'State not recognized'.! !
-
-!TerniLapilliConsole methodsFor: 'logging' stamp: 'jml 11/9/2018 14:10:30'!
+!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'jml 11/10/2018 06:03:15'!
 xHasPlacedAt: aPosition
 	
 	self addLine: (self placingLineFor: 'X' at: aPosition).! !
 
-!TerniLapilliConsole methodsFor: 'logging' stamp: 'jml 11/9/2018 16:01:55'!
+!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'jml 11/10/2018 05:59:42'!
 xHasSlidFrom: fromPosition to: toPosition
 	
 	self addLine: (self slidingLineFor: 'X' from: fromPosition to: toPosition).! !
@@ -691,6 +684,18 @@ slidingLineFor: aPlayer from: fromPosition to: toPosition
 	
 	^ aPlayer , ' deslizó hasta ', toPosition printString, ' desde ', fromPosition printString! !
 
+!TerniLapilliConsole methodsFor: 'messages' stamp: 'jml 11/9/2018 14:16:00'!
+stateLineFor: newState
+	
+	(newState isKindOf: PlayingO) ifTrue: [ ^ self turnLineFor: 'O' ].
+	(newState isKindOf: PlayingX) ifTrue: [ ^ self turnLineFor: 'X' ].
+	
+	(newState isKindOf: GameOverState) ifTrue: [
+		^ self winningLineFor: (game hasPlayerXWon ifTrue: [ 'X' ] ifFalse: [ 'O' ])
+	].
+	
+	self error: 'State not recognized'.! !
+
 !TerniLapilliConsole methodsFor: 'messages' stamp: 'jml 11/9/2018 14:00:58'!
 turnLineFor: aPlayer
 	
@@ -700,6 +705,15 @@ turnLineFor: aPlayer
 winningLineFor: aPlayer
 
 	^ 'Estado: Juego terminado - ¡Ganó ', aPlayer, '!!'! !
+
+
+!TerniLapilliConsole methodsFor: 'state' stamp: 'jml 11/10/2018 05:58:23'!
+stateChangedTo: newState
+	
+	game lastPlay accept: self.
+	
+	self addLine: (self stateLineFor: newState)
+	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
