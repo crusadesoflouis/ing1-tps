@@ -139,7 +139,7 @@ O|X|
 O| |X
 O Won!!'.! !
 
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/9/2018 17:00:30'!
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/9/2018 22:50:29'!
 test06XSliding
 	
 	| game boardView |
@@ -158,12 +158,39 @@ test06XSliding
 		slideXFrom: 3@3 to: 2@3.
 		
 	self assert: boardView output equals:
-' | | 
+'O|X| 
 -----
- | | 
+O|X|X
 -----
- | | 
+ |O| 
 Playing O'.! !
+
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/9/2018 23:15:44'!
+test07OSliding
+	
+	| game boardView |
+	
+	game _ TerniLapilli new.
+	
+	boardView _ TerniLapilliBoardView for: game.
+
+	game
+		putXAt: 2@2;
+		putOAt: 1@1;
+		putXAt: 1@2;
+		putOAt: 2@1;
+		putXAt: 3@3;
+		putOAt: 3@2;
+		slideXFrom: 3@3 to: 2@3;
+		slideOFrom: 3@2 to: 3@3.
+		
+	self assert: boardView output equals:
+'O|X| 
+-----
+O|X|X
+-----
+ | |O
+Playing X'.! !
 
 
 !classDefinition: #TerniLapilliConsoleTest category: #TerniLapilliConsole!
@@ -524,10 +551,22 @@ oHasPlacedAt: aPosition
 	
 	(board at: aPosition x) at: aPosition y put: 'O'.! !
 
+!TerniLapilliBoardView methodsFor: 'observing' stamp: 'la 11/9/2018 23:20:08'!
+oHasSlidFrom: aPosition to: anoterPosition 
+
+	(board at: aPosition x) at: aPosition y put: ' '.
+	(board at: anoterPosition x) at: anoterPosition y put: 'O'.	! !
+
 !TerniLapilliBoardView methodsFor: 'observing' stamp: 'jml 11/9/2018 16:36:33'!
 xHasPlacedAt: aPosition
 	
 	(board at: aPosition x) at: aPosition y put: 'X'.! !
+
+!TerniLapilliBoardView methodsFor: 'observing' stamp: 'la 11/9/2018 23:11:30'!
+xHasSlidFrom: aPosition to: anoterPosition 
+
+	(board at: aPosition x) at: aPosition y put: ' '.
+	(board at: anoterPosition x) at: anoterPosition y put: 'X'.	! !
 
 
 !TerniLapilliBoardView methodsFor: 'as yet unclassified' stamp: 'jml 11/9/2018 16:40:06'!
