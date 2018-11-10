@@ -334,6 +334,11 @@ lastPlay
 	
 	^ lastPlay! !
 
+!TerniLapilli methodsFor: 'accessing' stamp: 'jml 11/10/2018 14:17:52'!
+state
+	
+	^ state! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'TerniLapilli class' category: #TerniLapilli!
@@ -420,21 +425,16 @@ TerniLapilliObserver subclass: #TerniLapilliBoardView
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!TerniLapilliBoardView methodsFor: 'initialization' stamp: 'jml 11/9/2018 16:48:06'!
+!TerniLapilliBoardView methodsFor: 'initialization' stamp: 'jml 11/10/2018 14:20:51'!
 initializeFor: aGame 
 	
 	game _ aGame.
 	
 	aGame addObserver: self.
 	
-	" TODO check this"
-	currentState := self turnLineFor: 'X'.
+	currentState := self stateLineFor: game state.
 	
-	board := Array
-		with: (Array with: ' ' with: ' ' with: ' ')
-		with: (Array with: ' ' with: ' ' with: ' ')
-		with: (Array with: ' ' with: ' ' with: ' ')
-	.! !
+	board := (1 to: 3) collect: [ :rowNumber | Array new: 3 withAll: ' ' ].! !
 
 
 !TerniLapilliBoardView methodsFor: 'accessing' stamp: 'jml 11/10/2018 14:09:50'!
