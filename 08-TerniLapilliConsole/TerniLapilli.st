@@ -869,10 +869,62 @@ test40CanNotSlideOWhenPlayingX
 			self assertOIsMarkedOn: { 1@1 } ]
 	! !
 
+
+!TerniLapilliTest methodsFor: 'testingLastMove' stamp: 'la 11/10/2018 02:02:19'!
+test41EmptyGameDontHaveAnyPreviusMove
+
+	game _ TerniLapilli new.	
+
+	self assert: game lastPlay equals: 'There is no previous move'! !
+
+!TerniLapilliTest methodsFor: 'testingLastMove' stamp: 'la 11/10/2018 02:10:46'!
+test42LastMoveX
+
+	game _ TerniLapilli new.	
+	game putXAt: 1 @ 1.
+
+	self assert: game lastPlay equals: 'Last move: X put at : 1@1'! !
+
+!TerniLapilliTest methodsFor: 'testingLastMove' stamp: 'la 11/10/2018 02:13:58'!
+test43LastMoveO
+
+	game _ TerniLapilli new.	
+	game putXAt: 1 @ 1.
+	game putOAt: 1 @ 3.
+	self assert: game lastPlay equals: 'Last move: O put at : 1@3'! !
+
+!TerniLapilliTest methodsFor: 'testingLastMove' stamp: 'la 11/10/2018 02:51:18'!
+test43LastSlideX
+
+	game _ TerniLapilli new.
+	game putXAt: 2 @ 2.
+	game putOAt: 1 @ 1.
+	game putXAt: 1 @ 3.
+	game putOAt: 3 @ 1.
+	game putXAt: 2 @ 1.
+	game putOAt: 2 @ 3.
+	game slideXFrom: 2 @ 2 to: 1 @ 2.
+	
+	self assert: game lastPlay equals: 'Last move: X slide from: 2@2 to: 1@2'! !
+
+!TerniLapilliTest methodsFor: 'testingLastMove' stamp: 'la 11/10/2018 02:57:35'!
+test44LastSlideO
+
+	game _ TerniLapilli new.
+	game putXAt: 2 @ 2.
+	game putOAt: 1 @ 1.
+	game putXAt: 1 @ 3.
+	game putOAt: 3 @ 1.
+	game putXAt: 2 @ 1.
+	game putOAt: 2 @ 3.
+	game slideXFrom: 2 @ 2 to: 1 @ 2.
+	game slideOFrom: 2 @ 3 to: 3 @ 3. 
+	self assert: game lastPlay equals: 'Last move: O slide from: 2@3 to: 3@3'! !
+
 
 !classDefinition: #TerniLapilli category: #TerniLapilli!
 Object subclass: #TerniLapilli
-	instanceVariableNames: 'state playerOPositions playerXPositions console observers'
+	instanceVariableNames: 'state playerOPositions playerXPositions console observers lastPlay'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
@@ -952,14 +1004,14 @@ hasWin: positions
 		or: [ self hasDownDiagonal: positions ]]].! !
 
 
-!TerniLapilli methodsFor: 'initialization' stamp: 'jml 11/9/2018 16:13:51'!
+!TerniLapilli methodsFor: 'initialization' stamp: 'la 11/10/2018 03:03:15'!
 initialize
 
 	playerXPositions := OrderedCollection new.
 	playerOPositions := OrderedCollection new.
 	state := PlacingX new initializeFor: self.
-	
-	observers := OrderedCollection new.! !
+	observers := OrderedCollection new.
+	lastPlay:= 'There is no previous move'.! !
 
 
 !TerniLapilli methodsFor: 'marking board' stamp: 'JG 11/6/2018 20:34:26'!
@@ -983,13 +1035,15 @@ changeStateAfterAdding: aPosition to: positions
 	
 	observers do: [ :observer | observer stateChangedTo: state ].! !
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/9/2018 16:15:13'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'la 11/10/2018 03:02:44'!
 putOWhenPlacingOAt: aPosition
 
 	self playerOHasPiecesToPlace.
 	self assertIsFree: aPosition.
 	
 	observers do: [ :observer | observer oHasPlacedAt: aPosition ].
+	
+	self lastPlacingFor: 'O' at: aPosition.
 	
 	self changeStateAfterAdding: aPosition to: playerOPositions.! !
 
@@ -1013,7 +1067,7 @@ putXWhenPlacingOAt: aPoint
 	
 	self error: self class notXTurnErrorMessage! !
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/9/2018 16:15:25'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'la 11/10/2018 03:01:41'!
 putXWhenPlacingXAt: aPosition
 
 	self playerXHasPiecesToPlace.
@@ -1021,6 +1075,8 @@ putXWhenPlacingXAt: aPosition
 	
 	observers do: [ :observer | observer xHasPlacedAt: aPosition ].
 	
+	self lastPlacingFor: 'X' at: aPosition.
+
 	self changeStateAfterAdding: aPosition to: playerXPositions.! !
 
 !TerniLapilli methodsFor: 'marking board - private' stamp: 'JG 10/28/2018 12:38:49'!
@@ -1084,7 +1140,7 @@ slideOWhenPlayingXFrom: aPosition to: anotherPosition
 
 	self error: self class notOTurnErrorMessage ! !
 
-!TerniLapilli methodsFor: 'sliding - private' stamp: 'jml 11/9/2018 16:16:00'!
+!TerniLapilli methodsFor: 'sliding - private' stamp: 'la 11/10/2018 03:01:02'!
 slideOWhenSlidingOFrom: aPosition to: anotherPosition
 	
 	self assertIsFree: anotherPosition .
@@ -1093,6 +1149,8 @@ slideOWhenSlidingOFrom: aPosition to: anotherPosition
 	playerOPositions remove: aPosition.
 	
 	observers do: [ :observer | observer oHasSlidFrom: aPosition to: anotherPosition ].
+	
+	self lastSlidingMovefor: 'O' from: aPosition to: anotherPosition.
 	
 	self changeStateAfterAdding: anotherPosition to: playerOPositions
 	 ! !
@@ -1107,7 +1165,7 @@ slideXWhenPlayingOFrom: aPosition to: anotherPosition
 
 	self error: self class notXTurnErrorMessage! !
 
-!TerniLapilli methodsFor: 'sliding - private' stamp: 'jml 11/9/2018 16:15:48'!
+!TerniLapilli methodsFor: 'sliding - private' stamp: 'la 11/10/2018 03:01:02'!
 slideXWhenSlidingXFrom: aPosition to: anotherPosition
 	
 	self assertIsFree: anotherPosition .
@@ -1116,6 +1174,8 @@ slideXWhenSlidingXFrom: aPosition to: anotherPosition
 	playerXPositions remove: aPosition.
 	
 	observers do: [ :observer | observer xHasSlidFrom: aPosition to: anotherPosition ].
+	
+	self lastSlidingMovefor: 'X' from: aPosition to: anotherPosition.
 	
 	self changeStateAfterAdding: anotherPosition to: playerXPositions! !
 
@@ -1188,6 +1248,23 @@ isSlidingX
 addObserver: anObserver
 	
 	observers add: anObserver.! !
+
+
+!TerniLapilli methodsFor: 'lastPlay' stamp: 'la 11/10/2018 02:07:31'!
+lastPlay
+	
+	^lastPlay value! !
+
+
+!TerniLapilli methodsFor: 'lastPlay - private' stamp: 'la 11/10/2018 03:02:24'!
+lastPlacingFor: aPlayer at: aPosition 
+	
+lastPlay _ 'Last move: ',aPlayer,' put at : ',aPosition asString.! !
+
+!TerniLapilli methodsFor: 'lastPlay - private' stamp: 'la 11/10/2018 03:01:02'!
+lastSlidingMovefor: aPlayer from: aPosition to: anotherPosition 
+	
+	lastPlay _ 'Last move: ',aPlayer,' slide from: ',aPosition asString,' to: ',anotherPosition asString.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
