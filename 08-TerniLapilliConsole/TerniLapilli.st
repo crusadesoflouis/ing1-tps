@@ -179,10 +179,10 @@ playerXHasPiecesToPlace
 	! !
 
 
-!TerniLapilli methodsFor: 'positions' stamp: 'HAW 11/8/2018 10:49:00'!
+!TerniLapilli methodsFor: 'positions' stamp: 'jml 11/10/2018 15:16:34'!
 moveLegalFrom: aPosition to: anotherPosition
 	
-	^ (self is: aPosition adjacentTo: anotherPosition) and: [ self isInBoardBounds: anotherPosition ]! !
+	^ (self is: aPosition connectedTo: anotherPosition) and: [ self isInBoardBounds: anotherPosition ]! !
 
 !TerniLapilli methodsFor: 'positions' stamp: 'HAW 10/25/2017 15:56:16'!
 playerOPositions
@@ -259,20 +259,51 @@ slideXWhenSlidingXFrom: origin to: destination
 	observers do: [ :observer | observer stateChangedTo: state ].! !
 
 
-!TerniLapilli methodsFor: 'testing board positions' stamp: 'HAW 11/8/2018 12:19:28'!
-does: aNumber distanceOneTo: anotherNumber
-
-	^ (aNumber - anotherNumber) abs < 2 ! !
-
 !TerniLapilli methodsFor: 'testing board positions' stamp: 'HAW 11/8/2018 11:30:51'!
 hasXMorePiecesToPlace
 	
 	^playerXPositions size < 3! !
 
-!TerniLapilli methodsFor: 'testing board positions' stamp: 'HAW 11/8/2018 12:19:28'!
-is: aPosition adjacentTo: anotherPosition
+!TerniLapilli methodsFor: 'testing board positions' stamp: 'jml 11/10/2018 15:15:13'!
+horizontalDistanceBetween: aPosition and: anotherPosition
 
-	^ (self does: aPosition x distanceOneTo: anotherPosition x) and: [ self does: aPosition y distanceOneTo: anotherPosition y ]
+	^ (aPosition x - anotherPosition x) abs! !
+
+!TerniLapilli methodsFor: 'testing board positions' stamp: 'jml 11/10/2018 15:18:52'!
+is: aPosition adjacentTo: anotherPosition
+	
+	| horizontalDistance verticalDistance |
+	
+	horizontalDistance _ (self horizontalDistanceBetween: aPosition and: anotherPosition).
+	verticalDistance _ (self verticalDistanceBetween: aPosition and: anotherPosition).
+	
+	^ horizontalDistance + verticalDistance = 1
+	
+	! !
+
+!TerniLapilli methodsFor: 'testing board positions' stamp: 'jml 11/10/2018 15:17:20'!
+is: aPosition connectedTo: anotherPosition
+
+	^ (self is: aPosition adjacentTo: anotherPosition) or: [ self is: aPosition diagonallyConnectedTo: anotherPosition ]
+	! !
+
+!TerniLapilli methodsFor: 'testing board positions' stamp: 'jml 11/10/2018 15:21:44'!
+is: aPosition diagonallyConnectedTo: anotherPosition
+	
+	| horizontalDistance verticalDistance |
+	
+	horizontalDistance _ (self horizontalDistanceBetween: aPosition and: anotherPosition).
+	verticalDistance _ (self verticalDistanceBetween: aPosition and: anotherPosition).
+	
+	^ horizontalDistance = 1 and: [ verticalDistance = 1] and: [ self isEvenPosition: aPosition ].
+	
+	! !
+
+!TerniLapilli methodsFor: 'testing board positions' stamp: 'jml 11/10/2018 15:21:21'!
+isEvenPosition: aPosition
+	
+	^ (aPosition x + aPosition y) even
+	
 	! !
 
 !TerniLapilli methodsFor: 'testing board positions' stamp: 'HAW 11/8/2018 10:47:53'!
@@ -284,6 +315,11 @@ isInBoardBounds: aPosition
 isTaken: aPosition
 
 	^ (playerXPositions includes: aPosition) or: [ playerOPositions includes: aPosition ].! !
+
+!TerniLapilli methodsFor: 'testing board positions' stamp: 'jml 11/10/2018 15:15:30'!
+verticalDistanceBetween: aPosition and: anotherPosition
+
+	^ (aPosition y - anotherPosition y) abs! !
 
 
 !TerniLapilli methodsFor: 'testing game result' stamp: 'HAW 11/8/2018 11:56:45'!

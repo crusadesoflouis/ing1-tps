@@ -1087,6 +1087,26 @@ test30_02CanNotSlideOToAnInvalidPosition
 			self assertOIsMarkedOn: { 1@1. 3@1. 2@3 } ]
 	! !
 
+!TerniLapilliTest methodsFor: 'testing' stamp: 'jml 11/10/2018 15:22:49'!
+test30_03CanNotSlideAcrossWrongDiagonal
+
+	game _ TerniLapilli new.	
+	
+	game putXAt: 2 @ 2.
+	game putOAt: 1 @ 1.
+	game putXAt: 2 @ 1.
+	game putOAt: 3 @ 1.
+	game putXAt: 1 @ 3.
+	game putOAt: 2 @ 3.
+	
+	self 
+		should: [ game slideXFrom: 2 @ 1 to: 3 @ 2 ]
+		raise: self functionalException 
+		withExceptionDo: [ :anError |
+			self assert: anError messageText equals: TerniLapilli illegalMovement.
+			self assertXIsMarkedOn: { 1@3. 2@1. 2@2 } ]
+	! !
+
 !TerniLapilliTest methodsFor: 'testing' stamp: 'HAW 11/8/2018 11:48:20'!
 test31DifferenceBetweenPositionsShouldNotBeGreaterThanOneWhenSliding
 	game _ TerniLapilli new.	
