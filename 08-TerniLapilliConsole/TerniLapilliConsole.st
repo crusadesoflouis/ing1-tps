@@ -26,8 +26,216 @@ assertLinesIn: aStream skipping: aNumberOfLines equals: lines
 	self assertLinesIn: aStream equals: lines.! !
 
 
+!classDefinition: #TerniLapilliConsoleTest category: #TerniLapilliConsole!
+StreamTest subclass: #TerniLapilliConsoleTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilliConsole'!
+
+!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/9/2018 12:49:28'!
+test01XPlacing
+	
+	| game console |
+	
+	game _ TerniLapilli new.
+	
+	console _ TerniLapilliConsole for: game.
+	
+	game putXAt: 2@2.
+	
+	self assertLinesIn: console output equals: {
+		'X marcó en 2@2'.
+		'Estado: Jugando O'
+	}.
+	! !
+
+!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/9/2018 12:59:24'!
+test02OPlacing
+	
+	| game console |
+	
+	game _ TerniLapilli new.
+	
+	console _ TerniLapilliConsole for: game.
+	
+	game
+		putXAt: 2@2;
+		putOAt: 1@1.
+	
+	self assertLinesIn: console output equals: {
+		'X marcó en 2@2'.
+		'Estado: Jugando O'.
+		'O marcó en 1@1'.
+		'Estado: Jugando X'.
+	}.
+	! !
+
+!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/9/2018 12:59:50'!
+test03XPlacingAtDifferentPositions
+	
+	| game console |
+	
+	game _ TerniLapilli new.
+	
+	console _ TerniLapilliConsole for: game.
+	
+	game
+		putXAt: 2@2;
+		putOAt: 1@1;
+		putXAt: 1@2.
+	
+	self assertLinesIn: console output equals: {
+		'X marcó en 2@2'.
+		'Estado: Jugando O'.
+		'O marcó en 1@1'.
+		'Estado: Jugando X'.
+		'X marcó en 1@2'.
+		'Estado: Jugando O'.
+	}.
+	! !
+
+!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/9/2018 13:00:02'!
+test04OPlacingAtDifferentPositions
+	
+	| game console |
+	
+	game _ TerniLapilli new.
+	
+	console _ TerniLapilliConsole for: game.
+	
+	game
+		putXAt: 2@2;
+		putOAt: 1@1;
+		putXAt: 1@2;
+		putOAt: 3@3.
+	
+	self assertLinesIn: console output equals: {
+		'X marcó en 2@2'.
+		'Estado: Jugando O'.
+		'O marcó en 1@1'.
+		'Estado: Jugando X'.
+		'X marcó en 1@2'.
+		'Estado: Jugando O'.
+		'O marcó en 3@3'.
+		'Estado: Jugando X'.
+	}.
+	! !
+
+!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/10/2018 06:29:42'!
+test05XWins
+	
+	| game console |
+	
+	game _ TerniLapilli new.
+	
+	console _ TerniLapilliConsole for: game.
+	
+	game
+		putXAt: 2@2;
+		putOAt: 1@1;
+		putXAt: 1@2;
+		putOAt: 3@3;
+		putXAt: 3@2.
+	
+	self assertLinesIn: console output skipping: 8 equals: {
+		'X marcó en 3@2'.
+		'Estado: Juego terminado - ¡Ganó X!!'.
+	}.! !
+
+!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/10/2018 06:29:48'!
+test06OWins
+	
+	| game console |
+	
+	game _ TerniLapilli new.
+	
+	console _ TerniLapilliConsole for: game.
+	
+	game
+		putXAt: 2@2;
+		putOAt: 1@1;
+		putXAt: 1@2;
+		putOAt: 2@1;
+		putXAt: 3@3;
+		putOAt: 3@1.
+	
+	self assertLinesIn: console output skipping: 10 equals: {
+		'O marcó en 3@1'.
+		'Estado: Juego terminado - ¡Ganó O!!'
+	}.! !
+
+!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/10/2018 06:29:53'!
+test07IsXTurnAfterLastPiece
+	
+	| game console |
+	
+	game _ TerniLapilli new.
+	
+	console _ TerniLapilliConsole for: game.
+	
+	game
+		putXAt: 2@2;
+		putOAt: 1@1;
+		putXAt: 1@2;
+		putOAt: 2@1;
+		putXAt: 3@3;
+		putOAt: 3@2.
+	
+	self assertLinesIn: console output skipping: 11 equals: {
+		'Estado: Jugando X'
+	}.! !
+
+!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/10/2018 06:29:58'!
+test08XSliding
+	
+	| game console |
+	
+	game _ TerniLapilli new.
+	
+	console _ TerniLapilliConsole for: game.
+	
+	game
+		putXAt: 2@2;
+		putOAt: 1@1;
+		putXAt: 1@2;
+		putOAt: 2@1;
+		putXAt: 3@3;
+		putOAt: 3@2;
+		slideXFrom: 3@3 to: 2@3.
+	
+	self assertLinesIn: console output skipping: 12 equals: {
+		'X deslizó hasta 2@3 desde 3@3'.
+		'Estado: Jugando O'.
+	}.! !
+
+!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/10/2018 06:30:07'!
+test09OSliding
+	
+	| game console |
+	
+	game _ TerniLapilli new.
+	
+	console _ TerniLapilliConsole for: game.
+	
+	game
+		putXAt: 2@2;
+		putOAt: 1@1;
+		putXAt: 1@2;
+		putOAt: 2@1;
+		putXAt: 3@3;
+		putOAt: 3@2;
+		slideXFrom: 3@3 to: 2@3;
+		slideOFrom: 3@2 to: 3@3.	
+	
+	self assertLinesIn: console output skipping: 14 equals: {
+		'O deslizó hasta 3@3 desde 3@2'.
+		'Estado: Jugando X'.
+	}.! !
+
+
 !classDefinition: #TerniLapilliBoardViewTest category: #TerniLapilliConsole!
-StreamTest subclass: #TerniLapilliBoardViewTest
+TestCase subclass: #TerniLapilliBoardViewTest
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -191,306 +399,6 @@ O|X|X
 -----
  | |O
 Playing X'.! !
-
-
-!classDefinition: #TerniLapilliConsoleTest category: #TerniLapilliConsole!
-StreamTest subclass: #TerniLapilliConsoleTest
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'TerniLapilliConsole'!
-
-!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/9/2018 12:49:28'!
-test01XPlacing
-	
-	| game console |
-	
-	game _ TerniLapilli new.
-	
-	console _ TerniLapilliConsole for: game.
-	
-	game putXAt: 2@2.
-	
-	self assertLinesIn: console output equals: {
-		'X marcó en 2@2'.
-		'Estado: Jugando O'
-	}.
-	! !
-
-!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/9/2018 12:59:24'!
-test02OPlacing
-	
-	| game console |
-	
-	game _ TerniLapilli new.
-	
-	console _ TerniLapilliConsole for: game.
-	
-	game
-		putXAt: 2@2;
-		putOAt: 1@1.
-	
-	self assertLinesIn: console output equals: {
-		'X marcó en 2@2'.
-		'Estado: Jugando O'.
-		'O marcó en 1@1'.
-		'Estado: Jugando X'.
-	}.
-	! !
-
-!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/9/2018 12:59:50'!
-test03XPlacingAtDifferentPositions
-	
-	| game console |
-	
-	game _ TerniLapilli new.
-	
-	console _ TerniLapilliConsole for: game.
-	
-	game
-		putXAt: 2@2;
-		putOAt: 1@1;
-		putXAt: 1@2.
-	
-	self assertLinesIn: console output equals: {
-		'X marcó en 2@2'.
-		'Estado: Jugando O'.
-		'O marcó en 1@1'.
-		'Estado: Jugando X'.
-		'X marcó en 1@2'.
-		'Estado: Jugando O'.
-	}.
-	! !
-
-!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/9/2018 13:00:02'!
-test04OPlacingAtDifferentPositions
-	
-	| game console |
-	
-	game _ TerniLapilli new.
-	
-	console _ TerniLapilliConsole for: game.
-	
-	game
-		putXAt: 2@2;
-		putOAt: 1@1;
-		putXAt: 1@2;
-		putOAt: 3@3.
-	
-	self assertLinesIn: console output equals: {
-		'X marcó en 2@2'.
-		'Estado: Jugando O'.
-		'O marcó en 1@1'.
-		'Estado: Jugando X'.
-		'X marcó en 1@2'.
-		'Estado: Jugando O'.
-		'O marcó en 3@3'.
-		'Estado: Jugando X'.
-	}.
-	! !
-
-!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/9/2018 16:51:06'!
-test05XWins
-	
-	| game console |
-	
-	game _ TerniLapilli new.
-	
-	console _ TerniLapilliConsole for: game.
-	
-	game
-		putXAt: 2@2;
-		putOAt: 1@1;
-		putXAt: 1@2;
-		putOAt: 3@3;
-		putXAt: 3@2.
-	
-	self assertLinesIn: console output skipping: 8 equals: {
-		'X marcó en 3@2'.
-		'Estado: Juego terminado - ¡Ganó X!!'.
-	}.
-	
-	"
-	self assert: 'X marcó en 2@2' equals: outputStream next.
-	self assert: 'Estado: Jugando O' equals: outputStream next.
-	self assert: 'O marcó en 1@1' equals: outputStream next.
-	self assert: 'Estado: Jugando X' equals: outputStream next.
-	self assert: 'X marcó en 1@2' equals: outputStream next.
-	self assert: 'Estado: Jugando O' equals: outputStream next.
-	self assert: 'O marcó en 3@3' equals: outputStream next.
-	self assert: 'Estado: Jugando X' equals: outputStream next.
-	"! !
-
-!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/9/2018 16:51:22'!
-test06OWins
-	
-	| game console |
-	
-	game _ TerniLapilli new.
-	
-	console _ TerniLapilliConsole for: game.
-	
-	game
-		putXAt: 2@2;
-		putOAt: 1@1;
-		putXAt: 1@2;
-		putOAt: 2@1;
-		putXAt: 3@3;
-		putOAt: 3@1.
-	
-	self assertLinesIn: console output skipping: 10 equals: {
-		'O marcó en 3@1'.
-		'Estado: Juego terminado - ¡Ganó O!!'
-	}.
-	
-	
-	"
-	self assert: 'X marcó en 2@2' equals: outputStream next.
-	self assert: 'Estado: Jugando O' equals: outputStream next.
-	
-	self assert: 'O marcó en 1@1' equals: outputStream next.
-	self assert: 'Estado: Jugando X' equals: outputStream next.
-	
-	self assert: 'X marcó en 1@2' equals: outputStream next.
-	self assert: 'Estado: Jugando O' equals: outputStream next.
-	
-	self assert: 'O marcó en 2@1' equals: outputStream next.
-	self assert: 'Estado: Jugando X' equals: outputStream next.
-	
-	self assert: 'X marcó en 3@3' equals: outputStream next.
-	self assert: 'Estado: Jugando O' equals: outputStream next.
-	"
-	! !
-
-!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/9/2018 13:01:00'!
-test07IsXTurnAfterLastPiece
-	
-	| game console |
-	
-	game _ TerniLapilli new.
-	
-	console _ TerniLapilliConsole for: game.
-	
-	game
-		putXAt: 2@2;
-		putOAt: 1@1;
-		putXAt: 1@2;
-		putOAt: 2@1;
-		putXAt: 3@3;
-		putOAt: 3@2.
-	
-	self assertLinesIn: console output skipping: 11 equals: {
-		'Estado: Jugando X'
-	}.
-	
-	"
-	self assert: 'X marcó en 2@2' equals: outputStream next.
-	self assert: 'Estado: Jugando O' equals: outputStream next.
-	
-	self assert: 'O marcó en 1@1' equals: outputStream next.
-	self assert: 'Estado: Jugando X' equals: outputStream next.
-	
-	self assert: 'X marcó en 1@2' equals: outputStream next.
-	self assert: 'Estado: Jugando O' equals: outputStream next.
-	
-	self assert: 'O marcó en 2@1' equals: outputStream next.
-	self assert: 'Estado: Jugando X' equals: outputStream next.
-	
-	self assert: 'X marcó en 3@3' equals: outputStream next.
-	self assert: 'Estado: Jugando O' equals: outputStream next.
-	
-	self assert: 'O marcó en 3@2' equals: outputStream next.
-	"! !
-
-!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/9/2018 13:01:23'!
-test08XSliding
-	
-	| game console |
-	
-	game _ TerniLapilli new.
-	
-	console _ TerniLapilliConsole for: game.
-	
-	game
-		putXAt: 2@2;
-		putOAt: 1@1;
-		putXAt: 1@2;
-		putOAt: 2@1;
-		putXAt: 3@3;
-		putOAt: 3@2;
-		slideXFrom: 3@3 to: 2@3.
-	
-	self assertLinesIn: console output skipping: 12 equals: {
-		'X deslizó hasta 2@3 desde 3@3'.
-		'Estado: Jugando O'.
-	}.
-	
-	"
-	self assert: 'X marcó en 2@2' equals: outputStream next.
-	self assert: 'Estado: Jugando O' equals: outputStream next.
-	
-	self assert: 'O marcó en 1@1' equals: outputStream next.
-	self assert: 'Estado: Jugando X' equals: outputStream next.
-	
-	self assert: 'X marcó en 1@2' equals: outputStream next.
-	self assert: 'Estado: Jugando O' equals: outputStream next.
-	
-	self assert: 'O marcó en 2@1' equals: outputStream next.
-	self assert: 'Estado: Jugando X' equals: outputStream next.
-	
-	self assert: 'X marcó en 3@3' equals: outputStream next.
-	self assert: 'Estado: Jugando O' equals: outputStream next.
-	
-	self assert: 'O marcó en 3@2' equals: outputStream next.
-	self assert: 'Estado: Jugando X' equals: outputStream next.
-	"! !
-
-!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/9/2018 13:01:53'!
-test09OSliding
-	
-	| game console |
-	
-	game _ TerniLapilli new.
-	
-	console _ TerniLapilliConsole for: game.
-	
-	game
-		putXAt: 2@2;
-		putOAt: 1@1;
-		putXAt: 1@2;
-		putOAt: 2@1;
-		putXAt: 3@3;
-		putOAt: 3@2;
-		slideXFrom: 3@3 to: 2@3;
-		slideOFrom: 3@2 to: 3@3.	
-	
-	self assertLinesIn: console output skipping: 14 equals: {
-		'O deslizó hasta 3@3 desde 3@2'.
-		'Estado: Jugando X'.
-	}.
-	
-	"
-	self assert: 'X marcó en 2@2' equals: outputStream next.
-	self assert: 'Estado: Jugando O' equals: outputStream next.
-	
-	self assert: 'O marcó en 1@1' equals: outputStream next.
-	self assert: 'Estado: Jugando X' equals: outputStream next.
-	
-	self assert: 'X marcó en 1@2' equals: outputStream next.
-	self assert: 'Estado: Jugando O' equals: outputStream next.
-	
-	self assert: 'O marcó en 2@1' equals: outputStream next.
-	self assert: 'Estado: Jugando X' equals: outputStream next.
-	
-	self assert: 'X marcó en 3@3' equals: outputStream next.
-	self assert: 'Estado: Jugando O' equals: outputStream next.
-	
-	self assert: 'O marcó en 3@2' equals: outputStream next.
-	self assert: 'Estado: Jugando X' equals: outputStream next.
-	
-	self assert: 'X deslizó hasta 2@3 desde 3@3' equals: outputStream next.
-	self assert: 'Estado: Jugando O' equals: outputStream next.
-	"! !
 
 
 !classDefinition: #TerniLapilliObserver category: #TerniLapilliConsole!

@@ -1260,21 +1260,10 @@ addObserver: anObserver
 	observers add: anObserver.! !
 
 
-!TerniLapilli methodsFor: 'lastPlay' stamp: 'jml 11/10/2018 04:06:36'!
+!TerniLapilli methodsFor: 'accessing' stamp: 'jml 11/10/2018 04:06:36'!
 lastPlay
 	
 	^ lastPlay! !
-
-
-!TerniLapilli methodsFor: 'lastPlay - private' stamp: 'la 11/10/2018 03:02:24'!
-lastPlacingFor: aPlayer at: aPosition 
-	
-lastPlay _ 'Last move: ',aPlayer,' put at : ',aPosition asString.! !
-
-!TerniLapilli methodsFor: 'lastPlay - private' stamp: 'la 11/10/2018 03:01:02'!
-lastSlidingMovefor: aPlayer from: aPosition to: anotherPosition 
-	
-	lastPlay _ 'Last move: ',aPlayer,' slide from: ',aPosition asString,' to: ',anotherPosition asString.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
