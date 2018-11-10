@@ -448,27 +448,27 @@ output
 ', currentState! !
 
 
-!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'jml 11/10/2018 06:16:53'!
-oHasPlacedAt: aPosition
-	
-	self at: aPosition put: 'O'.! !
+!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'jml 11/10/2018 13:50:05'!
+visitOMovement: aMovement
 
-!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'jml 11/10/2018 06:20:29'!
-oHasSlidFrom: origin to: destination
-
-	self move: 'O' from: origin to: destination.
+	self move: 'O' from: aMovement origin to: aMovement destination.
 	! !
 
-!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'jml 11/10/2018 06:17:45'!
-xHasPlacedAt: aPosition
+!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'jml 11/10/2018 13:49:41'!
+visitOPlacement: aPlacement
 	
-	self at: aPosition put: 'X'.! !
+	self at: aPlacement position put: 'O'.! !
 
-!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'jml 11/10/2018 06:20:35'!
-xHasSlidFrom: origin to: destination
+!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'jml 11/10/2018 13:50:00'!
+visitXMovement: aMovement
 
-	self move: 'X' from: origin to: destination.
+	self move: 'X' from: aMovement origin to: aMovement destination.
 	! !
+
+!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'jml 11/10/2018 13:49:36'!
+visitXPlacement: aPlacement
+	
+	self at: aPlacement position put: 'X'.! !
 
 
 !TerniLapilliBoardView methodsFor: 'board' stamp: 'jml 11/9/2018 16:40:06'!
@@ -554,25 +554,25 @@ output
 	^ ReadStream on: lines! !
 
 
-!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'jml 11/10/2018 06:03:25'!
-oHasPlacedAt: aPosition
+!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'jml 11/10/2018 13:48:22'!
+visitOMovement: aMovement
 	
-	self addLine: (self placingLineFor: 'O' at: aPosition).! !
+	self addLine: (self slidingLineFor: 'O' from: aMovement origin to: aMovement destination).! !
 
-!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'jml 11/10/2018 06:03:20'!
-oHasSlidFrom: fromPosition to: toPosition
+!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'jml 11/10/2018 13:48:42'!
+visitOPlacement: aPlacement
 	
-	self addLine: (self slidingLineFor: 'O' from: fromPosition to: toPosition).! !
+	self addLine: (self placingLineFor: 'O' at: aPlacement position).! !
 
-!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'jml 11/10/2018 06:03:15'!
-xHasPlacedAt: aPosition
+!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'jml 11/10/2018 13:49:09'!
+visitXMovement: aMovement
 	
-	self addLine: (self placingLineFor: 'X' at: aPosition).! !
+	self addLine: (self slidingLineFor: 'X' from: aMovement origin to: aMovement destination).! !
 
-!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'jml 11/10/2018 05:59:42'!
-xHasSlidFrom: fromPosition to: toPosition
+!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'jml 11/10/2018 13:48:53'!
+visitXPlacement: aPlacement
 	
-	self addLine: (self slidingLineFor: 'X' from: fromPosition to: toPosition).! !
+	self addLine: (self placingLineFor: 'X' at: aPlacement position).! !
 
 
 !TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/9/2018 13:56:26'!
@@ -712,10 +712,10 @@ Movement subclass: #OMovement
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!OMovement methodsFor: 'visiting' stamp: 'jml 11/10/2018 06:07:54'!
+!OMovement methodsFor: 'visiting' stamp: 'jml 11/10/2018 13:47:06'!
 accept: aVisitor
 	
-	aVisitor oHasSlidFrom: origin to: destination! !
+	aVisitor visitOMovement: self! !
 
 
 !classDefinition: #XMovement category: #TerniLapilli!
@@ -725,10 +725,10 @@ Movement subclass: #XMovement
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!XMovement methodsFor: 'visiting' stamp: 'jml 11/10/2018 06:08:08'!
+!XMovement methodsFor: 'visiting' stamp: 'jml 11/10/2018 13:47:18'!
 accept: aVisitor
 	
-	aVisitor xHasSlidFrom: origin to: destination! !
+	aVisitor visitXMovement: self! !
 
 
 !classDefinition: #NoPlay category: #TerniLapilli!
@@ -797,10 +797,10 @@ Placement subclass: #OPlacement
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!OPlacement methodsFor: 'visiting' stamp: 'jml 11/10/2018 06:08:27'!
+!OPlacement methodsFor: 'visiting' stamp: 'jml 11/10/2018 13:47:32'!
 accept: aVisitor
 	
-	aVisitor oHasPlacedAt: position! !
+	aVisitor visitOPlacement: self! !
 
 
 !classDefinition: #XPlacement category: #TerniLapilli!
@@ -810,10 +810,10 @@ Placement subclass: #XPlacement
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!XPlacement methodsFor: 'visiting' stamp: 'jml 11/10/2018 06:08:35'!
+!XPlacement methodsFor: 'visiting' stamp: 'jml 11/10/2018 13:47:44'!
 accept: aVisitor
 	
-	aVisitor xHasPlacedAt: position! !
+	aVisitor visitXPlacement: self! !
 
 
 !classDefinition: #TerniLapilliState category: #TerniLapilli!
