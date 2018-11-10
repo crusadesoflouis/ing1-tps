@@ -870,33 +870,38 @@ test40CanNotSlideOWhenPlayingX
 	! !
 
 
-!TerniLapilliTest methodsFor: 'testingLastMove' stamp: 'la 11/10/2018 02:02:19'!
-test41EmptyGameDontHaveAnyPreviusMove
+!TerniLapilliTest methodsFor: 'testingLastMove' stamp: 'jml 11/10/2018 05:33:31'!
+test41ThereWasNoPlay
 
 	game _ TerniLapilli new.	
 
-	self assert: game lastPlay equals: 'There is no previous move'! !
+	self assert: (NoPlay new) equals: game lastPlay.! !
 
-!TerniLapilliTest methodsFor: 'testingLastMove' stamp: 'la 11/10/2018 02:10:46'!
-test42LastMoveX
-
-	game _ TerniLapilli new.	
-	game putXAt: 1 @ 1.
-
-	self assert: game lastPlay equals: 'Last move: X put at : 1@1'! !
-
-!TerniLapilliTest methodsFor: 'testingLastMove' stamp: 'la 11/10/2018 02:13:58'!
-test43LastMoveO
-
-	game _ TerniLapilli new.	
-	game putXAt: 1 @ 1.
-	game putOAt: 1 @ 3.
-	self assert: game lastPlay equals: 'Last move: O put at : 1@3'! !
-
-!TerniLapilliTest methodsFor: 'testingLastMove' stamp: 'la 11/10/2018 02:51:18'!
-test43LastSlideX
+!TerniLapilliTest methodsFor: 'testingLastMove' stamp: 'jml 11/10/2018 05:42:19'!
+test42LastPlayIsAnXPlacement
 
 	game _ TerniLapilli new.
+	
+	game putXAt: 1 @ 1.
+
+	self assert: (XPlacement at: 1@1) equals: game lastPlay.! !
+
+!TerniLapilliTest methodsFor: 'testingLastMove' stamp: 'jml 11/10/2018 05:42:22'!
+test43LastPlayIsAnOPlacement
+
+	game _ TerniLapilli new.
+		
+	game 
+		putXAt: 1 @ 1;
+		putOAt: 1 @ 3.
+	
+	self assert: (OPlacement at: 1@3) equals: game lastPlay.! !
+
+!TerniLapilliTest methodsFor: 'testingLastMove' stamp: 'jml 11/10/2018 05:42:55'!
+test44LastPlayIsAnXMovement
+
+	game _ TerniLapilli new.
+	
 	game putXAt: 2 @ 2.
 	game putOAt: 1 @ 1.
 	game putXAt: 1 @ 3.
@@ -904,13 +909,14 @@ test43LastSlideX
 	game putXAt: 2 @ 1.
 	game putOAt: 2 @ 3.
 	game slideXFrom: 2 @ 2 to: 1 @ 2.
-	
-	self assert: game lastPlay equals: 'Last move: X slide from: 2@2 to: 1@2'! !
+		
+	self assert: (XMovement from: 2@2 to: 1@2) equals: game lastPlay.! !
 
-!TerniLapilliTest methodsFor: 'testingLastMove' stamp: 'la 11/10/2018 02:57:35'!
-test44LastSlideO
+!TerniLapilliTest methodsFor: 'testingLastMove' stamp: 'jml 11/10/2018 05:42:03'!
+test45LastPlayIsAnOMovement
 
 	game _ TerniLapilli new.
+	
 	game putXAt: 2 @ 2.
 	game putOAt: 1 @ 1.
 	game putXAt: 1 @ 3.
@@ -919,7 +925,8 @@ test44LastSlideO
 	game putOAt: 2 @ 3.
 	game slideXFrom: 2 @ 2 to: 1 @ 2.
 	game slideOFrom: 2 @ 3 to: 3 @ 3. 
-	self assert: game lastPlay equals: 'Last move: O slide from: 2@3 to: 3@3'! !
+	
+	self assert: (OMovement from: 2@3 to: 3@3) equals: game lastPlay.! !
 
 
 !classDefinition: #TerniLapilli category: #TerniLapilli!
@@ -1004,14 +1011,18 @@ hasWin: positions
 		or: [ self hasDownDiagonal: positions ]]].! !
 
 
-!TerniLapilli methodsFor: 'initialization' stamp: 'la 11/10/2018 03:03:15'!
+!TerniLapilli methodsFor: 'initialization' stamp: 'jml 11/10/2018 05:03:21'!
 initialize
 
-	playerXPositions := OrderedCollection new.
-	playerOPositions := OrderedCollection new.
-	state := PlacingX new initializeFor: self.
-	observers := OrderedCollection new.
-	lastPlay:= 'There is no previous move'.! !
+	playerXPositions _ OrderedCollection new.
+	playerOPositions _ OrderedCollection new.
+	observers _ OrderedCollection new.
+	
+	state _ PlacingX new initializeFor: self.
+	lastPlay _ NoPlay new.
+	
+	
+	! !
 
 
 !TerniLapilli methodsFor: 'marking board' stamp: 'JG 11/6/2018 20:34:26'!
@@ -1027,25 +1038,20 @@ putXAt: aPosition
 	state putXAt: aPosition! !
 
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/9/2018 16:16:25'!
-changeStateAfterAdding: aPosition to: positions  
-
-	positions add: aPosition.
-	state := TerniLapilliState for: self.
-	
-	observers do: [ :observer | observer stateChangedTo: state ].! !
-
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'la 11/10/2018 03:02:44'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/10/2018 05:44:24'!
 putOWhenPlacingOAt: aPosition
 
 	self playerOHasPiecesToPlace.
 	self assertIsFree: aPosition.
 	
+	lastPlay := OPlacement at: aPosition.
+	
+	playerOPositions add: aPosition.
+	
+	state _ TerniLapilliState for: self.
+	
 	observers do: [ :observer | observer oHasPlacedAt: aPosition ].
-	
-	self lastPlacingFor: 'O' at: aPosition.
-	
-	self changeStateAfterAdding: aPosition to: playerOPositions.! !
+	observers do: [ :observer | observer stateChangedTo: state ].! !
 
 !TerniLapilli methodsFor: 'marking board - private' stamp: 'JG 10/28/2018 12:39:41'!
 putOWhenPlacingXAt: aPosition
@@ -1067,17 +1073,20 @@ putXWhenPlacingOAt: aPoint
 	
 	self error: self class notXTurnErrorMessage! !
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'la 11/10/2018 03:01:41'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/10/2018 04:59:06'!
 putXWhenPlacingXAt: aPosition
 
 	self playerXHasPiecesToPlace.
 	self assertIsFree: aPosition.
 	
-	observers do: [ :observer | observer xHasPlacedAt: aPosition ].
+	lastPlay := XPlacement at: aPosition.
 	
-	self lastPlacingFor: 'X' at: aPosition.
-
-	self changeStateAfterAdding: aPosition to: playerXPositions.! !
+	playerXPositions add: aPosition.
+	
+	state _ TerniLapilliState for: self.
+	
+	observers do: [ :observer | observer xHasPlacedAt: aPosition ].
+	observers do: [ :observer | observer stateChangedTo: state ].! !
 
 !TerniLapilli methodsFor: 'marking board - private' stamp: 'JG 10/28/2018 12:38:49'!
 putXWhenSlidingOAt: aPoint 
@@ -1140,20 +1149,22 @@ slideOWhenPlayingXFrom: aPosition to: anotherPosition
 
 	self error: self class notOTurnErrorMessage ! !
 
-!TerniLapilli methodsFor: 'sliding - private' stamp: 'la 11/10/2018 03:01:02'!
-slideOWhenSlidingOFrom: aPosition to: anotherPosition
+!TerniLapilli methodsFor: 'sliding - private' stamp: 'jml 11/10/2018 04:57:36'!
+slideOWhenSlidingOFrom: origin to: destination
 	
-	self assertIsFree: anotherPosition .
-	self assertIsLegalMovementFrom: aPosition to: anotherPosition.
+	self assertIsFree: destination .
+	self assertIsLegalMovementFrom: origin to: destination.
 	
-	playerOPositions remove: aPosition.
+	lastPlay := OMovement from: origin to: destination.
 	
-	observers do: [ :observer | observer oHasSlidFrom: aPosition to: anotherPosition ].
+	playerOPositions
+		remove: origin;
+		add: destination.
 	
-	self lastSlidingMovefor: 'O' from: aPosition to: anotherPosition.
+	state _ TerniLapilliState for: self.
 	
-	self changeStateAfterAdding: anotherPosition to: playerOPositions
-	 ! !
+	observers do: [ :observer | observer oHasSlidFrom: origin to: destination ].
+	observers do: [ :observer | observer stateChangedTo: state ].! !
 
 !TerniLapilli methodsFor: 'sliding - private' stamp: 'HAW 11/8/2018 11:16:01'!
 slideXWhenPlacingXFrom: aPosition to: anotherPosition
@@ -1165,19 +1176,22 @@ slideXWhenPlayingOFrom: aPosition to: anotherPosition
 
 	self error: self class notXTurnErrorMessage! !
 
-!TerniLapilli methodsFor: 'sliding - private' stamp: 'la 11/10/2018 03:01:02'!
-slideXWhenSlidingXFrom: aPosition to: anotherPosition
+!TerniLapilli methodsFor: 'sliding - private' stamp: 'jml 11/10/2018 05:00:36'!
+slideXWhenSlidingXFrom: origin to: destination
 	
-	self assertIsFree: anotherPosition .
-	self assertIsLegalMovementFrom: aPosition to: anotherPosition.
+	self assertIsFree: destination.
+	self assertIsLegalMovementFrom: origin to: destination.
 	
-	playerXPositions remove: aPosition.
+	lastPlay := XMovement from: origin to: destination.
 	
-	observers do: [ :observer | observer xHasSlidFrom: aPosition to: anotherPosition ].
+	playerXPositions
+		remove: origin;
+		add: destination.
 	
-	self lastSlidingMovefor: 'X' from: aPosition to: anotherPosition.
+	state _ TerniLapilliState for: self.
 	
-	self changeStateAfterAdding: anotherPosition to: playerXPositions! !
+	observers do: [ :observer | observer oHasSlidFrom: origin to: destination ].
+	observers do: [ :observer | observer stateChangedTo: state ].! !
 
 
 !TerniLapilli methodsFor: 'testing board positions' stamp: 'HAW 11/8/2018 12:19:28'!
@@ -1250,10 +1264,10 @@ addObserver: anObserver
 	observers add: anObserver.! !
 
 
-!TerniLapilli methodsFor: 'lastPlay' stamp: 'la 11/10/2018 02:07:31'!
+!TerniLapilli methodsFor: 'lastPlay' stamp: 'jml 11/10/2018 04:06:36'!
 lastPlay
 	
-	^lastPlay value! !
+	^ lastPlay! !
 
 
 !TerniLapilli methodsFor: 'lastPlay - private' stamp: 'la 11/10/2018 03:02:24'!
@@ -1330,6 +1344,162 @@ positionOutsideBoardErrorMessage
 positionTakenErrorMessage
 	
 	^'Position taken'! !
+
+
+!classDefinition: #TerniLapilliPlay category: #TerniLapilli!
+Object subclass: #TerniLapilliPlay
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!TerniLapilliPlay methodsFor: 'comparing' stamp: 'jml 11/10/2018 05:10:57'!
+= anObject
+	
+	self subclassResponsibility! !
+
+!TerniLapilliPlay methodsFor: 'comparing' stamp: 'jml 11/10/2018 05:24:05'!
+hash
+	
+	self subclassResponsibility! !
+
+
+!classDefinition: #Movement category: #TerniLapilli!
+TerniLapilliPlay subclass: #Movement
+	instanceVariableNames: 'origin destination'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!Movement methodsFor: 'initialization' stamp: 'jml 11/10/2018 05:19:15'!
+initializeFrom: fromPosition to: toPosition
+	
+	origin _ fromPosition.
+	destination _ toPosition.! !
+
+
+!Movement methodsFor: 'accessing' stamp: 'jml 11/10/2018 05:19:15'!
+destination
+	
+	^ destination! !
+
+!Movement methodsFor: 'accessing' stamp: 'jml 11/10/2018 05:19:01'!
+origin
+	
+	^ origin! !
+
+
+!Movement methodsFor: 'comparing' stamp: 'jml 11/10/2018 05:19:15'!
+= anObject
+	
+	^ self class = anObject class and: [ origin = anObject origin and: [ destination = anObject destination ] ]! !
+
+!Movement methodsFor: 'comparing' stamp: 'jml 11/10/2018 05:23:44'!
+hash
+	
+	^ self class hash bitXor: (self origin hash bitXor: self destination hash)! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Movement class' category: #TerniLapilli!
+Movement class
+	instanceVariableNames: ''!
+
+!Movement class methodsFor: 'instance creation' stamp: 'jml 11/10/2018 04:47:18'!
+from: fromPosition to: toPosition
+	
+	^ self new initializeFrom: fromPosition to: toPosition! !
+
+
+!classDefinition: #OMovement category: #TerniLapilli!
+Movement subclass: #OMovement
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+
+!classDefinition: #XMovement category: #TerniLapilli!
+Movement subclass: #XMovement
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+
+!classDefinition: #NoPlay category: #TerniLapilli!
+TerniLapilliPlay subclass: #NoPlay
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!NoPlay methodsFor: 'comparing' stamp: 'jml 11/10/2018 05:26:20'!
+= anObject
+	
+	^ self class = anObject class! !
+
+!NoPlay methodsFor: 'comparing' stamp: 'jml 11/10/2018 05:26:52'!
+hash
+	
+	^ self class hash! !
+
+
+!classDefinition: #Placement category: #TerniLapilli!
+TerniLapilliPlay subclass: #Placement
+	instanceVariableNames: 'position'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!Placement methodsFor: 'initialization' stamp: 'jml 11/10/2018 04:51:34'!
+initializeAt: aPosition
+	
+	position _ aPosition.! !
+
+
+!Placement methodsFor: 'accessing' stamp: 'jml 11/10/2018 05:25:20'!
+position
+	
+	^ position! !
+
+
+!Placement methodsFor: 'comparing' stamp: 'jml 11/10/2018 05:29:09'!
+= anObject
+	
+	^ self class = anObject class and: [ position = anObject position ]! !
+
+!Placement methodsFor: 'comparing' stamp: 'jml 11/10/2018 05:25:08'!
+hash
+	
+	^ self class hash bitXor: self position hash! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Placement class' category: #TerniLapilli!
+Placement class
+	instanceVariableNames: ''!
+
+!Placement class methodsFor: 'instance creation' stamp: 'jml 11/10/2018 04:51:14'!
+at: aPosition
+	
+	^ self new initializeAt: aPosition.! !
+
+
+!classDefinition: #OPlacement category: #TerniLapilli!
+Placement subclass: #OPlacement
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+
+!classDefinition: #XPlacement category: #TerniLapilli!
+Placement subclass: #XPlacement
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
 
 
 !classDefinition: #TerniLapilliState category: #TerniLapilli!
