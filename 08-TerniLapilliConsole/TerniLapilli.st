@@ -437,15 +437,10 @@ initializeFor: aGame
 	.! !
 
 
-!TerniLapilliBoardView methodsFor: 'accessing' stamp: 'jml 11/10/2018 06:23:17'!
+!TerniLapilliBoardView methodsFor: 'accessing' stamp: 'jml 11/10/2018 14:09:50'!
 output
 	
-	^ (self at: (1@1)), '|', (self at: (1@2)), '|', (self at: (1@3)), '
------
-', (self at: (2@1)), '|', (self at: (2@2)), '|', (self at: (2@3)), '
------
-', (self at: (3@1)), '|', (self at: (3@2)), '|', (self at: (3@3)), '
-', currentState! !
+	^ self boardDisplay, String newLineString, currentState! !
 
 
 !TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'jml 11/10/2018 13:50:05'!
@@ -487,6 +482,22 @@ move: player from: origin to: destination
 	self
 		at: origin put: ' ';
 		at: destination put: player.! !
+
+
+!TerniLapilliBoardView methodsFor: 'display' stamp: 'jml 11/10/2018 14:10:02'!
+boardDisplay
+	
+	^ (self rowSeparator join: (board collect: [ :row | self cellSeparator join: row ]))! !
+
+!TerniLapilliBoardView methodsFor: 'display' stamp: 'jml 11/10/2018 14:07:48'!
+cellSeparator
+	
+	^ '|'! !
+
+!TerniLapilliBoardView methodsFor: 'display' stamp: 'jml 11/10/2018 14:11:38'!
+rowSeparator
+	
+	^ String newLineString, '-----', String newLineString! !
 
 
 !TerniLapilliBoardView methodsFor: 'messages' stamp: 'jml 11/9/2018 16:57:41'!
