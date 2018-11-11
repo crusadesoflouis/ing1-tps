@@ -601,6 +601,11 @@ output
 	^ ReadStream on: lines! !
 
 
+!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'la 11/11/2018 15:37:58'!
+visitGameOverStatement: aGameOverState 
+
+	self addLine: (self winningLineFor: (game hasPlayerXWon ifTrue: [ 'X' ] ifFalse: [ 'O' ])).! !
+
 !TerniLapilliConsole methodsFor: 'play visiting' stamp: 'jml 11/10/2018 13:48:22'!
 visitOMovement: aMovement
 	
@@ -611,6 +616,11 @@ visitOPlacement: aPlacement
 	
 	self addLine: (self placingLineFor: 'O' at: aPlacement position).! !
 
+!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'la 11/11/2018 14:36:04'!
+visitOStatement: aPlacingO 
+	
+	self addLine: (self turnLineFor: 'O').! !
+
 !TerniLapilliConsole methodsFor: 'play visiting' stamp: 'jml 11/10/2018 13:49:09'!
 visitXMovement: aMovement
 	
@@ -620,6 +630,11 @@ visitXMovement: aMovement
 visitXPlacement: aPlacement
 	
 	self addLine: (self placingLineFor: 'X' at: aPlacement position).! !
+
+!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'la 11/11/2018 14:57:40'!
+visitXStatement: aPlacingX 
+
+	self addLine: (self turnLineFor: 'X').! !
 
 
 !TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/9/2018 13:56:26'!
@@ -638,18 +653,6 @@ slidingLineFor: aPlayer from: fromPosition to: toPosition
 	
 	^ aPlayer , ' deslizó hasta ', toPosition printString, ' desde ', fromPosition printString! !
 
-!TerniLapilliConsole methodsFor: 'messages' stamp: 'jml 11/9/2018 14:16:00'!
-stateLineFor: newState
-	
-	(newState isKindOf: PlayingO) ifTrue: [ ^ self turnLineFor: 'O' ].
-	(newState isKindOf: PlayingX) ifTrue: [ ^ self turnLineFor: 'X' ].
-	
-	(newState isKindOf: GameOverState) ifTrue: [
-		^ self winningLineFor: (game hasPlayerXWon ifTrue: [ 'X' ] ifFalse: [ 'O' ])
-	].
-	
-	self error: 'State not recognized'.! !
-
 !TerniLapilliConsole methodsFor: 'messages' stamp: 'jml 11/9/2018 14:00:58'!
 turnLineFor: aPlayer
 	
@@ -661,12 +664,11 @@ winningLineFor: aPlayer
 	^ 'Estado: Juego terminado - ¡Ganó ', aPlayer, '!!'! !
 
 
-!TerniLapilliConsole methodsFor: 'state' stamp: 'jml 11/10/2018 05:58:23'!
+!TerniLapilliConsole methodsFor: 'state' stamp: 'la 11/11/2018 14:51:44'!
 stateChangedTo: newState
 	
 	game lastPlay accept: self.
-	
-	self addLine: (self stateLineFor: newState)
+	newState accept: self.
 	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
@@ -957,6 +959,13 @@ TerniLapilliState subclass: #GameOverState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
+!GameOverState methodsFor: 'testing game result' stamp: 'la 11/11/2018 14:59:44'!
+accept: aVisitor
+
+	aVisitor visitGameOverStatement: self
+	
+	! !
+
 !GameOverState methodsFor: 'testing game result' stamp: 'HAW 11/8/2018 12:15:43'!
 isOver
 
@@ -1014,6 +1023,14 @@ slideXFrom: aPosition to: anotherPostion
 
 	game slideXWhenPlayingOFrom: aPosition to: anotherPostion .! !
 
+
+!PlayingO methodsFor: 'visitor' stamp: 'la 11/11/2018 14:58:27'!
+accept: aVisitor
+
+	aVisitor visitOStatement: self
+	
+	! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'PlayingO class' category: #TerniLapilli!
@@ -1048,6 +1065,7 @@ putXAt: aPosition
 slideOFrom: aPosition to: anotherPostion
 
 	game slideOWhenPlacingOFrom: aPosition to: anotherPostion .! !
+
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1120,6 +1138,14 @@ slideOFrom: aPosition to: anotherPostion
  
 	game slideOWhenPlayingXFrom: aPosition to: anotherPostion .! !
 
+
+!PlayingX methodsFor: 'visitor' stamp: 'la 11/11/2018 14:58:38'!
+accept: aVisitor
+
+	aVisitor visitXStatement: self
+	
+	! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'PlayingX class' category: #TerniLapilli!
@@ -1160,6 +1186,7 @@ slideXFrom: aPosition to: anotherPostion
 isPlacingX
 
 	^true! !
+
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
