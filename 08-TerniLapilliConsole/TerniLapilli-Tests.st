@@ -33,7 +33,7 @@ StreamTest subclass: #TerniLapilliConsoleTest
 	poolDictionaries: ''
 	category: 'TerniLapilli-Tests'!
 
-!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/9/2018 12:49:28'!
+!TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'la 11/11/2018 14:32:11'!
 test01XPlacing
 	
 	| game console |
@@ -47,8 +47,7 @@ test01XPlacing
 	self assertLinesIn: console output equals: {
 		'X marcó en 2@2'.
 		'Estado: Jugando O'
-	}.
-	! !
+	}.! !
 
 !TerniLapilliConsoleTest methodsFor: 'testing' stamp: 'jml 11/9/2018 12:59:24'!
 test02OPlacing
