@@ -1,6 +1,53 @@
+!classDefinition: #ActiveVariable category: #TerniLapilli!
+Object subclass: #ActiveVariable
+	instanceVariableNames: 'value observers'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!ActiveVariable methodsFor: 'observing' stamp: 'jml 11/12/2018 00:57:37'!
+addObserver: anObserver
+	
+	observers add: anObserver.! !
+
+
+!ActiveVariable methodsFor: 'error handling' stamp: 'jml 11/12/2018 01:02:16'!
+doesNotUnderstand: aMessage
+	
+	^ aMessage sendTo: value.
+	
+	! !
+
+
+!ActiveVariable methodsFor: 'value' stamp: 'jml 11/12/2018 00:58:43'!
+setValue: newValue
+
+	value _ newValue.
+	
+	observers do: [ :observer | observer valueChangedTo: newValue ].! !
+
+
+!ActiveVariable methodsFor: 'initialization' stamp: 'jml 11/12/2018 00:57:41'!
+initializeWith: aValue
+	
+	value _ aValue.
+	observers _ Set new.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ActiveVariable class' category: #TerniLapilli!
+ActiveVariable class
+	instanceVariableNames: ''!
+
+!ActiveVariable class methodsFor: 'instance creation' stamp: 'jml 11/12/2018 00:56:40'!
+with: aValue
+	
+	^ self new initializeWith: aValue! !
+
+
 !classDefinition: #TerniLapilli category: #TerniLapilli!
 Object subclass: #TerniLapilli
-	instanceVariableNames: 'state playerOPositions playerXPositions console observers lastPlay'
+	instanceVariableNames: 'state playerOPositions playerXPositions lastPlay'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
@@ -80,14 +127,14 @@ hasWin: positions
 		or: [ self hasDownDiagonal: positions ]]].! !
 
 
-!TerniLapilli methodsFor: 'initialization' stamp: 'jml 11/10/2018 05:03:21'!
+!TerniLapilli methodsFor: 'initialization' stamp: 'jml 11/12/2018 01:00:00'!
 initialize
 
 	playerXPositions _ OrderedCollection new.
 	playerOPositions _ OrderedCollection new.
-	observers _ OrderedCollection new.
-	
-	state _ PlacingX new initializeFor: self.
+		
+	state _ ActiveVariable with: (PlacingX new initializeFor: self).
+
 	lastPlay _ NoPlay new.
 	
 	
@@ -107,7 +154,7 @@ putXAt: aPosition
 	state putXAt: aPosition! !
 
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/10/2018 06:04:15'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/12/2018 01:04:22'!
 putOWhenPlacingOAt: aPosition
 
 	self playerOHasPiecesToPlace.
@@ -117,9 +164,7 @@ putOWhenPlacingOAt: aPosition
 	
 	playerOPositions add: aPosition.
 	
-	state _ TerniLapilliState for: self.
-	
-	observers do: [ :observer | observer stateChangedTo: state ].! !
+	self updateState.! !
 
 !TerniLapilli methodsFor: 'marking board - private' stamp: 'JG 10/28/2018 12:39:41'!
 putOWhenPlacingXAt: aPosition
@@ -141,7 +186,7 @@ putXWhenPlacingOAt: aPoint
 	
 	self error: self class notXTurnErrorMessage! !
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/10/2018 06:04:20'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'jml 11/12/2018 01:04:34'!
 putXWhenPlacingXAt: aPosition
 
 	self playerXHasPiecesToPlace.
@@ -151,9 +196,7 @@ putXWhenPlacingXAt: aPosition
 	
 	playerXPositions add: aPosition.
 	
-	state _ TerniLapilliState for: self.
-	
-	observers do: [ :observer | observer stateChangedTo: state ].! !
+	self updateState.! !
 
 !TerniLapilli methodsFor: 'marking board - private' stamp: 'JG 10/28/2018 12:38:49'!
 putXWhenSlidingOAt: aPoint 
@@ -217,7 +260,7 @@ slideOWhenPlayingXFrom: aPosition to: anotherPosition
 
 	self error: self class notOTurnErrorMessage ! !
 
-!TerniLapilli methodsFor: 'sliding - private' stamp: 'jml 11/10/2018 06:04:24'!
+!TerniLapilli methodsFor: 'sliding - private' stamp: 'jml 11/12/2018 01:04:45'!
 slideOWhenSlidingOFrom: origin to: destination
 	
 	self assertIsFree: destination .
@@ -229,9 +272,7 @@ slideOWhenSlidingOFrom: origin to: destination
 		remove: origin;
 		add: destination.
 	
-	state _ TerniLapilliState for: self.
-	
-	observers do: [ :observer | observer stateChangedTo: state ].! !
+	self updateState.! !
 
 !TerniLapilli methodsFor: 'sliding - private' stamp: 'HAW 11/8/2018 11:16:01'!
 slideXWhenPlacingXFrom: aPosition to: anotherPosition
@@ -243,7 +284,7 @@ slideXWhenPlayingOFrom: aPosition to: anotherPosition
 
 	self error: self class notXTurnErrorMessage! !
 
-!TerniLapilli methodsFor: 'sliding - private' stamp: 'jml 11/10/2018 06:04:28'!
+!TerniLapilli methodsFor: 'sliding - private' stamp: 'jml 11/12/2018 01:04:49'!
 slideXWhenSlidingXFrom: origin to: destination
 	
 	self assertIsFree: destination.
@@ -255,9 +296,7 @@ slideXWhenSlidingXFrom: origin to: destination
 		remove: origin;
 		add: destination.
 	
-	state _ TerniLapilliState for: self.
-	
-	observers do: [ :observer | observer stateChangedTo: state ].! !
+	self updateState.! !
 
 
 !TerniLapilli methodsFor: 'testing board positions' stamp: 'HAW 11/8/2018 11:30:51'!
@@ -360,10 +399,15 @@ isSlidingX
 	^state isSlidingX! !
 
 
-!TerniLapilli methodsFor: 'observing' stamp: 'jml 11/9/2018 16:14:22'!
-addObserver: anObserver
+!TerniLapilli methodsFor: 'state' stamp: 'jml 11/12/2018 01:00:49'!
+addStateObserver: anObserver
 	
-	observers add: anObserver.! !
+	state addObserver: anObserver.! !
+
+!TerniLapilli methodsFor: 'state' stamp: 'jml 11/12/2018 01:04:09'!
+updateState
+	
+	state setValue: (TerniLapilliState for: self).! !
 
 
 !TerniLapilli methodsFor: 'accessing' stamp: 'jml 11/10/2018 04:06:36'!
@@ -449,8 +493,8 @@ Object subclass: #TerniLapilliObserver
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!TerniLapilliObserver methodsFor: 'state' stamp: 'jml 11/10/2018 06:15:03'!
-stateChangedTo: aState
+!TerniLapilliObserver methodsFor: 'observing' stamp: 'jml 11/12/2018 01:06:10'!
+valueChangedTo: aState
 	
 	self subclassResponsibility! !
 
@@ -509,19 +553,19 @@ TerniLapilliObserver subclass: #TerniLapilliBoardView
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!TerniLapilliBoardView methodsFor: 'initialization' stamp: 'la 11/12/2018 02:23:43'!
+!TerniLapilliBoardView methodsFor: 'initialization' stamp: 'jml 11/12/2018 01:01:04'!
 initializeFor: aGame 
 	
 	game _ aGame.
 	
-	aGame addObserver: self.
+	aGame addStateObserver: self.
 	
 	currentState :=  ''.
 	
 	board := (1 to: 3) collect: [ :rowNumber | Array new: 3 withAll: ' ' ].! !
 
 
-!TerniLapilliBoardView methodsFor: 'accessing' stamp: 'jml 11/10/2018 14:09:50'!
+!TerniLapilliBoardView methodsFor: 'viewing' stamp: 'jml 11/10/2018 14:09:50'!
 output
 	
 	^ self boardDisplay, String newLineString, currentState! !
@@ -624,8 +668,8 @@ winningLineFor: aPlayer
 	^ aPlayer, ' Won!!'! !
 
 
-!TerniLapilliBoardView methodsFor: 'state' stamp: 'la 11/12/2018 02:18:47'!
-stateChangedTo: aState
+!TerniLapilliBoardView methodsFor: 'observing' stamp: 'jml 11/12/2018 01:06:10'!
+valueChangedTo: aState
 	
 	game lastPlay accept: self.
 	aState accept: self.! !
@@ -649,16 +693,16 @@ TerniLapilliObserver subclass: #TerniLapilliConsole
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!TerniLapilliConsole methodsFor: 'initialization' stamp: 'jml 11/9/2018 16:17:45'!
+!TerniLapilliConsole methodsFor: 'initialization' stamp: 'jml 11/12/2018 01:01:07'!
 initializeFor: aGame
 	
 	game _ aGame.
 	lines _ OrderedCollection new.
 	
-	aGame addObserver: self.! !
+	aGame addStateObserver: self.! !
 
 
-!TerniLapilliConsole methodsFor: 'accessing' stamp: 'jml 11/8/2018 19:54:55'!
+!TerniLapilliConsole methodsFor: 'viewing' stamp: 'jml 11/8/2018 19:54:55'!
 output
 
 	^ ReadStream on: lines! !
@@ -738,8 +782,8 @@ winningLineFor: aPlayer
 	^ 'Estado: Juego terminado - ¡Ganó ', aPlayer, '!!'! !
 
 
-!TerniLapilliConsole methodsFor: 'state' stamp: 'la 11/11/2018 14:51:44'!
-stateChangedTo: newState
+!TerniLapilliConsole methodsFor: 'observing' stamp: 'jml 11/12/2018 01:06:10'!
+valueChangedTo: newState
 	
 	game lastPlay accept: self.
 	newState accept: self.
