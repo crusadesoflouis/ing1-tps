@@ -184,8 +184,9 @@ moveLegalFrom: aPosition to: anotherPosition
 	
 	^ (self is: aPosition connectedTo: anotherPosition) and: [ self isInBoardBounds: anotherPosition ]! !
 
-!TerniLapilli methodsFor: 'positions' stamp: 'HAW 10/25/2017 15:56:16'!
+!TerniLapilli methodsFor: 'positions' stamp: 'la 11/11/2018 20:47:55'!
 playerOPositions
+
 	^ playerOPositions copy.! !
 
 !TerniLapilli methodsFor: 'positions' stamp: 'HAW 10/25/2017 15:56:32'!
@@ -461,14 +462,16 @@ TerniLapilliObserver subclass: #TerniLapilliBoardView
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!TerniLapilliBoardView methodsFor: 'initialization' stamp: 'jml 11/10/2018 14:20:51'!
+!TerniLapilliBoardView methodsFor: 'initialization' stamp: 'la 11/11/2018 20:43:48'!
 initializeFor: aGame 
 	
 	game _ aGame.
 	
 	aGame addObserver: self.
 	
-	currentState := self stateLineFor: game state.
+	 "TODO:  observar que, cuando se crea un boardView una vez que el juego ya fue inicializado, el current state no deberia decir nada, creo que el test del tablero vacio deberia mostrar solo el test vacio y que
+	de estado no diga que juega ninguno, hasta que el juego le diga al tablero que se actualice"	
+	currentState :=  'Playing X'.
 	
 	board := (1 to: 3) collect: [ :rowNumber | Array new: 3 withAll: ' ' ].! !
 
@@ -478,6 +481,11 @@ output
 	
 	^ self boardDisplay, String newLineString, currentState! !
 
+
+!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'la 11/11/2018 20:59:19'!
+visitGameOverState: aGame
+	
+	currentState _ (game hasPlayerXWon ifTrue: [ 'X' ] ifFalse: [ 'O' ]),' Won!!'.! !
 
 !TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'jml 11/10/2018 13:50:05'!
 visitOMovement: aMovement
@@ -489,6 +497,26 @@ visitOMovement: aMovement
 visitOPlacement: aPlacement
 	
 	self at: aPlacement position put: 'O'.! !
+
+!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'la 11/11/2018 21:08:39'!
+visitPlacingOState: aPlacingO 
+	
+	currentState _ 'Playing O'.! !
+
+!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'la 11/11/2018 21:18:06'!
+visitPlacingXState: aGame 
+
+	currentState _ 'Playing X'.! !
+
+!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'la 11/11/2018 21:12:25'!
+visitSlidingOState: aSlidingX 
+
+	currentState _ 'Playing O'.! !
+
+!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'la 11/11/2018 21:12:17'!
+visitSlidingXState: aSlidingX 
+
+	currentState _ 'Playing X'.! !
 
 !TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'jml 11/10/2018 13:50:00'!
 visitXMovement: aMovement
@@ -536,19 +564,6 @@ rowSeparator
 	^ String newLineString, '-----', String newLineString! !
 
 
-!TerniLapilliBoardView methodsFor: 'messages' stamp: 'jml 11/9/2018 16:57:41'!
-stateLineFor: aState
-	
-	(aState isKindOf: PlayingO) ifTrue: [ ^ self turnLineFor: 'O' ].
-	(aState isKindOf: PlayingX) ifTrue: [ ^ self turnLineFor: 'X' ].
-	
-	(aState isKindOf: GameOverState) ifTrue: [
-		^ self winningLineFor: (game hasPlayerXWon ifTrue: [ 'X' ] ifFalse: [ 'O' ])
-	].
-	
-	self error: 'State not recognized'.
-	! !
-
 !TerniLapilliBoardView methodsFor: 'messages' stamp: 'jml 11/9/2018 16:46:29'!
 turnLineFor: aPlayer
 	
@@ -560,12 +575,12 @@ winningLineFor: aPlayer
 	^ aPlayer, ' Won!!'! !
 
 
-!TerniLapilliBoardView methodsFor: 'state' stamp: 'jml 11/10/2018 06:15:47'!
+!TerniLapilliBoardView methodsFor: 'state' stamp: 'la 11/11/2018 21:00:24'!
 stateChangedTo: aState
 	
 	game lastPlay accept: self.
 	
-	currentState := self stateLineFor: aState.! !
+	aState accept: self.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -601,8 +616,8 @@ output
 	^ ReadStream on: lines! !
 
 
-!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'la 11/11/2018 15:37:58'!
-visitGameOverStatement: aGameOverState 
+!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'la 11/11/2018 20:59:19'!
+visitGameOverState: aGameOverState 
 
 	self addLine: (self winningLineFor: (game hasPlayerXWon ifTrue: [ 'X' ] ifFalse: [ 'O' ])).! !
 
@@ -616,10 +631,25 @@ visitOPlacement: aPlacement
 	
 	self addLine: (self placingLineFor: 'O' at: aPlacement position).! !
 
-!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'la 11/11/2018 14:36:04'!
-visitOStatement: aPlacingO 
+!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'la 11/11/2018 21:08:39'!
+visitPlacingOState: aPlacingO 
 	
 	self addLine: (self turnLineFor: 'O').! !
+
+!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'la 11/11/2018 21:17:06'!
+visitPlacingXState: aGame 
+	
+	self addLine: (self turnLineFor: 'X').! !
+
+!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'la 11/11/2018 21:11:31'!
+visitSlidingOState: aSlidingX 
+	
+	self addLine: (self turnLineFor: 'O').! !
+
+!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'la 11/11/2018 21:11:24'!
+visitSlidingXState: aSlidingX 
+	
+	self addLine: (self turnLineFor: 'X').! !
 
 !TerniLapilliConsole methodsFor: 'play visiting' stamp: 'jml 11/10/2018 13:49:09'!
 visitXMovement: aMovement
@@ -630,11 +660,6 @@ visitXMovement: aMovement
 visitXPlacement: aPlacement
 	
 	self addLine: (self placingLineFor: 'X' at: aPlacement position).! !
-
-!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'la 11/11/2018 14:57:40'!
-visitXStatement: aPlacingX 
-
-	self addLine: (self turnLineFor: 'X').! !
 
 
 !TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/9/2018 13:56:26'!
@@ -959,10 +984,10 @@ TerniLapilliState subclass: #GameOverState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!GameOverState methodsFor: 'testing game result' stamp: 'la 11/11/2018 14:59:44'!
+!GameOverState methodsFor: 'testing game result' stamp: 'la 11/11/2018 20:59:19'!
 accept: aVisitor
 
-	aVisitor visitGameOverStatement: self
+	aVisitor visitGameOverState: self
 	
 	! !
 
@@ -1024,13 +1049,6 @@ slideXFrom: aPosition to: anotherPostion
 	game slideXWhenPlayingOFrom: aPosition to: anotherPostion .! !
 
 
-!PlayingO methodsFor: 'visitor' stamp: 'la 11/11/2018 14:58:27'!
-accept: aVisitor
-
-	aVisitor visitOStatement: self
-	
-	! !
-
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'PlayingO class' category: #TerniLapilli!
@@ -1066,6 +1084,13 @@ slideOFrom: aPosition to: anotherPostion
 
 	game slideOWhenPlacingOFrom: aPosition to: anotherPostion .! !
 
+
+!PlacingO methodsFor: 'visitor' stamp: 'la 11/11/2018 21:08:39'!
+accept: aVisitor
+
+	aVisitor visitPlacingOState: self
+	
+	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1103,6 +1128,12 @@ slideOFrom: aPosition to: anotherPostion
 	game slideOWhenSlidingOFrom: aPosition to: anotherPostion .! !
 
 
+!SlidingO methodsFor: 'testing pieces placed' stamp: 'la 11/11/2018 21:09:48'!
+accept: aVisitor
+
+	aVisitor visitSlidingOState: self
+	! !
+
 !SlidingO methodsFor: 'testing pieces placed' stamp: 'JG 10/28/2018 12:04:38'!
 areAllXsOnTheBoard
 	
@@ -1138,13 +1169,6 @@ slideOFrom: aPosition to: anotherPostion
  
 	game slideOWhenPlayingXFrom: aPosition to: anotherPostion .! !
 
-
-!PlayingX methodsFor: 'visitor' stamp: 'la 11/11/2018 14:58:38'!
-accept: aVisitor
-
-	aVisitor visitXStatement: self
-	
-	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1188,6 +1212,11 @@ isPlacingX
 	^true! !
 
 
+!PlacingX methodsFor: 'visitor' stamp: 'la 11/11/2018 21:16:14'!
+accept: aVisitor
+
+	aVisitor visitPlacingXState: self.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'PlacingX class' category: #TerniLapilli!
@@ -1229,6 +1258,12 @@ areAllXsOnTheBoard
 	
 	^true! !
 
+
+!SlidingX methodsFor: 'testing playing turn' stamp: 'la 11/11/2018 21:10:00'!
+accept: aVisitor
+
+	aVisitor visitSlidingXState: self
+	! !
 
 !SlidingX methodsFor: 'testing playing turn' stamp: 'HAW 11/8/2018 11:29:47'!
 isSlidingX
