@@ -240,26 +240,8 @@ TestCase subclass: #TerniLapilliBoardViewTest
 	poolDictionaries: ''
 	category: 'TerniLapilli-Tests'!
 
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/10/2018 14:24:02'!
-test01EmptyBoard
-	
-	| game boardView |
-	
-	game _ TerniLapilli new.
-	
-	boardView _ TerniLapilliBoardView for: game.
-	
-	self assert:
-' | | 
------
- | | 
------
- | | 
-Playing X'
-	equals: boardView output.! !
-
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/10/2018 14:24:24'!
-test02XPlacing
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/12/2018 02:21:16'!
+test01XPlacing
 	
 	| game boardView |
 	
@@ -278,8 +260,8 @@ X| |
 Playing O'
 	equals: boardView output.! !
 
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/10/2018 14:24:38'!
-test03OPlacing
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/12/2018 02:21:25'!
+test02OPlacing
 	
 	| game boardView |
 	
@@ -300,8 +282,8 @@ X|O|
 Playing X'
 	equals: boardView output.! !
 
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/10/2018 14:24:50'!
-test04XWins
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/12/2018 02:21:34'!
+test03XWins
 	
 	| game boardView |
 	
@@ -325,8 +307,8 @@ test04XWins
 X Won!!'
 	equals: boardView output.! !
 
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/10/2018 14:25:00'!
-test05OWins
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/12/2018 02:21:41'!
+test04OWins
 	
 	| game boardView |
 	
@@ -351,8 +333,8 @@ O| |X
 O Won!!'
 	equals: boardView output.! !
 
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/10/2018 14:25:08'!
-test06XSliding
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/12/2018 02:21:50'!
+test05XSliding
 	
 	| game boardView |
 	
@@ -378,8 +360,8 @@ O|X|X
 Playing O'
 	equals: boardView output.! !
 
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'jml 11/10/2018 14:25:17'!
-test07OSliding
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/12/2018 02:21:59'!
+test06OSliding
 	
 	| game boardView |
 	
