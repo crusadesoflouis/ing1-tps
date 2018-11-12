@@ -550,30 +550,33 @@ visitXPlacement: aPlacement
 	self at: aPlacement position put: 'X'.! !
 
 
-!TerniLapilliBoardView methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:19'!
+!TerniLapilliBoardView methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:45:58'!
 visitGameOverState: aState
 	
-	currentState _ (game hasPlayerXWon ifTrue: [ 'X' ] ifFalse: [ 'O' ]),' Won!!'.! !
+	| winningPlayer |
+	
+	winningPlayer _ game hasPlayerXWon ifTrue: [ 'X' ] ifFalse: [ 'O' ].
+	currentState _ self winningLineFor: winningPlayer.! !
 
-!TerniLapilliBoardView methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:23'!
+!TerniLapilliBoardView methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:47:21'!
 visitPlacingO: aState 
 	
-	currentState _ 'Playing O'.! !
+	currentState _ self turnLineFor: 'O'.! !
 
-!TerniLapilliBoardView methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:29'!
+!TerniLapilliBoardView methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:47:33'!
 visitPlacingX: aState 
 
-	currentState _ 'Playing X'.! !
+	currentState _ self turnLineFor: 'X'.! !
 
-!TerniLapilliBoardView methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:34'!
+!TerniLapilliBoardView methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:47:27'!
 visitSlidingO: aState 
 
-	currentState _ 'Playing O'.! !
+	currentState _ self turnLineFor: 'O'.! !
 
-!TerniLapilliBoardView methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:37'!
+!TerniLapilliBoardView methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:47:40'!
 visitSlidingX: aState 
 
-	currentState _ 'Playing X'.! !
+	currentState _ self turnLineFor: 'X'.! !
 
 
 !TerniLapilliBoardView methodsFor: 'board' stamp: 'jml 11/9/2018 16:40:06'!
