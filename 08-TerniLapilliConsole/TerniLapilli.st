@@ -1122,6 +1122,17 @@ slideXFrom: aPosition to: anotherPostion
 
 	game error: game class canNotPlayWhenGameIsOverErrorMessage ! !
 
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'GameOverState class' category: #TerniLapilli!
+GameOverState class
+	instanceVariableNames: ''!
+
+!GameOverState class methodsFor: 'state selection' stamp: 'instance  creation 11/12/2018 17:31:41'!
+isFor: aTerniLapilli 
+
+	^false! !
+
 
 !classDefinition: #OWon category: #TerniLapilli!
 GameOverState subclass: #OWon
