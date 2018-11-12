@@ -1,33 +1,161 @@
-!classDefinition: #StreamTest category: #'TerniLapilli-Tests'!
-TestCase subclass: #StreamTest
+!classDefinition: #TerniLapilliBoardViewTest category: #'TerniLapilli-Tests'!
+TestCase subclass: #TerniLapilliBoardViewTest
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli-Tests'!
 
-!StreamTest methodsFor: 'assertion - private' stamp: 'jml 11/9/2018 16:06:10'!
-skip: aNumberOfLines in: aStream
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/12/2018 02:21:16'!
+test01XPlacing
 	
-	aNumberOfLines timesRepeat: [ aStream next ].! !
+	| game boardView |
+	
+	game _ TerniLapilli new.
+	
+	boardView _ TerniLapilliBoardView for: game.
+	
+	game putXAt: 3@1.
+	
+	self assert:
+' | | 
+-----
+ | | 
+-----
+X| | 
+Playing O'
+	equals: boardView output.! !
 
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/12/2018 02:21:25'!
+test02OPlacing
+	
+	| game boardView |
+	
+	game _ TerniLapilli new.
+	
+	boardView _ TerniLapilliBoardView for: game.
+	
+	game 
+		putXAt: 3@1;
+		putOAt: 3@2.
+	
+	self assert:
+' | | 
+-----
+ | | 
+-----
+X|O| 
+Playing X'
+	equals: boardView output.! !
 
-!StreamTest methodsFor: 'assertions' stamp: 'jml 11/9/2018 16:06:10'!
-assertLinesIn: aStream equals: lines
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/12/2018 02:21:34'!
+test03XWins
 	
-	lines do: [ :line | self assert: line equals: aStream next ].
+	| game boardView |
 	
-	self assert: aStream atEnd.! !
+	game _ TerniLapilli new.
+	
+	boardView _ TerniLapilliBoardView for: game.
+	
+	game
+		putXAt: 2@2;
+		putOAt: 1@1;
+		putXAt: 1@2;
+		putOAt: 3@3;
+		putXAt: 3@2.
+		
+	self assert:
+'O|X| 
+-----
+ |X| 
+-----
+ |X|O
+X Won!!'
+	equals: boardView output.! !
 
-!StreamTest methodsFor: 'assertions' stamp: 'jml 11/9/2018 16:06:10'!
-assertLinesIn: aStream skipping: aNumberOfLines equals: lines
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/12/2018 02:21:41'!
+test04OWins
 	
-	self skip: aNumberOfLines in: aStream.
+	| game boardView |
 	
-	self assertLinesIn: aStream equals: lines.! !
+	game _ TerniLapilli new.
+	
+	boardView _ TerniLapilliBoardView for: game.
+	
+	game
+		putXAt: 2@2;
+		putOAt: 1@1;
+		putXAt: 1@2;
+		putOAt: 2@1;
+		putXAt: 3@3;
+		putOAt: 3@1.
+		
+	self assert:
+'O|X| 
+-----
+O|X| 
+-----
+O| |X
+O Won!!'
+	equals: boardView output.! !
+
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/12/2018 02:21:50'!
+test05XSliding
+	
+	| game boardView |
+	
+	game _ TerniLapilli new.
+	
+	boardView _ TerniLapilliBoardView for: game.
+	
+	game
+		putXAt: 2@2;
+		putOAt: 1@1;
+		putXAt: 1@2;
+		putOAt: 2@1;
+		putXAt: 3@3;
+		putOAt: 3@2;
+		slideXFrom: 3@3 to: 2@3.
+		
+	self assert:
+'O|X| 
+-----
+O|X|X
+-----
+ |O| 
+Playing O'
+	equals: boardView output.! !
+
+!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/12/2018 02:21:59'!
+test06OSliding
+	
+	| game boardView |
+	
+	game _ TerniLapilli new.
+	
+	boardView _ TerniLapilliBoardView for: game.
+
+	game
+		putXAt: 2@2;
+		putOAt: 1@1;
+		putXAt: 1@2;
+		putOAt: 2@1;
+		putXAt: 3@3;
+		putOAt: 3@2;
+		slideXFrom: 3@3 to: 2@3;
+		slideOFrom: 3@2 to: 3@3.
+		
+	self assert:
+'O|X| 
+-----
+O|X|X
+-----
+ | |O
+Playing X'
+	equals: boardView output.! !
 
 
 !classDefinition: #TerniLapilliConsoleTest category: #'TerniLapilli-Tests'!
-StreamTest subclass: #TerniLapilliConsoleTest
+TestCase subclass: #TerniLapilliConsoleTest
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -232,161 +360,26 @@ test09OSliding
 		'Estado: Jugando X'.
 	}.! !
 
-
-!classDefinition: #TerniLapilliBoardViewTest category: #'TerniLapilli-Tests'!
-TestCase subclass: #TerniLapilliBoardViewTest
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'TerniLapilli-Tests'!
 
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/12/2018 02:21:16'!
-test01XPlacing
+!TerniLapilliConsoleTest methodsFor: 'assertion - private' stamp: 'jml 11/12/2018 00:27:54'!
+skip: aNumberOfLines in: aStream
 	
-	| game boardView |
-	
-	game _ TerniLapilli new.
-	
-	boardView _ TerniLapilliBoardView for: game.
-	
-	game putXAt: 3@1.
-	
-	self assert:
-' | | 
------
- | | 
------
-X| | 
-Playing O'
-	equals: boardView output.! !
+	aNumberOfLines timesRepeat: [ aStream next ].! !
 
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/12/2018 02:21:25'!
-test02OPlacing
-	
-	| game boardView |
-	
-	game _ TerniLapilli new.
-	
-	boardView _ TerniLapilliBoardView for: game.
-	
-	game 
-		putXAt: 3@1;
-		putOAt: 3@2.
-	
-	self assert:
-' | | 
------
- | | 
------
-X|O| 
-Playing X'
-	equals: boardView output.! !
 
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/12/2018 02:21:34'!
-test03XWins
+!TerniLapilliConsoleTest methodsFor: 'assertions' stamp: 'jml 11/12/2018 00:27:42'!
+assertLinesIn: aStream equals: lines
 	
-	| game boardView |
+	lines do: [ :line | self assert: line equals: aStream next ].
 	
-	game _ TerniLapilli new.
-	
-	boardView _ TerniLapilliBoardView for: game.
-	
-	game
-		putXAt: 2@2;
-		putOAt: 1@1;
-		putXAt: 1@2;
-		putOAt: 3@3;
-		putXAt: 3@2.
-		
-	self assert:
-'O|X| 
------
- |X| 
------
- |X|O
-X Won!!'
-	equals: boardView output.! !
+	self assert: aStream atEnd.! !
 
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/12/2018 02:21:41'!
-test04OWins
+!TerniLapilliConsoleTest methodsFor: 'assertions' stamp: 'jml 11/12/2018 00:27:36'!
+assertLinesIn: aStream skipping: aNumberOfLines equals: lines
 	
-	| game boardView |
+	self skip: aNumberOfLines in: aStream.
 	
-	game _ TerniLapilli new.
-	
-	boardView _ TerniLapilliBoardView for: game.
-	
-	game
-		putXAt: 2@2;
-		putOAt: 1@1;
-		putXAt: 1@2;
-		putOAt: 2@1;
-		putXAt: 3@3;
-		putOAt: 3@1.
-		
-	self assert:
-'O|X| 
------
-O|X| 
------
-O| |X
-O Won!!'
-	equals: boardView output.! !
-
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/12/2018 02:21:50'!
-test05XSliding
-	
-	| game boardView |
-	
-	game _ TerniLapilli new.
-	
-	boardView _ TerniLapilliBoardView for: game.
-	
-	game
-		putXAt: 2@2;
-		putOAt: 1@1;
-		putXAt: 1@2;
-		putOAt: 2@1;
-		putXAt: 3@3;
-		putOAt: 3@2;
-		slideXFrom: 3@3 to: 2@3.
-		
-	self assert:
-'O|X| 
------
-O|X|X
------
- |O| 
-Playing O'
-	equals: boardView output.! !
-
-!TerniLapilliBoardViewTest methodsFor: 'testing' stamp: 'la 11/12/2018 02:21:59'!
-test06OSliding
-	
-	| game boardView |
-	
-	game _ TerniLapilli new.
-	
-	boardView _ TerniLapilliBoardView for: game.
-
-	game
-		putXAt: 2@2;
-		putOAt: 1@1;
-		putXAt: 1@2;
-		putOAt: 2@1;
-		putXAt: 3@3;
-		putOAt: 3@2;
-		slideXFrom: 3@3 to: 2@3;
-		slideOFrom: 3@2 to: 3@3.
-		
-	self assert:
-'O|X| 
------
-O|X|X
------
- | |O
-Playing X'
-	equals: boardView output.! !
+	self assertLinesIn: aStream equals: lines.! !
 
 
 !classDefinition: #TerniLapilliTest category: #'TerniLapilli-Tests'!
