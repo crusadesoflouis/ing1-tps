@@ -520,8 +520,8 @@ visitXPlacement: aPlacement
 	self subclassResponsibility ! !
 
 
-!TerniLapilliObserver methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:41:57'!
-visitGameOverState: aState
+!TerniLapilliObserver methodsFor: 'state visiting' stamp: 'jml 11/12/2018 16:36:13'!
+visitOWon: aState
 
 	self subclassResponsibility ! !
 
@@ -542,6 +542,11 @@ visitSlidingO: aState
 
 !TerniLapilliObserver methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:14'!
 visitSlidingX: aState 
+
+	self subclassResponsibility ! !
+
+!TerniLapilliObserver methodsFor: 'state visiting' stamp: 'jml 11/12/2018 16:36:10'!
+visitXWon: aState
 
 	self subclassResponsibility ! !
 
@@ -594,13 +599,10 @@ visitXPlacement: aPlacement
 	self at: aPlacement position put: 'X'.! !
 
 
-!TerniLapilliBoardView methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:45:58'!
-visitGameOverState: aState
+!TerniLapilliBoardView methodsFor: 'state visiting' stamp: 'jml 11/12/2018 16:36:42'!
+visitOWon: aState
 	
-	| winningPlayer |
-	
-	winningPlayer _ game hasPlayerXWon ifTrue: [ 'X' ] ifFalse: [ 'O' ].
-	currentState _ self winningLineFor: winningPlayer.! !
+	currentState _ self winningLineFor: 'O'.! !
 
 !TerniLapilliBoardView methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:47:21'!
 visitPlacingO: aState 
@@ -621,6 +623,11 @@ visitSlidingO: aState
 visitSlidingX: aState 
 
 	currentState _ self turnLineFor: 'X'.! !
+
+!TerniLapilliBoardView methodsFor: 'state visiting' stamp: 'jml 11/12/2018 16:36:36'!
+visitXWon: aState
+	
+	currentState _ self winningLineFor: 'X'.! !
 
 
 !TerniLapilliBoardView methodsFor: 'board' stamp: 'jml 11/9/2018 16:40:06'!
@@ -729,10 +736,10 @@ visitXPlacement: aPlacement
 	self addLine: (self placingLineFor: 'X' at: aPlacement position).! !
 
 
-!TerniLapilliConsole methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:44'!
-visitGameOverState: aState 
+!TerniLapilliConsole methodsFor: 'state visiting' stamp: 'jml 11/12/2018 16:37:06'!
+visitOWon: aState 
 
-	self addLine: (self winningLineFor: (game hasPlayerXWon ifTrue: [ 'X' ] ifFalse: [ 'O' ])).! !
+	self addLine: (self winningLineFor: 'O').! !
 
 !TerniLapilliConsole methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:47'!
 visitPlacingO: aState 
@@ -753,6 +760,11 @@ visitSlidingO: aState
 visitSlidingX: aState 
 	
 	self addLine: (self turnLineFor: 'X').! !
+
+!TerniLapilliConsole methodsFor: 'state visiting' stamp: 'jml 11/12/2018 16:37:00'!
+visitXWon: aState 
+
+	self addLine: (self winningLineFor: 'X').! !
 
 
 !TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/9/2018 13:56:26'!
@@ -1050,7 +1062,7 @@ initializeFor: aGame
 	game := aGame ! !
 
 
-!TerniLapilliState methodsFor: 'visitor' stamp: 'la 11/12/2018 02:19:27'!
+!TerniLapilliState methodsFor: 'visiting' stamp: 'la 11/12/2018 02:19:27'!
 accept: aVisitor
 
 	self subclassResponsibility ! !
@@ -1083,13 +1095,6 @@ TerniLapilliState subclass: #GameOverState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!GameOverState methodsFor: 'testing game result' stamp: 'la 11/11/2018 20:59:19'!
-accept: aVisitor
-
-	aVisitor visitGameOverState: self
-	
-	! !
-
 !GameOverState methodsFor: 'testing game result' stamp: 'HAW 11/8/2018 12:15:43'!
 isOver
 
@@ -1117,16 +1122,57 @@ slideXFrom: aPosition to: anotherPostion
 
 	game error: game class canNotPlayWhenGameIsOverErrorMessage ! !
 
+
+!classDefinition: #OWon category: #TerniLapilli!
+GameOverState subclass: #OWon
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!OWon methodsFor: 'visiting' stamp: 'jml 11/12/2018 16:31:24'!
+accept: aVisitor
+
+	aVisitor visitOWon: self
+	
+	! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'GameOverState class' category: #TerniLapilli!
-GameOverState class
+!classDefinition: 'OWon class' category: #TerniLapilli!
+OWon class
 	instanceVariableNames: ''!
 
-!GameOverState class methodsFor: 'state selection' stamp: 'HAW 11/8/2018 12:02:20'!
+!OWon class methodsFor: 'state selection' stamp: 'jml 11/12/2018 16:31:12'!
 isFor: aTerniLapilli 
 
-	^ aTerniLapilli hasPlayerXWon or: [ aTerniLapilli hasPlayerOWon ]! !
+	^ aTerniLapilli hasPlayerOWon! !
+
+
+!classDefinition: #XWon category: #TerniLapilli!
+GameOverState subclass: #XWon
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!XWon methodsFor: 'visiting' stamp: 'jml 11/12/2018 16:34:39'!
+accept: aVisitor
+
+	aVisitor visitXWon: self
+	
+	! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'XWon class' category: #TerniLapilli!
+XWon class
+	instanceVariableNames: ''!
+
+!XWon class methodsFor: 'state selection' stamp: 'jml 11/12/2018 16:37:32'!
+isFor: aTerniLapilli 
+
+	^ aTerniLapilli hasPlayerXWon! !
 
 
 !classDefinition: #PlayingO category: #TerniLapilli!
@@ -1183,7 +1229,7 @@ slideOFrom: aPosition to: anotherPostion
 	game slideOWhenPlacingOFrom: aPosition to: anotherPostion .! !
 
 
-!PlacingO methodsFor: 'visitor' stamp: 'jml 11/12/2018 00:38:53'!
+!PlacingO methodsFor: 'visiting' stamp: 'jml 11/12/2018 00:38:53'!
 accept: aVisitor
 
 	aVisitor visitPlacingO: self
@@ -1226,16 +1272,17 @@ slideOFrom: aPosition to: anotherPostion
 	game slideOWhenSlidingOFrom: aPosition to: anotherPostion .! !
 
 
-!SlidingO methodsFor: 'testing pieces placed' stamp: 'jml 11/12/2018 00:39:32'!
-accept: aVisitor
-
-	aVisitor visitSlidingO: self
-	! !
-
 !SlidingO methodsFor: 'testing pieces placed' stamp: 'JG 10/28/2018 12:04:38'!
 areAllXsOnTheBoard
 	
 	^true! !
+
+
+!SlidingO methodsFor: 'visiting' stamp: 'jml 11/12/2018 00:39:32'!
+accept: aVisitor
+
+	aVisitor visitSlidingO: self
+	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1309,7 +1356,7 @@ isPlacingX
 	^true! !
 
 
-!PlacingX methodsFor: 'visitor' stamp: 'jml 11/12/2018 00:39:11'!
+!PlacingX methodsFor: 'visting' stamp: 'jml 11/12/2018 00:39:11'!
 accept: aVisitor
 
 	aVisitor visitPlacingX: self.! !
@@ -1356,16 +1403,17 @@ areAllXsOnTheBoard
 	^true! !
 
 
-!SlidingX methodsFor: 'testing playing turn' stamp: 'jml 11/12/2018 00:39:45'!
-accept: aVisitor
-
-	aVisitor visitSlidingX: self
-	! !
-
 !SlidingX methodsFor: 'testing playing turn' stamp: 'HAW 11/8/2018 11:29:47'!
 isSlidingX
 
 	^true! !
+
+
+!SlidingX methodsFor: 'visiting' stamp: 'jml 11/12/2018 00:39:45'!
+accept: aVisitor
+
+	aVisitor visitSlidingX: self
+	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
