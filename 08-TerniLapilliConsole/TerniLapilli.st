@@ -455,11 +455,6 @@ stateChangedTo: aState
 	self subclassResponsibility! !
 
 
-!TerniLapilliObserver methodsFor: 'play visiting' stamp: 'la 11/12/2018 01:51:37'!
-visitGameOverState: aGame
-
-	self subclassResponsibility ! !
-
 !TerniLapilliObserver methodsFor: 'play visiting' stamp: 'la 11/12/2018 01:53:08'!
 visitOMovement: aMovement
 
@@ -470,26 +465,6 @@ visitOPlacement: aGame
 
 	self subclassResponsibility ! !
 
-!TerniLapilliObserver methodsFor: 'play visiting' stamp: 'la 11/12/2018 01:53:42'!
-visitPlacingOState: aGame 
-
-	self subclassResponsibility ! !
-
-!TerniLapilliObserver methodsFor: 'play visiting' stamp: 'la 11/12/2018 01:53:45'!
-visitPlacingXState: aGame 
-
-	self subclassResponsibility ! !
-
-!TerniLapilliObserver methodsFor: 'play visiting' stamp: 'la 11/12/2018 02:17:14'!
-visitSlidingOState: aGame 
-
-	self subclassResponsibility ! !
-
-!TerniLapilliObserver methodsFor: 'play visiting' stamp: 'la 11/12/2018 02:17:16'!
-visitSlidingXState: aGame 
-
-	self subclassResponsibility ! !
-
 !TerniLapilliObserver methodsFor: 'play visiting' stamp: 'la 11/12/2018 01:53:10'!
 visitXMovement: aMovement
 
@@ -497,6 +472,32 @@ visitXMovement: aMovement
 
 !TerniLapilliObserver methodsFor: 'play visiting' stamp: 'la 11/12/2018 01:53:24'!
 visitXPlacement: aPlacement
+
+	self subclassResponsibility ! !
+
+
+!TerniLapilliObserver methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:41:57'!
+visitGameOverState: aState
+
+	self subclassResponsibility ! !
+
+!TerniLapilliObserver methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:06'!
+visitPlacingO: aState 
+
+	self subclassResponsibility ! !
+
+!TerniLapilliObserver methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:09'!
+visitPlacingX: aState 
+
+	self subclassResponsibility ! !
+
+!TerniLapilliObserver methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:11'!
+visitSlidingO: aState 
+
+	self subclassResponsibility ! !
+
+!TerniLapilliObserver methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:14'!
+visitSlidingX: aState 
 
 	self subclassResponsibility ! !
 
@@ -526,11 +527,6 @@ output
 	^ self boardDisplay, String newLineString, currentState! !
 
 
-!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'la 11/11/2018 20:59:19'!
-visitGameOverState: aGame
-	
-	currentState _ (game hasPlayerXWon ifTrue: [ 'X' ] ifFalse: [ 'O' ]),' Won!!'.! !
-
 !TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'jml 11/10/2018 13:50:05'!
 visitOMovement: aMovement
 
@@ -542,26 +538,6 @@ visitOPlacement: aPlacement
 	
 	self at: aPlacement position put: 'O'.! !
 
-!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'la 11/12/2018 02:17:56'!
-visitPlacingOState: aGame 
-	
-	currentState _ 'Playing O'.! !
-
-!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'la 11/11/2018 21:18:06'!
-visitPlacingXState: aGame 
-
-	currentState _ 'Playing X'.! !
-
-!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'la 11/12/2018 02:17:36'!
-visitSlidingOState: aGame 
-
-	currentState _ 'Playing O'.! !
-
-!TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'la 11/12/2018 02:17:40'!
-visitSlidingXState: aGame 
-
-	currentState _ 'Playing X'.! !
-
 !TerniLapilliBoardView methodsFor: 'play visiting' stamp: 'jml 11/10/2018 13:50:00'!
 visitXMovement: aMovement
 
@@ -572,6 +548,32 @@ visitXMovement: aMovement
 visitXPlacement: aPlacement
 	
 	self at: aPlacement position put: 'X'.! !
+
+
+!TerniLapilliBoardView methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:19'!
+visitGameOverState: aState
+	
+	currentState _ (game hasPlayerXWon ifTrue: [ 'X' ] ifFalse: [ 'O' ]),' Won!!'.! !
+
+!TerniLapilliBoardView methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:23'!
+visitPlacingO: aState 
+	
+	currentState _ 'Playing O'.! !
+
+!TerniLapilliBoardView methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:29'!
+visitPlacingX: aState 
+
+	currentState _ 'Playing X'.! !
+
+!TerniLapilliBoardView methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:34'!
+visitSlidingO: aState 
+
+	currentState _ 'Playing O'.! !
+
+!TerniLapilliBoardView methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:37'!
+visitSlidingX: aState 
+
+	currentState _ 'Playing X'.! !
 
 
 !TerniLapilliBoardView methodsFor: 'board' stamp: 'jml 11/9/2018 16:40:06'!
@@ -659,11 +661,6 @@ output
 	^ ReadStream on: lines! !
 
 
-!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'la 11/11/2018 20:59:19'!
-visitGameOverState: aGameOverState 
-
-	self addLine: (self winningLineFor: (game hasPlayerXWon ifTrue: [ 'X' ] ifFalse: [ 'O' ])).! !
-
 !TerniLapilliConsole methodsFor: 'play visiting' stamp: 'jml 11/10/2018 13:48:22'!
 visitOMovement: aMovement
 	
@@ -674,26 +671,6 @@ visitOPlacement: aPlacement
 	
 	self addLine: (self placingLineFor: 'O' at: aPlacement position).! !
 
-!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'la 11/12/2018 02:18:23'!
-visitPlacingOState: aGame 
-	
-	self addLine: (self turnLineFor: 'O').! !
-
-!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'la 11/11/2018 21:17:06'!
-visitPlacingXState: aGame 
-	
-	self addLine: (self turnLineFor: 'X').! !
-
-!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'la 11/12/2018 02:18:27'!
-visitSlidingOState: aGame 
-	
-	self addLine: (self turnLineFor: 'O').! !
-
-!TerniLapilliConsole methodsFor: 'play visiting' stamp: 'la 11/12/2018 02:18:29'!
-visitSlidingXState: aGame 
-	
-	self addLine: (self turnLineFor: 'X').! !
-
 !TerniLapilliConsole methodsFor: 'play visiting' stamp: 'jml 11/10/2018 13:49:09'!
 visitXMovement: aMovement
 	
@@ -703,6 +680,32 @@ visitXMovement: aMovement
 visitXPlacement: aPlacement
 	
 	self addLine: (self placingLineFor: 'X' at: aPlacement position).! !
+
+
+!TerniLapilliConsole methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:44'!
+visitGameOverState: aState 
+
+	self addLine: (self winningLineFor: (game hasPlayerXWon ifTrue: [ 'X' ] ifFalse: [ 'O' ])).! !
+
+!TerniLapilliConsole methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:47'!
+visitPlacingO: aState 
+	
+	self addLine: (self turnLineFor: 'O').! !
+
+!TerniLapilliConsole methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:50'!
+visitPlacingX: aState 
+	
+	self addLine: (self turnLineFor: 'X').! !
+
+!TerniLapilliConsole methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:52'!
+visitSlidingO: aState 
+	
+	self addLine: (self turnLineFor: 'O').! !
+
+!TerniLapilliConsole methodsFor: 'state visiting' stamp: 'jml 11/12/2018 00:42:55'!
+visitSlidingX: aState 
+	
+	self addLine: (self turnLineFor: 'X').! !
 
 
 !TerniLapilliConsole methodsFor: 'logging - private' stamp: 'jml 11/9/2018 13:56:26'!
@@ -1133,10 +1136,10 @@ slideOFrom: aPosition to: anotherPostion
 	game slideOWhenPlacingOFrom: aPosition to: anotherPostion .! !
 
 
-!PlacingO methodsFor: 'visitor' stamp: 'la 11/11/2018 21:08:39'!
+!PlacingO methodsFor: 'visitor' stamp: 'jml 11/12/2018 00:38:53'!
 accept: aVisitor
 
-	aVisitor visitPlacingOState: self
+	aVisitor visitPlacingO: self
 	
 	! !
 
@@ -1176,10 +1179,10 @@ slideOFrom: aPosition to: anotherPostion
 	game slideOWhenSlidingOFrom: aPosition to: anotherPostion .! !
 
 
-!SlidingO methodsFor: 'testing pieces placed' stamp: 'la 11/11/2018 21:09:48'!
+!SlidingO methodsFor: 'testing pieces placed' stamp: 'jml 11/12/2018 00:39:32'!
 accept: aVisitor
 
-	aVisitor visitSlidingOState: self
+	aVisitor visitSlidingO: self
 	! !
 
 !SlidingO methodsFor: 'testing pieces placed' stamp: 'JG 10/28/2018 12:04:38'!
@@ -1259,10 +1262,10 @@ isPlacingX
 	^true! !
 
 
-!PlacingX methodsFor: 'visitor' stamp: 'la 11/11/2018 21:16:14'!
+!PlacingX methodsFor: 'visitor' stamp: 'jml 11/12/2018 00:39:11'!
 accept: aVisitor
 
-	aVisitor visitPlacingXState: self.! !
+	aVisitor visitPlacingX: self.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1306,10 +1309,10 @@ areAllXsOnTheBoard
 	^true! !
 
 
-!SlidingX methodsFor: 'testing playing turn' stamp: 'la 11/11/2018 21:10:00'!
+!SlidingX methodsFor: 'testing playing turn' stamp: 'jml 11/12/2018 00:39:45'!
 accept: aVisitor
 
-	aVisitor visitSlidingXState: self
+	aVisitor visitSlidingX: self
 	! !
 
 !SlidingX methodsFor: 'testing playing turn' stamp: 'HAW 11/8/2018 11:29:47'!
