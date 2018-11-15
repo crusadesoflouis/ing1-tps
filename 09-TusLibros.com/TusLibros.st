@@ -144,15 +144,10 @@ Object subclass: #Book
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!Book methodsFor: 'initialization' stamp: 'instance  creation 11/12/2018 20:29:24'!
-initializeWith: anIsbn
+!Book methodsFor: 'initialization' stamp: 'jml 11/15/2018 16:56:39'!
+initializeWith: anIsbn titled: aTitle 
 	
-	! !
-
-!Book methodsFor: 'initialization' stamp: 'instance  creation 11/12/2018 21:11:39'!
-initializeWith: aIsbn titled: aTitle 
-	
-	isbn _ aIsbn.
+	isbn _ anIsbn.
 	title _ aTitle! !
 
 
@@ -191,17 +186,17 @@ Object subclass: #BookInventory
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!BookInventory methodsFor: 'accessing' stamp: 'instance  creation 11/12/2018 21:18:45'!
+!BookInventory methodsFor: 'accessing' stamp: 'jml 11/15/2018 16:56:13'!
 bookWith: anIsbn 
 	
-	^books at: anIsbn  ifAbsent:[self error: self class bookDoesNotExistErrorMessage]
+	^books at: anIsbn ifAbsent: [ self error: self class bookDoesNotExistErrorMessage ]
 ! !
 
 
-!BookInventory methodsFor: 'adding' stamp: 'instance  creation 11/12/2018 21:13:52'!
-addBook: aIsbn titled: aTitle
+!BookInventory methodsFor: 'adding' stamp: 'jml 11/15/2018 16:55:56'!
+addBook: anIsbn titled: aTitle
 
-	books at: aIsbn  put:  (Book with: aIsbn titled: aTitle) ! !
+	books at: anIsbn put: (Book with: anIsbn titled: aTitle)! !
 
 !BookInventory methodsFor: 'adding' stamp: 'instance  creation 11/12/2018 21:13:52'!
 initialize
@@ -243,10 +238,10 @@ add: anAmount of: aBook
 	contents at: aBook put: previousAmount + anAmount.! !
 
 
-!Cart methodsFor: 'initialization' stamp: 'instance  creation 11/12/2018 20:05:07'!
+!Cart methodsFor: 'initialization' stamp: 'jml 11/15/2018 16:57:01'!
 initialize
 
-	contents  _ Dictionary new.! !
+	contents _ Dictionary new.! !
 
 
 !Cart methodsFor: 'accessing' stamp: 'instance  creation 11/12/2018 20:37:55'!
