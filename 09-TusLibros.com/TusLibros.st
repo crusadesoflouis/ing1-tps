@@ -16,8 +16,8 @@ test01CannotGetABookThatIsNotInTheInventory
 		self assert: BookInventory bookDoesNotExistErrorMessage equals: anException messageText.
 	].! !
 
-!BookTest methodsFor: 'tests' stamp: 'instance  creation 11/12/2018 21:21:28'!
-test02CannGetABookThatIsInTheInventory
+!BookTest methodsFor: 'tests' stamp: 'jml 11/15/2018 16:53:51'!
+test02CanGetABookThatIsInTheInventory
 	
 	| inventory anIsbn aTitle |
 	
