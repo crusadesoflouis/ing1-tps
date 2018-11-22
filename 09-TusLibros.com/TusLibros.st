@@ -125,7 +125,19 @@ TestCase subclass: #CashierTest
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!CashierTest methodsFor: 'tests' stamp: 'la 11/20/2018 23:15:36'!
+!CashierTest methodsFor: 'tests' stamp: 'jml 11/15/2018 20:26:22'!
+asd_test05
+	
+	| mp |
+	
+	mp _ SimulatedMerchantProcessorInterface new.
+	
+	mp simulateCardWithoudFunds: '1234'.
+	
+	
+	! !
+
+!CashierTest methodsFor: 'tests' stamp: 'jml 11/15/2018 20:43:23'!
 test01CannotCheckOutAnEmptyCart
 	
 	| cart |
@@ -133,7 +145,7 @@ test01CannotCheckOutAnEmptyCart
 	cart _ self createCart.
 		
 	self should: [
-		cashier checkOut: cart with: self defaultCreditCard andOwner: self defaultCreditCard owner.
+		cashier checkOut: cart with: self defaultCreditCard.
 	] raise: Error - MessageNotUnderstood
 	withExceptionDo: [ :exception |
 		self assert: Cashier emptyCartErrorMessage equals: exception messageText.
@@ -141,7 +153,7 @@ test01CannotCheckOutAnEmptyCart
 		self assert: 0 equals: mpInterface numberOfRequestsSent.
 	].! !
 
-!CashierTest methodsFor: 'tests' stamp: 'la 11/20/2018 23:16:11'!
+!CashierTest methodsFor: 'tests' stamp: 'jml 11/15/2018 20:44:24'!
 test02CanCheckOutACartWithASingleElement
 	
 	| cart price catalog |
@@ -153,13 +165,13 @@ test02CanCheckOutACartWithASingleElement
 	cart _ self createCart.
 	cart add: 1 of: self itemSellByTheStore.
 	
-	cashier checkOut: cart with: self defaultCreditCard andOwner: self defaultCreditCard owner.
+	cashier checkOut: cart with: self defaultCreditCard.
 	
 	self assert: 1 equals: salesBook size.
 	self assert: price equals: (salesBook at: 1).
 	self assert: 1 equals: mpInterface numberOfRequestsSent.! !
 
-!CashierTest methodsFor: 'tests' stamp: 'la 11/20/2018 23:16:16'!
+!CashierTest methodsFor: 'tests' stamp: 'jml 11/15/2018 20:53:10'!
 test03CanCheckOutACartWithRepeatedItem
 	
 	| cart price amount |
@@ -170,13 +182,13 @@ test03CanCheckOutACartWithRepeatedItem
 	cart _ self createCart.
 	cart add: amount of: self itemSellByTheStore.
 	
-	cashier checkOut: cart with: self defaultCreditCard andOwner: self defaultCreditCard owner.
+	cashier checkOut: cart with: self defaultCreditCard.
 	
 	self assert: 1 equals: salesBook size.
 	self assert: price * amount equals: (salesBook at: 1).
 	self assert: 1 equals: mpInterface numberOfRequestsSent.! !
 
-!CashierTest methodsFor: 'tests' stamp: 'la 11/20/2018 23:16:28'!
+!CashierTest methodsFor: 'tests' stamp: 'jml 11/15/2018 20:53:43'!
 test04CannotCheckOutWithExpiredCreditCard
 	
 	| cart |
@@ -185,7 +197,7 @@ test04CannotCheckOutWithExpiredCreditCard
 	cart add: 3 of: self itemSellByTheStore.
 	
 	self should: [
-		cashier checkOut: cart with: self expiredCreditCard andOwner: self expiredCreditCard owner.
+		cashier checkOut: cart with: self expiredCreditCard.
 	] raise: Error - MessageNotUnderstood
 	withExceptionDo: [ :exception |
 		self assert: Cashier expiredCreditCardErrorMessage equals: exception messageText.
@@ -194,7 +206,7 @@ test04CannotCheckOutWithExpiredCreditCard
 		self assert: 0 equals: mpInterface numberOfRequestsSent.
 	].! !
 
-!CashierTest methodsFor: 'tests' stamp: 'la 11/20/2018 23:17:09'!
+!CashierTest methodsFor: 'tests' stamp: 'jml 11/15/2018 21:26:11'!
 test05CannotCheckoutWithNotFundedCreditCard
 	
 	| cart creditCard |
@@ -207,7 +219,7 @@ test05CannotCheckoutWithNotFundedCreditCard
 	mpInterface simulateCardWithoutFunds: creditCard.
 	
 	self should: [
-		cashier checkOut: cart with: creditCard andOwner: creditCard owner.
+		cashier checkOut: cart with: creditCard.
 	] raise: Error - MessageNotUnderstood
 	withExceptionDo: [ :exception |
 		self assert: MerchantProcessorInterface notEnoughFundsErrorDescription equals: exception messageText.
@@ -215,29 +227,6 @@ test05CannotCheckoutWithNotFundedCreditCard
 		self assert: salesBook isEmpty.
 		self assert: 1 equals: mpInterface numberOfRequestsSent.
 	].! !
-
-!CashierTest methodsFor: 'tests' stamp: 'la 11/20/2018 23:21:52'!
-test06CannotCheckoutWithAStolenCreditCard
-	| cart creditCard thief |
-	
-	creditCard _ self defaultCreditCard.
-	thief _ 'pepe'.
-	cart _ self createCart.
-	cart add: 3 of: self itemSellByTheStore.
-	
-	mpInterface simulateCardWithFunds: creditCard.
-	
-	self should: [
-		cashier checkOut: cart with: creditCard andOwner: thief.
-	] raise: Error - MessageNotUnderstood
-	withExceptionDo: [ :exception |
-		self assert: Cashier stolenCreditCardErrorMessage equals: exception messageText.
-		
-		self assert: salesBook isEmpty.
-		self assert: 0 equals: mpInterface numberOfRequestsSent.
-	].
-
-! !
 
 
 !CashierTest methodsFor: 'support' stamp: 'jml 11/15/2018 18:28:33'!
@@ -407,14 +396,12 @@ Object subclass: #Cashier
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!Cashier methodsFor: 'checking out' stamp: 'la 11/20/2018 23:21:29'!
-checkOut: aCart with: aCreditCard andOwner: anOwner
+!Cashier methodsFor: 'checking out' stamp: 'LA 11/22/2018 15:37:52'!
+checkOut: aCart with: aCreditCard 
 	
 	| total |
 	
 	(aCreditCard isExpiredAt: GregorianMonthOfYear current) ifTrue: [ self error: self class expiredCreditCardErrorMessage ].
-
-	(aCreditCard owner = anOwner) ifFalse: [self error: self class stolenCreditCardErrorMessage].
 	
 	aCart isEmpty ifTrue: [ self error: self class emptyCartErrorMessage ].
 	
@@ -422,9 +409,7 @@ checkOut: aCart with: aCreditCard andOwner: anOwner
 	
 	mpInterface debit: total from: aCreditCard.
 	
-	salesBook add: total.
-	
-	"TODO return ticket?"! !
+	salesBook add: total.! !
 
 
 !Cashier methodsFor: 'initialization' stamp: 'jml 11/15/2018 20:41:14'!
@@ -448,11 +433,6 @@ emptyCartErrorMessage
 expiredCreditCardErrorMessage
 	
 	^ 'Credit card is expired'! !
-
-!Cashier class methodsFor: 'error messages' stamp: 'la 11/20/2018 23:04:22'!
-stolenCreditCardErrorMessage
-	
-	^ 'CALL THE POLICE'! !
 
 
 !Cashier class methodsFor: 'instance creation' stamp: 'jml 11/15/2018 20:42:08'!
@@ -496,12 +476,6 @@ isExpiredAt: aMonthOfYear
 	
 	^ expirationMonth < aMonthOfYear! !
 
-
-!CreditCard methodsFor: 'accesing' stamp: 'la 11/20/2018 23:15:49'!
-owner
-	
-	^name! !
-
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'CreditCard class' category: #TusLibros!
@@ -532,6 +506,11 @@ Object subclass: #MerchantProcessorInterface
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
+!MerchantProcessorInterface methodsFor: 'queries' stamp: 'LA 11/22/2018 15:37:34'!
+debit: anAmount from: aCreditCard
+	
+	self subclassResponsibility! !
+
 !MerchantProcessorInterface methodsFor: 'queries' stamp: 'jml 11/15/2018 20:45:20'!
 numberOfRequestsSent
 	
@@ -551,7 +530,7 @@ notEnoughFundsErrorDescription
 
 !classDefinition: #SimulatedMerchantProcessorInterface category: #TusLibros!
 MerchantProcessorInterface subclass: #SimulatedMerchantProcessorInterface
-	instanceVariableNames: 'numberOfRequests unfundedCards fundedCards'
+	instanceVariableNames: 'numberOfRequests unfundedCards'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
@@ -562,12 +541,11 @@ numberOfRequestsSent
 	^ numberOfRequests! !
 
 
-!SimulatedMerchantProcessorInterface methodsFor: 'initialization' stamp: 'la 11/20/2018 23:05:44'!
+!SimulatedMerchantProcessorInterface methodsFor: 'initialization' stamp: 'jml 11/15/2018 21:24:32'!
 initialize
 	
 	numberOfRequests _ 0.
-	unfundedCards _ Set new.
-	fundedCards _ Set new.! !
+	unfundedCards _ Set new.! !
 
 
 !SimulatedMerchantProcessorInterface methodsFor: 'requests - private' stamp: 'jml 11/15/2018 20:51:31'!
@@ -585,11 +563,6 @@ debit: anAmount from: aCreditCard
 		self error: self class notEnoughFundsErrorDescription.
 	].! !
 
-
-!SimulatedMerchantProcessorInterface methodsFor: 'simulating' stamp: 'la 11/20/2018 23:04:56'!
-simulateCardWithFunds: aCreditCard 
-
-	fundedCards add: aCreditCard ! !
 
 !SimulatedMerchantProcessorInterface methodsFor: 'simulating' stamp: 'jml 11/15/2018 21:24:17'!
 simulateCardWithoutFunds: aCreditCard 
