@@ -346,7 +346,7 @@ setUp
 
 !classDefinition: #Cart category: #TusLibros!
 Object subclass: #Cart
-	instanceVariableNames: 'catalog items'
+	instanceVariableNames: 'catalog contents'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
@@ -373,34 +373,41 @@ assertIsValidQuantity: aQuantity
 	aQuantity strictlyPositive ifFalse: [ self error: self invalidQuantityErrorMessage ]! !
 
 
-!Cart methodsFor: 'initialization' stamp: 'HernanWilkinson 6/17/2013 17:48'!
+!Cart methodsFor: 'initialization' stamp: 'LA 11/22/2018 21:32:37'!
 initializeAcceptingItemsOf: aCatalog
 
 	catalog := aCatalog.
-	items := OrderedCollection new.! !
+	contents := Dictionary new.! !
 
 
-!Cart methodsFor: 'queries' stamp: 'HernanWilkinson 6/17/2013 17:45'!
+!Cart methodsFor: 'queries' stamp: 'LA 11/22/2018 21:35:59'!
 occurrencesOf: anItem
 
-	^items occurrencesOf: anItem  ! !
+	^ contents at: anItem ifAbsent: 0! !
 
 
-!Cart methodsFor: 'testing' stamp: 'HernanWilkinson 6/17/2013 17:44'!
+!Cart methodsFor: 'testing' stamp: 'LA 11/22/2018 21:34:35'!
 includes: anItem
 
-	^items includes: anItem ! !
+	^ contents includesKey: anItem ! !
 
-!Cart methodsFor: 'testing' stamp: 'HernanWilkinson 6/17/2013 17:44'!
+!Cart methodsFor: 'testing' stamp: 'LA 11/22/2018 21:34:47'!
 isEmpty
 	
-	^items isEmpty ! !
+	^contents isEmpty ! !
 
 
-!Cart methodsFor: 'total' stamp: 'HernanWilkinson 6/17/2013 19:09'!
+!Cart methodsFor: 'total' stamp: 'LA 11/22/2018 21:45:07'!
 total
-
-	^ items sum: [ :anItem | catalog at: anItem ]! !
+	
+	^ contents keys inject: 0 into: [ :subtotal :item |
+		| price quantity |
+		
+		price _ catalog at: item.
+		quantity _ contents at: item.
+		
+		subtotal + (price * quantity).
+	].! !
 
 
 !Cart methodsFor: 'adding' stamp: 'HernanWilkinson 6/17/2013 17:44'!
@@ -408,19 +415,19 @@ add: anItem
 
 	^ self add: 1 of: anItem ! !
 
-!Cart methodsFor: 'adding' stamp: 'HernanWilkinson 6/17/2013 17:51'!
+!Cart methodsFor: 'adding' stamp: 'LA 11/22/2018 21:36:36'!
 add: aQuantity of: anItem
 
 	self assertIsValidQuantity: aQuantity.
 	self assertIsValidItem: anItem.
+	
+	contents at: anItem put: (self occurrencesOf: anItem) + aQuantity.! !
 
-	1 to: aQuantity do: [ :aNumber | items add: anItem ]! !
 
-
-!Cart methodsFor: 'accessing' stamp: 'LA 11/22/2018 21:29:11'!
+!Cart methodsFor: 'accessing' stamp: 'LA 11/22/2018 21:34:21'!
 contents
 	
-	^ items! !
+	^ contents! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
