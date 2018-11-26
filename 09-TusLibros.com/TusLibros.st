@@ -487,14 +487,16 @@ test15CannotListPurchasesWithWrongPassword
 		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 17:02:16'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 17:04:05'!
 test16PurchaseListForNewUserIsEmpty
 
-	| interface |
+	| interface purchaseList |
 	
 	interface _ testObjectsFactory tusLibrosInterface.
-
-	self assert: 0 equals: (interface listPurchasesFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword).! !
+	
+	purchaseList _ interface listPurchasesFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
+	
+	self assert: purchaseList isEmpty.! !
 
 !TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 17:02:16'!
 test17
@@ -1044,13 +1046,13 @@ listCartWithId: aCartId
 	
 	^ cart contents! !
 
-!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/26/2018 17:02:16'!
+!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/26/2018 17:04:22'!
 listPurchasesFor: anUserName andPassword: aPassword 
 
 	(users includesKey: anUserName ) ifFalse: [self error: self class userNotFoundErrorMessage ].
 	((users at: anUserName) = aPassword) ifFalse: [self error: self class invalidPasswordErrorMessage ].
 	
-	^0! !
+	^ OrderedCollection new! !
 
 
 !TusLibrosInterface methodsFor: 'initialization' stamp: 'LA 11/26/2018 05:07:39'!
