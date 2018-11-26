@@ -382,7 +382,7 @@ test09CannotAddItemsThatDoNotBelongToStore
 		]
 	.! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 05:01:53'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 05:51:40'!
 test10CannotCheckoutAnInvalidCart
 	
 	| interface expiredCreditCard|
@@ -392,7 +392,7 @@ test10CannotCheckoutAnInvalidCart
 	expiredCreditCard  _ testObjectsFactory expiredCreditCard.
 	
 	self
-		should: [ interface checkOutCartWithId: 666 ccn: expiredCreditCard number expiratingOn: expiredCreditCard  expiration owner: expiredCreditCard  owner. ]
+		should: [ interface checkoutCartWithId: 666 ccn: expiredCreditCard number expiratingOn: expiredCreditCard  expiration owner: expiredCreditCard  owner. ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :exception |
 			self assert: TusLibrosInterface cartNotFoundErrorMessage equals: exception messageText.
@@ -400,7 +400,7 @@ test10CannotCheckoutAnInvalidCart
 	.
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 05:16:51'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 05:51:40'!
 test11CannotCheckoutAnEmptyCart
 	
 	| interface cartId notExpiredCreditCard |
@@ -411,7 +411,7 @@ test11CannotCheckoutAnEmptyCart
 	notExpiredCreditCard  _ testObjectsFactory notExpiredCreditCard .
 	
 	self
-		should: [ interface checkOutCartWithId: cartId ccn: notExpiredCreditCard number expiratingOn: notExpiredCreditCard  expiration owner: notExpiredCreditCard  owner. ]
+		should: [ interface checkoutCartWithId: cartId ccn: notExpiredCreditCard number expiratingOn: notExpiredCreditCard  expiration owner: notExpiredCreditCard  owner. ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :exception |
 			self assert: Cashier cartCanNotBeEmptyErrorMessage equals: exception messageText.
@@ -419,7 +419,7 @@ test11CannotCheckoutAnEmptyCart
 	.
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 04:46:59'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 05:51:40'!
 test12CannotCheckoutWithAnExpiredCreditCart
 	
 	| interface cartId item quantity expiredCreditCard |
@@ -432,13 +432,13 @@ test12CannotCheckoutWithAnExpiredCreditCart
 	expiredCreditCard  _ testObjectsFactory expiredCreditCard.
 	
 	self
-		should: [ interface checkOutCartWithId: cartId ccn: expiredCreditCard number expiratingOn: expiredCreditCard  expiration owner: expiredCreditCard  owner. ]
+		should: [ interface checkoutCartWithId: cartId ccn: expiredCreditCard number expiratingOn: expiredCreditCard  expiration owner: expiredCreditCard  owner. ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :exception |
 			self assert: Cashier canNotChargeAnExpiredCreditCardErrorMessage equals: exception messageText.
 		].! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 05:17:31'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 05:51:40'!
 test13CannotCheckoutWhenTheCreditCardHasNoCredit
 
 	| interface cartId item quantity unfundedCreditCard |
@@ -451,11 +451,69 @@ test13CannotCheckoutWhenTheCreditCardHasNoCredit
 	unfundedCreditCard  _ testObjectsFactory unfundedCreditCard.
 	
 	self
-		should: [ interface checkOutCartWithId: cartId ccn: unfundedCreditCard number expiratingOn: unfundedCreditCard  expiration owner: unfundedCreditCard  owner. ]
+		should: [ interface checkoutCartWithId: cartId ccn: unfundedCreditCard number expiratingOn: unfundedCreditCard  expiration owner: unfundedCreditCard  owner. ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :exception |
 			self assert: Cashier canNotChargeAnExpiredCreditCardErrorMessage equals: exception messageText.
 		].! !
+
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 05:33:37'!
+test14CannotListPurcheaseForNonRegisteredUser
+	
+	| interface |
+	
+	interface _ testObjectsFactory tusLibrosInterface.
+	
+	self
+		should: [ interface listPurcheasesFor: testObjectsFactory wrongUser andPassword: '123' ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo:[ :exception |
+			self assert: TusLibrosInterface userNotFoundErrorMessage equals: exception messageText.
+		].
+	! !
+
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 05:42:20'!
+test15CannotListPurcheaseForWrongPassword
+
+	| interface |
+	
+	interface _ testObjectsFactory tusLibrosInterface.
+	
+	self
+		should: [ interface listPurcheasesFor: testObjectsFactory defaultUser andPassword: '123' ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo:[ :exception |
+			self assert: TusLibrosInterface invalidPasswordErrorMessage equals: exception messageText.
+		].
+	! !
+
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 05:50:40'!
+test16ListPurcheaseForNewUserIsEmpty
+
+	| interface |
+	
+	interface _ testObjectsFactory tusLibrosInterface.
+
+	self assert: 0 equals: (interface listPurcheasesFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword).! !
+
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 06:02:11'!
+test17ListPurcheaseForOneElement
+
+
+	| cartList interface cartId item quantity userListSales totalAmount |
+	
+	quantity _ 3.
+	item _ testObjectsFactory itemSellByTheStore.
+	interface _ testObjectsFactory tusLibrosInterface. 
+	totalAmount _ 3*testObjectsFactory itemSellByTheStorePrice.
+	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
+	interface add: quantity of: item toCartWithId: cartId.
+	
+	userListSales _ interface listPurcheasesFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
+	
+	self assert: testObjectsFactory itemSellByTheStore equals: (userListSales at: 1) isbn.
+	self assert: quantity equals: (userListSales at: 1) quantity.
+	self assert: totalAmount itemSellByTheStore equals: userListSales totalAmount.! !
 
 
 !TuslibrosInterfaceTest methodsFor: 'setup' stamp: 'LA 11/22/2018 20:19:29'!
@@ -939,8 +997,8 @@ add: aQuantity of: anItem toCartWithId: aCartId
 	
 	cart add: aQuantity of: anItem.! !
 
-!TusLibrosInterface methodsFor: 'resources' stamp: 'LA 11/26/2018 05:23:19'!
-checkOutCartWithId: aCartId ccn: aCreditCardNumber expiratingOn: expirationMonthOfYear owner: aName 
+!TusLibrosInterface methodsFor: 'resources' stamp: 'LA 11/26/2018 05:51:40'!
+checkoutCartWithId: aCartId ccn: aCreditCardNumber expiratingOn: expirationMonthOfYear owner: aName 
 	
 	| cart cashier total creditCard merchantProcessor|
 	
@@ -985,6 +1043,14 @@ listCartWithId: aCartId
 	cart _ self findCartWithId: aCartId.
 	
 	^ cart contents! !
+
+!TusLibrosInterface methodsFor: 'resources' stamp: 'LA 11/26/2018 05:50:59'!
+listPurcheasesFor: anUserName andPassword: aPassword 
+
+	(users includesKey: anUserName ) ifFalse: [self error: self class userNotFoundErrorMessage ].
+	((users at: anUserName) = aPassword) ifFalse: [self error: self class invalidPasswordErrorMessage ].
+	
+	^0! !
 
 
 !TusLibrosInterface methodsFor: 'initialization' stamp: 'LA 11/26/2018 05:07:39'!
