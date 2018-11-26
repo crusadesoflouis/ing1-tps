@@ -416,7 +416,7 @@ test11CannotCheckoutAnEmptyCart
 	! !
 
 
-!TuslibrosInterfaceTest methodsFor: 'setUp' stamp: 'LA 11/22/2018 20:19:29'!
+!TuslibrosInterfaceTest methodsFor: 'setup' stamp: 'LA 11/22/2018 20:19:29'!
 setUp
 
 	testObjectsFactory := StoreTestObjectsFactory new.
