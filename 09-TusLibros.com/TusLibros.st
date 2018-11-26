@@ -419,46 +419,90 @@ test11CannotCheckoutAnEmptyCart
 	.
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 05:51:40'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 17:27:31'!
 test12CannotCheckoutWithAnExpiredCreditCart
 	
-	| interface cartId item quantity expiredCreditCard |
+	| interface cartId item quantity creditCard |
 	
 	quantity _ 3.
 	item _ testObjectsFactory itemSellByTheStore.
+	creditCard  _ testObjectsFactory expiredCreditCard.
+	
 	interface _ testObjectsFactory tusLibrosInterface. 
 	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
 	interface add: quantity of: item toCartWithId: cartId.
-	expiredCreditCard  _ testObjectsFactory expiredCreditCard.
 	
 	self
-		should: [ interface checkoutCartWithId: cartId ccn: expiredCreditCard number expiratingOn: expiredCreditCard  expiration owner: expiredCreditCard  owner. ]
+		should: [
+			interface
+				checkoutCartWithId: cartId
+				ccn: creditCard number
+				expiratingOn: creditCard expiration
+				owner: creditCard owner.
+		]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :exception |
 			self assert: Cashier canNotChargeAnExpiredCreditCardErrorMessage equals: exception messageText.
 		].! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 05:51:40'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 17:37:33'!
 test13CannotCheckoutWhenTheCreditCardHasNoCredit
 
-	| interface cartId item quantity unfundedCreditCard |
+	| interface cartId item quantity creditCard |
 	
 	quantity _ 3.
 	item _ testObjectsFactory itemSellByTheStore.
-	interface _ testObjectsFactory tusLibrosInterface. 
+	interface _ testObjectsFactory tusLibrosInterfaceWithDebitBehavior: [ :anAmount :aCreditCard |
+		self error: Cashier creditCardHasNoCreditErrorMessage
+	].
+	
 	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
 	interface add: quantity of: item toCartWithId: cartId.
-	unfundedCreditCard  _ testObjectsFactory unfundedCreditCard.
+	creditCard _ testObjectsFactory notExpiredCreditCard.
 	
 	self
-		should: [ interface checkoutCartWithId: cartId ccn: unfundedCreditCard number expiratingOn: unfundedCreditCard  expiration owner: unfundedCreditCard  owner. ]
+		should: [
+			interface
+				checkoutCartWithId: cartId
+				ccn: creditCard number
+				expiratingOn: creditCard expiration
+				owner: creditCard owner
+			.
+		]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :exception |
-			self assert: Cashier canNotChargeAnExpiredCreditCardErrorMessage equals: exception messageText.
+			self assert: Cashier creditCardHasNoCreditErrorMessage equals: exception messageText.
 		].! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 17:02:16'!
-test14CannotListPurchasesForNonRegisteredUser
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 18:03:28'!
+test14CheckoutChargesCreditCardUsingMerchantProcessor
+
+	| interface cartId item numberOfItems creditCard debitedAmount price debitedCreditCard |
+	
+	numberOfItems _ 3.
+	item _ testObjectsFactory itemSellByTheStore.
+	price _ testObjectsFactory itemSellByTheStorePrice.
+	
+	interface _ testObjectsFactory tusLibrosInterfaceWithDebitBehavior: [ :anAmount :aCreditCard |
+		debitedAmount _ anAmount.
+		debitedCreditCard _ aCreditCard.
+	].
+	
+	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
+	interface add: numberOfItems of: item toCartWithId: cartId.
+	creditCard _ testObjectsFactory notExpiredCreditCard.
+	
+	interface
+		checkoutCartWithId: cartId
+		ccn: creditCard number
+		expiratingOn: creditCard expiration
+		owner: creditCard owner.
+	
+	self assert: numberOfItems * price equals: debitedAmount.
+	self assert: creditCard equals: debitedCreditCard.! !
+
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 17:51:31'!
+test15CannotListPurchasesForNonRegisteredUser
 	
 	| interface |
 	
@@ -472,8 +516,8 @@ test14CannotListPurchasesForNonRegisteredUser
 		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 17:02:16'!
-test15CannotListPurchasesWithWrongPassword
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 17:51:43'!
+test16CannotListPurchasesWithWrongPassword
 
 	| interface |
 	
@@ -487,8 +531,8 @@ test15CannotListPurchasesWithWrongPassword
 		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 17:04:05'!
-test16PurchaseListForNewUserIsEmpty
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 17:51:56'!
+test17PurchaseListForNewUserIsEmpty
 
 	| interface purchaseList |
 	
@@ -497,25 +541,6 @@ test16PurchaseListForNewUserIsEmpty
 	purchaseList _ interface listPurchasesFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
 	
 	self assert: purchaseList isEmpty.! !
-
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 17:02:16'!
-test17
-
-
-	| cartList interface cartId item quantity userListSales totalAmount |
-	
-	quantity _ 3.
-	item _ testObjectsFactory itemSellByTheStore.
-	interface _ testObjectsFactory tusLibrosInterface. 
-	totalAmount _ 3*testObjectsFactory itemSellByTheStorePrice.
-	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
-	interface add: quantity of: item toCartWithId: cartId.
-	
-	userListSales _ interface listPurchasesFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
-	
-	self assert: testObjectsFactory itemSellByTheStore equals: (userListSales at: 1) isbn.
-	self assert: quantity equals: (userListSales at: 1) quantity.
-	self assert: totalAmount itemSellByTheStore equals: userListSales totalAmount.! !
 
 
 !TuslibrosInterfaceTest methodsFor: 'setup' stamp: 'LA 11/22/2018 20:19:29'!
@@ -749,6 +774,24 @@ owner
 	
 	^owner! !
 
+
+!CreditCard methodsFor: 'comparing' stamp: 'jml 11/26/2018 17:56:56'!
+= anObject
+	
+	(self == anObject) ifTrue: [ ^ true ].
+	(anObject isKindOf: self class) ifFalse: [ ^ false ].
+	
+	^ number = anObject number
+		and: [ owner = anObject owner ]
+		and: [ expiration = anObject expiration ]
+	
+	! !
+
+!CreditCard methodsFor: 'comparing' stamp: 'jml 11/26/2018 17:59:12'!
+hash
+	
+	^ number hash bitXor: (owner hash bitXor: expiration hash)! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'CreditCard class' category: #TusLibros!
@@ -768,13 +811,8 @@ Object subclass: #MerchantProcessorInterface
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!MerchantProcessorInterface methodsFor: 'queries' stamp: 'LA 11/22/2018 15:37:34'!
+!MerchantProcessorInterface methodsFor: 'operations' stamp: 'LA 11/22/2018 15:37:34'!
 debit: anAmount from: aCreditCard
-	
-	self subclassResponsibility! !
-
-!MerchantProcessorInterface methodsFor: 'queries' stamp: 'jml 11/15/2018 20:45:20'!
-numberOfRequestsSent
 	
 	self subclassResponsibility! !
 
@@ -792,45 +830,32 @@ notEnoughFundsErrorDescription
 
 !classDefinition: #SimulatedMerchantProcessorInterface category: #TusLibros!
 MerchantProcessorInterface subclass: #SimulatedMerchantProcessorInterface
-	instanceVariableNames: 'numberOfRequests unfundedCards'
+	instanceVariableNames: 'debitBehavior'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!SimulatedMerchantProcessorInterface methodsFor: 'queries' stamp: 'jml 11/15/2018 20:52:26'!
-numberOfRequestsSent
+!SimulatedMerchantProcessorInterface methodsFor: 'initialization' stamp: 'jml 11/26/2018 17:09:13'!
+initializeWithDebitBehavior: aBehavior
 	
-	^ numberOfRequests! !
+	debitBehavior _ aBehavior.! !
 
 
-!SimulatedMerchantProcessorInterface methodsFor: 'initialization' stamp: 'LA 11/26/2018 05:22:59'!
-initialize
-	
-	numberOfRequests _ 0.
-	unfundedCards _ Set new.
-	unfundedCards add: (StoreTestObjectsFactory new unfundedCreditCard )! !
-
-
-!SimulatedMerchantProcessorInterface methodsFor: 'requests - private' stamp: 'jml 11/15/2018 20:51:31'!
-simulateRequest
-	
-	numberOfRequests _ numberOfRequests + 1.! !
-
-
-!SimulatedMerchantProcessorInterface methodsFor: 'requests' stamp: 'LA 11/26/2018 05:25:13'!
+!SimulatedMerchantProcessorInterface methodsFor: 'operations' stamp: 'jml 11/26/2018 17:37:18'!
 debit: anAmount from: aCreditCard
 	
-	self simulateRequest.
-	self halt.
-	(unfundedCards includes: aCreditCard) ifTrue: [
-		self error: self class notEnoughFundsErrorDescription.
-	].! !
+	debitBehavior value: anAmount value: aCreditCard.! !
 
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!SimulatedMerchantProcessorInterface methodsFor: 'simulating' stamp: 'jml 11/15/2018 21:24:17'!
-simulateCardWithoutFunds: aCreditCard 
+!classDefinition: 'SimulatedMerchantProcessorInterface class' category: #TusLibros!
+SimulatedMerchantProcessorInterface class
+	instanceVariableNames: ''!
+
+!SimulatedMerchantProcessorInterface class methodsFor: 'instance creation' stamp: 'jml 11/26/2018 17:08:55'!
+withDebitBehavior: aBehavior
 	
-	unfundedCards add: aCreditCard.! !
+	^ self new initializeWithDebitBehavior: aBehavior ! !
 
 
 !classDefinition: #Sale category: #TusLibros!
@@ -910,11 +935,6 @@ notExpiredCreditCard
 	
 	^CreditCard expiringOn:  (Month month: today monthIndex year: today yearNumber + 1) withNumber: '1111222244445555' andOwner: 'manolo'! !
 
-!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'LA 11/26/2018 05:05:52'!
-unfundedCreditCard
-	
-	^CreditCard expiringOn:  (Month month: today monthIndex year: today yearNumber + 1) withNumber: '5555444433331111' andOwner: 'manolo'! !
-
 
 !StoreTestObjectsFactory methodsFor: 'initialization' stamp: 'HernanWilkinson 6/17/2013 18:37'!
 initialize
@@ -961,15 +981,24 @@ wrongUser
 	^ 'pepe'! !
 
 
-!StoreTestObjectsFactory methodsFor: 'interface' stamp: 'LA 11/22/2018 21:22:06'!
+!StoreTestObjectsFactory methodsFor: 'interface' stamp: 'jml 11/26/2018 17:28:22'!
 tusLibrosInterface
 	
-	^ TusLibrosInterface newWithUsers: self registeredUsers andCatalog: self defaultCatalog! !
+	^ self tusLibrosInterfaceWithDebitBehavior: [ :anAmount :aCredit | ]! !
+
+!StoreTestObjectsFactory methodsFor: 'interface' stamp: 'jml 11/26/2018 17:24:41'!
+tusLibrosInterfaceWithDebitBehavior: aBehavior
+	
+	| mp |
+	
+	mp _ SimulatedMerchantProcessorInterface withDebitBehavior: aBehavior.
+	
+	^ TusLibrosInterface newWithUsers: self registeredUsers catalog: self defaultCatalog merchantProcessor: mp.! !
 
 
 !classDefinition: #TusLibrosInterface category: #TusLibros!
 Object subclass: #TusLibrosInterface
-	instanceVariableNames: 'users lastId activeCarts catalog sales'
+	instanceVariableNames: 'users lastId activeCarts catalog sales merchantProcessor'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
@@ -999,21 +1028,18 @@ add: aQuantity of: anItem toCartWithId: aCartId
 	
 	cart add: aQuantity of: anItem.! !
 
-!TusLibrosInterface methodsFor: 'resources' stamp: 'LA 11/26/2018 05:51:40'!
+!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/26/2018 17:29:58'!
 checkoutCartWithId: aCartId ccn: aCreditCardNumber expiratingOn: expirationMonthOfYear owner: aName 
 	
-	| cart cashier total creditCard merchantProcessor|
+	| cart cashier total creditCard |
 	
 	cart _ self findCartWithId: aCartId.
 	creditCard _ CreditCard expiringOn: expirationMonthOfYear withNumber: aCreditCardNumber andOwner: aName.
-	merchantProcessor _ SimulatedMerchantProcessorInterface new.
-
-	(creditCard isExpiredOn: DateAndTime now) ifTrue: [self error: Cashier canNotChargeAnExpiredCreditCardErrorMessage].
 
 	cashier _ Cashier
 		toCheckout: cart
 		charging: creditCard
-		throught: merchantProcessor 
+		throught: merchantProcessor
 		on: DateAndTime now
 		registeringOn: sales.
 	
@@ -1055,15 +1081,16 @@ listPurchasesFor: anUserName andPassword: aPassword
 	^ OrderedCollection new! !
 
 
-!TusLibrosInterface methodsFor: 'initialization' stamp: 'LA 11/26/2018 05:07:39'!
-initializeWithUsers: registeredUsers andCatalog: aCatalog
+!TusLibrosInterface methodsFor: 'initialization' stamp: 'jml 11/26/2018 17:14:48'!
+initializeWithUsers: registeredUsers catalog: aCatalog merchantProcessor: aMerchantProcessor
 
 	users _ registeredUsers.
 	catalog _ aCatalog.
+	merchantProcessor _ aMerchantProcessor.
+	sales _ OrderedCollection new.
 	
 	lastId _ 0.
-	activeCarts _ Dictionary new.
-	sales _ OrderedCollection new.! !
+	activeCarts _ Dictionary new.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1087,7 +1114,7 @@ userNotFoundErrorMessage
 	^'User not found'! !
 
 
-!TusLibrosInterface class methodsFor: 'instance creation' stamp: 'LA 11/22/2018 21:21:21'!
-newWithUsers: users andCatalog: aCatalog
+!TusLibrosInterface class methodsFor: 'instance creation' stamp: 'jml 11/26/2018 17:15:31'!
+newWithUsers: users catalog: aCatalog merchantProcessor: aMerchantProcessor
 
-	^self new initializeWithUsers: users andCatalog: aCatalog.! !
+	^ self new initializeWithUsers: users catalog: aCatalog merchantProcessor: aMerchantProcessor! !
