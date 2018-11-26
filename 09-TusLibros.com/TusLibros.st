@@ -457,47 +457,47 @@ test13CannotCheckoutWhenTheCreditCardHasNoCredit
 			self assert: Cashier canNotChargeAnExpiredCreditCardErrorMessage equals: exception messageText.
 		].! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 05:33:37'!
-test14CannotListPurcheaseForNonRegisteredUser
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 17:02:16'!
+test14CannotListPurchasesForNonRegisteredUser
 	
 	| interface |
 	
 	interface _ testObjectsFactory tusLibrosInterface.
 	
 	self
-		should: [ interface listPurcheasesFor: testObjectsFactory wrongUser andPassword: '123' ]
+		should: [ interface listPurchasesFor: testObjectsFactory wrongUser andPassword: '123' ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo:[ :exception |
 			self assert: TusLibrosInterface userNotFoundErrorMessage equals: exception messageText.
 		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 05:42:20'!
-test15CannotListPurcheaseForWrongPassword
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 17:02:16'!
+test15CannotListPurchasesWithWrongPassword
 
 	| interface |
 	
 	interface _ testObjectsFactory tusLibrosInterface.
 	
 	self
-		should: [ interface listPurcheasesFor: testObjectsFactory defaultUser andPassword: '123' ]
+		should: [ interface listPurchasesFor: testObjectsFactory defaultUser andPassword: '123' ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo:[ :exception |
 			self assert: TusLibrosInterface invalidPasswordErrorMessage equals: exception messageText.
 		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 05:50:40'!
-test16ListPurcheaseForNewUserIsEmpty
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 17:02:16'!
+test16PurchaseListForNewUserIsEmpty
 
 	| interface |
 	
 	interface _ testObjectsFactory tusLibrosInterface.
 
-	self assert: 0 equals: (interface listPurcheasesFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword).! !
+	self assert: 0 equals: (interface listPurchasesFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword).! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 06:02:11'!
-test17ListPurcheaseForOneElement
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 17:02:16'!
+test17
 
 
 	| cartList interface cartId item quantity userListSales totalAmount |
@@ -509,7 +509,7 @@ test17ListPurcheaseForOneElement
 	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
 	interface add: quantity of: item toCartWithId: cartId.
 	
-	userListSales _ interface listPurcheasesFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
+	userListSales _ interface listPurchasesFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
 	
 	self assert: testObjectsFactory itemSellByTheStore equals: (userListSales at: 1) isbn.
 	self assert: quantity equals: (userListSales at: 1) quantity.
@@ -1044,8 +1044,8 @@ listCartWithId: aCartId
 	
 	^ cart contents! !
 
-!TusLibrosInterface methodsFor: 'resources' stamp: 'LA 11/26/2018 05:50:59'!
-listPurcheasesFor: anUserName andPassword: aPassword 
+!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/26/2018 17:02:16'!
+listPurchasesFor: anUserName andPassword: aPassword 
 
 	(users includesKey: anUserName ) ifFalse: [self error: self class userNotFoundErrorMessage ].
 	((users at: anUserName) = aPassword) ifFalse: [self error: self class invalidPasswordErrorMessage ].
