@@ -253,36 +253,44 @@ TestCase subclass: #TuslibrosInterfaceTest
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/22/2018 20:21:00'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:19:00'!
 test01CannotListAnInvalidCart
 
 	self
 		should: [ testObjectsFactory tusLibrosInterface listCart: 666 ]
 		raise: Error - MessageNotUnderstood
-		withExceptionDo:[ :anError |
-			self assert: anError messageText = TusLibrosInterface cartNotFoundErrorMessage.
+		withExceptionDo:[ :exception |
+			self assert: TusLibrosInterface cartNotFoundErrorMessage equals: exception messageText.
 		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/22/2018 20:21:40'!
-test02CannotCreatCartWithAnInexistentUser
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:18:55'!
+test02CannotCreatCartForNonRegisteredUser
+	
+	| interface |
+	
+	interface _ testObjectsFactory tusLibrosInterface.
 	
 	self
-		should: [ testObjectsFactory tusLibrosInterface createCartFor: testObjectsFactory wrongUser andPassword: '123' ]
+		should: [ interface createCartFor: testObjectsFactory wrongUser andPassword: '123' ]
 		raise: Error - MessageNotUnderstood
-		withExceptionDo:[ :anError |
-			self assert: anError messageText = TusLibrosInterface userNotFoundErrorMessage.
+		withExceptionDo:[ :exception |
+			self assert: TusLibrosInterface userNotFoundErrorMessage equals: exception messageText.
 		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/22/2018 20:22:37'!
-test03CannotCreatCartWithAnInvalidPassword
-
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:18:50'!
+test03CannotCreatCartWithWrongPassword
+	
+	| interface |
+	
+	interface _ testObjectsFactory tusLibrosInterface.
+	
 	self
-		should: [ testObjectsFactory tusLibrosInterface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory wrongPassword ]
+		should: [ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory wrongPassword ]
 		raise: Error - MessageNotUnderstood
-		withExceptionDo:[ :anError |
-			self assert: anError messageText = TusLibrosInterface invalidPasswordErrorMessage.
+		withExceptionDo:[ :exception |
+			self assert: TusLibrosInterface invalidPasswordErrorMessage equals: exception messageText.
 		].
 	! !
 
@@ -308,19 +316,19 @@ test05NewCartIsEmpty
 	
 	self assert: (interface listCart: cartId) isEmpty.! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/22/2018 21:10:50'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:18:39'!
 test06CannotAddItemToAnInvalidCart
 
 
 	self
-		should: [ testObjectsFactory tusLibrosInterface add: 3 of: testObjectsFactory itemSellByTheStore to: 0.]
+		should: [ testObjectsFactory tusLibrosInterface add: 3 of: testObjectsFactory itemSellByTheStore toCartWithId: 0.]
 		raise: Error - MessageNotUnderstood
-		withExceptionDo:[ :anError |
-			self assert: anError messageText = TusLibrosInterface cartNotFoundErrorMessage.
+		withExceptionDo:[ :exception |
+			self assert: TusLibrosInterface cartNotFoundErrorMessage equals: exception messageText.
 		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/22/2018 21:30:23'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:16:48'!
 test07CanAddItemToCart
 	
 	| cartList interface cartId isbn quantity |
@@ -329,7 +337,7 @@ test07CanAddItemToCart
 	isbn _ testObjectsFactory itemSellByTheStore.
 	interface _ testObjectsFactory tusLibrosInterface. 
 	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
-	interface add: quantity of: isbn to: cartId.
+	interface add: quantity of: isbn toCartWithId: cartId.
 	cartList _ interface listCart: cartId.
 	
 	self deny: cartList isEmpty.
@@ -714,8 +722,8 @@ newId
 	! !
 
 
-!TusLibrosInterface methodsFor: 'protocol' stamp: 'LA 11/22/2018 21:27:33'!
-add: aQuantity of: anItem to: aCartId 
+!TusLibrosInterface methodsFor: 'protocol' stamp: 'jml 11/25/2018 23:16:31'!
+add: aQuantity of: anItem toCartWithId: aCartId 
 	
 	| cart |
 	
