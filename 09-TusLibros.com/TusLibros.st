@@ -531,16 +531,117 @@ test16CannotListPurchasesWithWrongPassword
 		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 17:51:56'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 18:31:05'!
 test17PurchaseListForNewUserIsEmpty
 
-	| interface purchaseList |
+	| interface purchases |
 	
 	interface _ testObjectsFactory tusLibrosInterface.
 	
-	purchaseList _ interface listPurchasesFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
+	purchases _ interface listPurchasesFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
 	
-	self assert: purchaseList isEmpty.! !
+	self assert: purchases contents isEmpty.
+	self assert: 0 equals: purchases total.! !
+
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 18:33:41'!
+test18PurchaseIsListed
+
+	| interface purchaseList cartId creditCard item numberOfItems password user purchases |
+	
+	user _ testObjectsFactory defaultUser.
+	password _ testObjectsFactory defaultPassword.
+	numberOfItems _ 3.
+	item _ testObjectsFactory itemSellByTheStore.
+	
+	interface _ testObjectsFactory tusLibrosInterface.
+	
+	cartId _ interface createCartFor: user andPassword: password.
+	interface add: numberOfItems of: item toCartWithId: cartId.
+	creditCard _ testObjectsFactory notExpiredCreditCard.
+	
+	interface
+		checkoutCartWithId: cartId
+		ccn: creditCard number
+		expiratingOn: creditCard expiration
+		owner: creditCard owner.
+		
+	purchases _ interface listPurchasesFor: user andPassword: password.
+	purchaseList _ purchases contents.
+	
+	self deny: purchaseList isEmpty.
+	self assert: 1 equals: purchaseList size.
+	self assert: (purchaseList includesKey: item).
+	self assert: numberOfItems equals: (purchaseList at: item).
+	! !
+
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 18:43:33'!
+test19PurchasesOfAnotherUserAreNotListed
+
+	| listingUser purchasingUser interface cartId creditCard item numberOfItems purchases |
+	
+	listingUser _ testObjectsFactory defaultUser.
+	purchasingUser _ testObjectsFactory secondUser.
+	
+	numberOfItems _ 3.
+	item _ testObjectsFactory itemSellByTheStore.
+	
+	interface _ testObjectsFactory tusLibrosInterface.
+	
+	cartId _ interface createCartFor: purchasingUser andPassword: testObjectsFactory secondUserPassword.
+	
+	interface add: numberOfItems of: item toCartWithId: cartId.
+	creditCard _ testObjectsFactory notExpiredCreditCard.
+	
+	interface
+		checkoutCartWithId: cartId
+		ccn: creditCard number
+		expiratingOn: creditCard expiration
+		owner: creditCard owner.
+		
+	purchases _ interface listPurchasesFor: listingUser andPassword: testObjectsFactory defaultPassword.
+	
+	self assert: purchases contents isEmpty.
+	self assert: 0 equals: purchases total.! !
+
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 19:04:11'!
+test20SeveralPurchasesAreAddedInList
+
+	| interface purchaseList creditCard item password user purchases cartId1 cartId2 quantity1 quantity2 |
+	
+	user _ testObjectsFactory defaultUser.
+	password _ testObjectsFactory defaultPassword.
+	quantity1 _ 3.
+	quantity2 _ 5.
+	creditCard _ testObjectsFactory notExpiredCreditCard.
+	item _ testObjectsFactory itemSellByTheStore.
+	
+	interface _ testObjectsFactory tusLibrosInterface.
+	cartId1 _ interface createCartFor: user andPassword: password.
+	
+	interface add: quantity1 of: item toCartWithId: cartId1.
+	interface
+		checkoutCartWithId: cartId1
+		ccn: creditCard number
+		expiratingOn: creditCard expiration
+		owner: creditCard owner.
+	
+	cartId2 _ interface createCartFor: user andPassword: password.
+	
+	interface add: quantity2 of: item toCartWithId: cartId2.
+	interface
+		checkoutCartWithId: cartId2
+		ccn: creditCard number
+		expiratingOn: creditCard expiration
+		owner: creditCard owner.
+		
+	purchases _ interface listPurchasesFor: user andPassword: password.
+	purchaseList _ purchases contents.
+	
+	self deny: purchaseList isEmpty.
+	self assert: 1 equals: purchaseList size.
+	self assert: (purchaseList includesKey: item).
+	self assert: quantity1 + quantity2 equals: (purchaseList at: item).
+	! !
 
 
 !TuslibrosInterfaceTest methodsFor: 'setup' stamp: 'LA 11/22/2018 20:19:29'!
@@ -552,7 +653,7 @@ setUp
 
 !classDefinition: #Cart category: #TusLibros!
 Object subclass: #Cart
-	instanceVariableNames: 'catalog contents'
+	instanceVariableNames: 'catalog contents user'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
@@ -568,11 +669,12 @@ assertIsValidQuantity: aQuantity
 	aQuantity strictlyPositive ifFalse: [ self error: self class invalidQuantityErrorMessage ]! !
 
 
-!Cart methodsFor: 'initialization' stamp: 'LA 11/22/2018 21:32:37'!
-initializeAcceptingItemsOf: aCatalog
-
-	catalog := aCatalog.
-	contents := Dictionary new.! !
+!Cart methodsFor: 'initialization' stamp: 'jml 11/26/2018 18:52:55'!
+initializeFor: aUser acceptingItemsOf: aCatalog
+	
+	user _ aUser.
+	catalog _ aCatalog.
+	contents _ Dictionary new.! !
 
 
 !Cart methodsFor: 'queries' stamp: 'LA 11/22/2018 21:35:59'!
@@ -624,16 +726,21 @@ contents
 	
 	^ contents! !
 
+!Cart methodsFor: 'accessing' stamp: 'jml 11/26/2018 18:55:55'!
+user
+	
+	^ user ! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Cart class' category: #TusLibros!
 Cart class
 	instanceVariableNames: ''!
 
-!Cart class methodsFor: 'instance creation' stamp: 'HernanWilkinson 6/17/2013 17:48'!
-acceptingItemsOf: aCatalog
+!Cart class methodsFor: 'instance creation' stamp: 'jml 11/26/2018 18:52:27'!
+for: aUser acceptingItemsOf: aCatalog
 
-	^self new initializeAcceptingItemsOf: aCatalog ! !
+	^ self new initializeFor: aUser acceptingItemsOf: aCatalog ! !
 
 
 !Cart class methodsFor: 'error messages' stamp: 'jml 11/25/2018 23:43:50'!
@@ -660,10 +767,10 @@ calculateTotal
 	total := cart total.
 	! !
 
-!Cashier methodsFor: 'checkout - private' stamp: 'HernanWilkinson 6/17/2013 19:07'!
+!Cashier methodsFor: 'checkout - private' stamp: 'jml 11/26/2018 18:55:39'!
 createSale
-
-	^ Sale of: total
+	
+	^ Sale of: cart user withContents: cart contents andTotal: total
 ! !
 
 !Cashier methodsFor: 'checkout - private' stamp: 'HernanWilkinson 6/17/2013 19:06'!
@@ -841,7 +948,7 @@ initializeWithDebitBehavior: aBehavior
 	debitBehavior _ aBehavior.! !
 
 
-!SimulatedMerchantProcessorInterface methodsFor: 'operations' stamp: 'jml 11/26/2018 17:37:18'!
+!SimulatedMerchantProcessorInterface methodsFor: 'operations' stamp: 'jml 11/26/2018 19:05:34'!
 debit: anAmount from: aCreditCard
 	
 	debitBehavior value: anAmount value: aCreditCard.! !
@@ -860,16 +967,33 @@ withDebitBehavior: aBehavior
 
 !classDefinition: #Sale category: #TusLibros!
 Object subclass: #Sale
-	instanceVariableNames: 'total'
+	instanceVariableNames: 'total contents user'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!Sale methodsFor: 'total' stamp: 'HernanWilkinson 6/17/2013 18:48'!
+!Sale methodsFor: 'accessing' stamp: 'jml 11/26/2018 18:28:49'!
+contents
+	
+	^ contents! !
+
+!Sale methodsFor: 'accessing' stamp: 'HernanWilkinson 6/17/2013 18:48'!
 total
 	
 	^ total! !
 
+!Sale methodsFor: 'accessing' stamp: 'jml 11/26/2018 18:58:46'!
+user
+	
+	^ user! !
+
+
+!Sale methodsFor: 'initialization' stamp: 'jml 11/26/2018 18:54:37'!
+initializeOf: aUser withContents: aContent andTotal: anAmount
+	
+	user _ aUser.
+	contents _ aContent.
+	total _ anAmount.! !
 
 !Sale methodsFor: 'initialization' stamp: 'HernanWilkinson 6/17/2013 18:47'!
 initializeTotal: aTotal
@@ -882,11 +1006,10 @@ initializeTotal: aTotal
 Sale class
 	instanceVariableNames: ''!
 
-!Sale class methodsFor: 'instance creation' stamp: 'HernanWilkinson 6/17/2013 18:47'!
-of: aTotal
-
-	"should assert total is not negative or 0!!"
-	^self new initializeTotal: aTotal ! !
+!Sale class methodsFor: 'instance creation' stamp: 'jml 11/26/2018 18:54:17'!
+of: aUser withContents: aContent andTotal: anAmount
+	
+	^ self new initializeOf: aUser withContents: aContent andTotal: anAmount! !
 
 
 !classDefinition: #StoreTestObjectsFactory category: #TusLibros!
@@ -912,10 +1035,10 @@ itemSellByTheStorePrice
 	^10! !
 
 
-!StoreTestObjectsFactory methodsFor: 'cart' stamp: 'HernanWilkinson 6/17/2013 18:08'!
+!StoreTestObjectsFactory methodsFor: 'cart' stamp: 'jml 11/26/2018 18:53:29'!
 createCart
 	
-	^Cart acceptingItemsOf: self defaultCatalog! !
+	^Cart for: self defaultUser acceptingItemsOf: self defaultCatalog! !
 
 !StoreTestObjectsFactory methodsFor: 'cart' stamp: 'HernanWilkinson 6/17/2013 18:08'!
 defaultCatalog
@@ -958,17 +1081,28 @@ defaultUser
 	
 	^ 'manolo'! !
 
-!StoreTestObjectsFactory methodsFor: 'users' stamp: 'LA 11/22/2018 20:14:02'!
+!StoreTestObjectsFactory methodsFor: 'users' stamp: 'jml 11/26/2018 18:45:48'!
 registeredUsers
 
-	|registeredUsers|
+	| registeredUsers |
 	
 	registeredUsers _ Dictionary new.
 	registeredUsers at: self defaultUser put: self defaultPassword.
+	registeredUsers at: self secondUser put: self secondUserPassword.
 	
 	^ registeredUsers
 	
 		! !
+
+!StoreTestObjectsFactory methodsFor: 'users' stamp: 'jml 11/26/2018 18:44:35'!
+secondUser
+	
+	^ 'cacho'! !
+
+!StoreTestObjectsFactory methodsFor: 'users' stamp: 'jml 11/26/2018 18:45:15'!
+secondUserPassword
+	
+	^ '1245645'! !
 
 !StoreTestObjectsFactory methodsFor: 'users' stamp: 'LA 11/22/2018 20:14:53'!
 wrongPassword
@@ -1047,7 +1181,7 @@ checkoutCartWithId: aCartId ccn: aCreditCardNumber expiratingOn: expirationMonth
 	^ total
 ! !
 
-!TusLibrosInterface methodsFor: 'resources' stamp: 'LA 11/22/2018 21:19:37'!
+!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/26/2018 18:51:38'!
 createCartFor: anUserName andPassword: aPassword
 	
 	| cartId cart |
@@ -1057,7 +1191,7 @@ createCartFor: anUserName andPassword: aPassword
 	
 	cartId _ self newId.
 	
-	cart _ Cart acceptingItemsOf: catalog.
+	cart _ Cart for: anUserName acceptingItemsOf: catalog.
 	
 	activeCarts at: cartId put: cart.
 	
@@ -1072,13 +1206,31 @@ listCartWithId: aCartId
 	
 	^ cart contents! !
 
-!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/26/2018 17:04:22'!
-listPurchasesFor: anUserName andPassword: aPassword 
+!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/26/2018 18:58:22'!
+listPurchasesFor: aUserName andPassword: aPassword 
 
-	(users includesKey: anUserName ) ifFalse: [self error: self class userNotFoundErrorMessage ].
-	((users at: anUserName) = aPassword) ifFalse: [self error: self class invalidPasswordErrorMessage ].
+	| userSales purchasedItems total |
 	
-	^ OrderedCollection new! !
+	(users includesKey: aUserName ) ifFalse: [self error: self class userNotFoundErrorMessage ].
+	((users at: aUserName) = aPassword) ifFalse: [self error: self class invalidPasswordErrorMessage ].
+	
+	total _ 0.
+	
+	purchasedItems _ Dictionary new.
+	
+	userSales _ sales select: [ :sale | sale user = aUserName ].
+	
+	userSales do: [ :sale |
+		total _ total + sale total.
+		sale contents associationsDo: [ :assoc | | currentQuantity item quantity |
+			item _ assoc key.
+			quantity _ assoc value.
+			currentQuantity _ purchasedItems at: item ifAbsent: 0.
+			purchasedItems at: item put: currentQuantity + quantity.
+		].
+	].
+	
+	^ Sale of: aUserName withContents: purchasedItems andTotal: total! !
 
 
 !TusLibrosInterface methodsFor: 'initialization' stamp: 'jml 11/26/2018 17:14:48'!
