@@ -253,11 +253,11 @@ TestCase subclass: #TuslibrosInterfaceTest
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:19:00'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 00:57:24'!
 test01CannotListAnInvalidCart
 
 	self
-		should: [ testObjectsFactory tusLibrosInterface listCart: 666 ]
+		should: [ testObjectsFactory tusLibrosInterface listCartWithId: 666 ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo:[ :exception |
 			self assert: TusLibrosInterface cartNotFoundErrorMessage equals: exception messageText.
@@ -306,7 +306,7 @@ test04NewCartsHaveDifferentIds
 	self deny: firstId  = secondId.
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:20:18'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 00:57:24'!
 test05NewCartIsListedAsEmpty
 	
 	| interface cartId |
@@ -314,7 +314,7 @@ test05NewCartIsListedAsEmpty
 	interface _ testObjectsFactory tusLibrosInterface. 
 	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
 	
-	self assert: (interface listCart: cartId) isEmpty.! !
+	self assert: (interface listCartWithId: cartId) isEmpty.! !
 
 !TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:18:39'!
 test06CannotAddItemToAnInvalidCart
@@ -328,7 +328,7 @@ test06CannotAddItemToAnInvalidCart
 		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:21:58'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 00:57:24'!
 test07ItemAddedToCartIsListed
 	
 	| cartList interface cartId item quantity |
@@ -339,14 +339,14 @@ test07ItemAddedToCartIsListed
 	
 	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
 	interface add: quantity of: item toCartWithId: cartId.
-	cartList _ interface listCart: cartId.
+	cartList _ interface listCartWithId: cartId.
 	
 	self deny: cartList isEmpty.
 	self assert: 1 equals: cartList size.
 	self assert: (cartList includesKey: item).
 	self assert: quantity equals: (cartList at: item).! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:46:38'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 00:57:24'!
 test08CannotAddNonPositiveNumberOfItems
 	
 	| interface cartId |
@@ -360,11 +360,11 @@ test08CannotAddNonPositiveNumberOfItems
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :exception |
 			self assert: Cart invalidQuantityErrorMessage equals: exception messageText.
-			self assert: (interface listCart: cartId) isEmpty.
+			self assert: (interface listCartWithId: cartId) isEmpty.
 		]
 	.! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:48:11'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 00:57:24'!
 test09CannotAddItemsThatDoNotBelongToStore
 	
 	| interface cartId |
@@ -378,7 +378,7 @@ test09CannotAddItemsThatDoNotBelongToStore
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :exception |
 			self assert: Cart invalidItemErrorMessage equals: exception messageText.
-			self assert: (interface listCart: cartId) isEmpty.
+			self assert: (interface listCartWithId: cartId) isEmpty.
 		]
 	.! !
 
@@ -777,8 +777,8 @@ Object subclass: #TusLibrosInterface
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!TusLibrosInterface methodsFor: 'carts' stamp: 'LA 11/22/2018 21:27:14'!
-findCart: aCartId
+!TusLibrosInterface methodsFor: 'carts' stamp: 'jml 11/26/2018 00:58:02'!
+findCartWithId: aCartId
 	
 	(activeCarts includesKey: aCartId) ifFalse: [ self error: self class cartNotFoundErrorMessage ].
 	
@@ -793,21 +793,21 @@ newId
 	! !
 
 
-!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/25/2018 23:42:00'!
+!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/26/2018 00:58:02'!
 add: aQuantity of: anItem toCartWithId: aCartId 
 	
 	| cart |
 	
-	cart _ self findCart: aCartId.
+	cart _ self findCartWithId: aCartId.
 	
 	cart add: aQuantity of: anItem.! !
 
-!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/26/2018 00:43:24'!
+!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/26/2018 00:58:02'!
 checkOutCartWithId: aCartId ccn: aCreditCardNumber expiratingOn: expirationMonth of: expirationYear owner: aName 
 	
 	| cart cashier total |
 	
-	cart _ self findCart: aCartId.
+	cart _ self findCartWithId: aCartId.
 	
 	cashier _ Cashier
 		toCheckout: cart
@@ -837,12 +837,12 @@ createCartFor: anUserName andPassword: aPassword
 	
 	^ cartId! !
 
-!TusLibrosInterface methodsFor: 'resources' stamp: 'LA 11/22/2018 21:29:24'!
-listCart: aCartId
+!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/26/2018 00:58:02'!
+listCartWithId: aCartId
 	
 	| cart |
 	
-	cart _ self findCart: aCartId.
+	cart _ self findCartWithId: aCartId.
 	
 	^ cart contents! !
 
