@@ -382,15 +382,17 @@ test09CannotAddItemsThatDoNotBelongToStore
 		]
 	.! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 00:35:24'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 05:01:53'!
 test10CannotCheckoutAnInvalidCart
 	
-	| interface |
+	| interface expiredCreditCard|
 	
 	interface _ testObjectsFactory tusLibrosInterface.
 	
+	expiredCreditCard  _ testObjectsFactory expiredCreditCard.
+	
 	self
-		should: [ interface checkOutCartWithId: 766 ccn: '0' expiratingOn: 1 of: 2040 owner: 'manolo'. ]
+		should: [ interface checkOutCartWithId: 666 ccn: expiredCreditCard number expiratingOn: expiredCreditCard  expiration owner: expiredCreditCard  owner. ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :exception |
 			self assert: TusLibrosInterface cartNotFoundErrorMessage equals: exception messageText.
@@ -398,22 +400,43 @@ test10CannotCheckoutAnInvalidCart
 	.
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 00:37:04'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 05:01:21'!
 test11CannotCheckoutAnEmptyCart
 	
-	| interface cartId |
+	| interface cartId expiredCreditCard |
 	
 	interface _ testObjectsFactory tusLibrosInterface.
 	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
 	
+	expiredCreditCard  _ testObjectsFactory expiredCreditCard.
+	
 	self
-		should: [ interface checkOutCartWithId: cartId ccn: '0' expiratingOn: 1 of: 2040 owner: 'manolo'. ]
+		should: [ interface checkOutCartWithId: cartId ccn: expiredCreditCard number expiratingOn: expiredCreditCard  expiration owner: expiredCreditCard  owner. ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :exception |
 			self assert: Cashier cartCanNotBeEmptyErrorMessage equals: exception messageText.
 		]
 	.
 	! !
+
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 04:46:59'!
+test12CannotCheckoutWithAnExpiredCreditCart
+	
+	| interface cartId item quantity expiredCreditCard |
+	
+	quantity _ 3.
+	item _ testObjectsFactory itemSellByTheStore.
+	interface _ testObjectsFactory tusLibrosInterface. 
+	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
+	interface add: quantity of: item toCartWithId: cartId.
+	expiredCreditCard  _ testObjectsFactory expiredCreditCard.
+	
+	self
+		should: [ interface checkOutCartWithId: cartId ccn: expiredCreditCard number expiratingOn: expiredCreditCard  expiration owner: expiredCreditCard  owner. ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :exception |
+			self assert: Cashier canNotChargeAnExpiredCreditCardErrorMessage equals: exception messageText.
+		].! !
 
 
 !TuslibrosInterfaceTest methodsFor: 'setup' stamp: 'LA 11/22/2018 20:19:29'!
@@ -613,7 +636,7 @@ creditCardHasNoCreditErrorMessage
 
 !classDefinition: #CreditCard category: #TusLibros!
 Object subclass: #CreditCard
-	instanceVariableNames: 'expiration'
+	instanceVariableNames: 'expiration number owner'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
@@ -624,10 +647,28 @@ isExpiredOn: aDate
 	^expiration start < (Month month: aDate monthIndex year: aDate yearNumber) start ! !
 
 
-!CreditCard methodsFor: 'initialization' stamp: 'HernanWilkinson 6/17/2013 18:38'!
-initializeExpiringOn: aMonth 
+!CreditCard methodsFor: 'initialization' stamp: 'LA 11/26/2018 04:57:54'!
+initializeExpiringOn: aMonth withNumber: anNumber andOwner: anOwner 
 	
-	expiration := aMonth ! !
+	expiration := aMonth.
+	number := anNumber.
+	owner := anOwner.! !
+
+
+!CreditCard methodsFor: 'accessing' stamp: 'LA 11/26/2018 04:55:42'!
+expiration
+
+	^expiration! !
+
+!CreditCard methodsFor: 'accessing' stamp: 'LA 11/26/2018 04:55:34'!
+number
+
+	^number! !
+
+!CreditCard methodsFor: 'accessing' stamp: 'LA 11/26/2018 04:55:50'!
+owner
+	
+	^owner! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -635,10 +676,82 @@ initializeExpiringOn: aMonth
 CreditCard class
 	instanceVariableNames: ''!
 
-!CreditCard class methodsFor: 'instance creation' stamp: 'HernanWilkinson 6/17/2013 18:38'!
-expiringOn: aMonth 
+!CreditCard class methodsFor: 'instance creation' stamp: 'LA 11/26/2018 04:57:00'!
+expiringOn: aMonth withNumber: anNumber andOwner: anOwner 
+
+	^self new initializeExpiringOn: aMonth withNumber: anNumber andOwner: anOwner ! !
+
+
+!classDefinition: #MerchantProcessorInterface category: #TusLibros!
+Object subclass: #MerchantProcessorInterface
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
+
+!MerchantProcessorInterface methodsFor: 'queries' stamp: 'LA 11/22/2018 15:37:34'!
+debit: anAmount from: aCreditCard
 	
-	^self new initializeExpiringOn: aMonth! !
+	self subclassResponsibility! !
+
+!MerchantProcessorInterface methodsFor: 'queries' stamp: 'jml 11/15/2018 20:45:20'!
+numberOfRequestsSent
+	
+	self subclassResponsibility! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'MerchantProcessorInterface class' category: #TusLibros!
+MerchantProcessorInterface class
+	instanceVariableNames: ''!
+
+!MerchantProcessorInterface class methodsFor: 'error messages' stamp: 'jml 11/15/2018 21:23:28'!
+notEnoughFundsErrorDescription
+	
+	^ 'Card has not enough funds'! !
+
+
+!classDefinition: #SimulatedMerchantProcessorInterface category: #TusLibros!
+MerchantProcessorInterface subclass: #SimulatedMerchantProcessorInterface
+	instanceVariableNames: 'numberOfRequests unfundedCards'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
+
+!SimulatedMerchantProcessorInterface methodsFor: 'queries' stamp: 'jml 11/15/2018 20:52:26'!
+numberOfRequestsSent
+	
+	^ numberOfRequests! !
+
+
+!SimulatedMerchantProcessorInterface methodsFor: 'initialization' stamp: 'LA 11/26/2018 05:00:25'!
+initialize
+	
+	numberOfRequests _ 0.
+	unfundedCards _ Set new.
+	unfundedCards add: (CreditCard expiringOn: (Month month: DateAndTime now monthIndex year: DateAndTime now yearNumber + 1) withNumber: '4444333322221111' andOwner: 'manolo')! !
+
+
+!SimulatedMerchantProcessorInterface methodsFor: 'requests - private' stamp: 'jml 11/15/2018 20:51:31'!
+simulateRequest
+	
+	numberOfRequests _ numberOfRequests + 1.! !
+
+
+!SimulatedMerchantProcessorInterface methodsFor: 'requests' stamp: 'jml 11/15/2018 21:25:53'!
+debit: anAmount from: aCreditCard
+	
+	self simulateRequest.
+	
+	(unfundedCards includes: aCreditCard) ifTrue: [
+		self error: self class notEnoughFundsErrorDescription.
+	].! !
+
+
+!SimulatedMerchantProcessorInterface methodsFor: 'simulating' stamp: 'jml 11/15/2018 21:24:17'!
+simulateCardWithoutFunds: aCreditCard 
+	
+	unfundedCards add: aCreditCard.! !
 
 
 !classDefinition: #Sale category: #TusLibros!
@@ -708,15 +821,15 @@ defaultCatalog
 		yourself ! !
 
 
-!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'HernanWilkinson 6/17/2013 18:37'!
+!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'LA 11/26/2018 04:59:19'!
 expiredCreditCard
 	
-	^CreditCard expiringOn: (Month month: today monthIndex year: today yearNumber - 1)! !
+	^CreditCard expiringOn:  (Month month: today monthIndex year: today yearNumber - 1) withNumber: '1111222244445555' andOwner: 'manolo'! !
 
-!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'HernanWilkinson 6/17/2013 18:36'!
+!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'LA 11/26/2018 04:59:08'!
 notExpiredCreditCard
 	
-	^CreditCard expiringOn: (Month month: today monthIndex year: today yearNumber + 1)! !
+	^CreditCard expiringOn:  (Month month: today monthIndex year: today yearNumber + 1) withNumber: '1111222244445555' andOwner: 'manolo'! !
 
 
 !StoreTestObjectsFactory methodsFor: 'initialization' stamp: 'HernanWilkinson 6/17/2013 18:37'!
@@ -772,7 +885,7 @@ tusLibrosInterface
 
 !classDefinition: #TusLibrosInterface category: #TusLibros!
 Object subclass: #TusLibrosInterface
-	instanceVariableNames: 'users lastId activeCarts catalog'
+	instanceVariableNames: 'users lastId activeCarts catalog sales'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
@@ -802,24 +915,32 @@ add: aQuantity of: anItem toCartWithId: aCartId
 	
 	cart add: aQuantity of: anItem.! !
 
-!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/26/2018 00:58:02'!
-checkOutCartWithId: aCartId ccn: aCreditCardNumber expiratingOn: expirationMonth of: expirationYear owner: aName 
+!TusLibrosInterface methodsFor: 'resources' stamp: 'LA 11/26/2018 04:50:03'!
+checkOutCartWithId: aCartId ccn: aCreditCardNumber expiratingOn: expirationMonthOfYear owner: aName 
 	
-	| cart cashier total |
+	| cart cashier total creditCard|
 	
 	cart _ self findCartWithId: aCartId.
 	
+	creditCard _ CreditCard expiringOn: expirationMonthOfYear withNumber: aCreditCardNumber andOwner: aName.
+
 	cashier _ Cashier
 		toCheckout: cart
-		charging: nil
-		throught: nil
-		on: nil
-		registeringOn: nil
+		charging: creditCard
+		throught: SimulatedMerchantProcessorInterface new
+		on: DateAndTime now
+		registeringOn: sales
 	.
 	
 	total _ cashier checkOut.
 	
-	^ total! !
+	^ total
+	
+	
+	"
+	toCheckout: aCart charging: aCreditCard throught: aMerchantProcessor on: aDate registeringOn: aSalesBook
+	
+"! !
 
 !TusLibrosInterface methodsFor: 'resources' stamp: 'LA 11/22/2018 21:19:37'!
 createCartFor: anUserName andPassword: aPassword
