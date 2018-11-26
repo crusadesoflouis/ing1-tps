@@ -10,7 +10,7 @@ test01NewCartsAreCreatedEmpty
 
 	self assert: testObjectsFactory createCart isEmpty! !
 
-!CartTest methodsFor: 'tests' stamp: 'HernanWilkinson 6/17/2013 18:10'!
+!CartTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:44:36'!
 test02CanNotAddItemsThatDoNotBelongToStore
 
 	| cart |
@@ -21,7 +21,7 @@ test02CanNotAddItemsThatDoNotBelongToStore
 		should: [ cart add: testObjectsFactory itemNotSellByTheStore ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
-			self assert: anError messageText = cart invalidItemErrorMessage.
+			self assert: anError messageText = Cart invalidItemErrorMessage.
 			self assert: cart isEmpty ]! !
 
 !CartTest methodsFor: 'tests' stamp: 'HernanWilkinson 6/17/2013 18:10'!
@@ -34,7 +34,7 @@ test03AfterAddingAnItemTheCartIsNotEmptyAnymore
 	cart add: testObjectsFactory itemSellByTheStore.
 	self deny: cart isEmpty ! !
 
-!CartTest methodsFor: 'tests' stamp: 'HernanWilkinson 6/17/2013 18:10'!
+!CartTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:44:41'!
 test04CanNotAddNonPositiveNumberOfItems
 
 	| cart |
@@ -45,10 +45,10 @@ test04CanNotAddNonPositiveNumberOfItems
 		should: [cart add: 0 of: testObjectsFactory itemSellByTheStore ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
-			self assert: anError messageText = cart invalidQuantityErrorMessage.
+			self assert: anError messageText = Cart invalidQuantityErrorMessage.
 			self assert: cart isEmpty ]! !
 
-!CartTest methodsFor: 'tests' stamp: 'HernanWilkinson 6/17/2013 18:10'!
+!CartTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:44:45'!
 test05CanNotAddMoreThanOneItemNotSellByTheStore
 
 	| cart |
@@ -59,7 +59,7 @@ test05CanNotAddMoreThanOneItemNotSellByTheStore
 		should: [cart add: 2 of: testObjectsFactory itemNotSellByTheStore  ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
-			self assert: anError messageText = cart invalidItemErrorMessage.
+			self assert: anError messageText = Cart invalidItemErrorMessage.
 			self assert: cart isEmpty ]! !
 
 !CartTest methodsFor: 'tests' stamp: 'HernanWilkinson 6/17/2013 18:11'!
@@ -346,6 +346,42 @@ test07ItemAddedToCartIsListed
 	self assert: (cartList includesKey: item).
 	self assert: quantity equals: (cartList at: item).! !
 
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:46:38'!
+test08CannotAddNonPositiveNumberOfItems
+	
+	| interface cartId |
+	
+	interface _ testObjectsFactory tusLibrosInterface.
+	
+	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
+	
+	self
+		should: [ interface add: 0 of: testObjectsFactory itemSellByTheStore toCartWithId: cartId. ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :exception |
+			self assert: Cart invalidQuantityErrorMessage equals: exception messageText.
+			self assert: (interface listCart: cartId) isEmpty.
+		]
+	.! !
+
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:48:11'!
+test09CannotAddItemsThatDoNotBelongToStore
+	
+	| interface cartId |
+	
+	interface _ testObjectsFactory tusLibrosInterface.
+	
+	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
+	
+	self
+		should: [ interface add: 10 of: testObjectsFactory itemNotSellByTheStore toCartWithId: cartId. ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :exception |
+			self assert: Cart invalidItemErrorMessage equals: exception messageText.
+			self assert: (interface listCart: cartId) isEmpty.
+		]
+	.! !
+
 
 !TuslibrosInterfaceTest methodsFor: 'setUp' stamp: 'LA 11/22/2018 20:19:29'!
 setUp
@@ -361,26 +397,15 @@ Object subclass: #Cart
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!Cart methodsFor: 'error messages' stamp: 'HernanWilkinson 6/17/2013 17:45'!
-invalidItemErrorMessage
-	
-	^'Item is not in catalog'! !
-
-!Cart methodsFor: 'error messages' stamp: 'HernanWilkinson 6/17/2013 17:45'!
-invalidQuantityErrorMessage
-	
-	^'Invalid number of items'! !
-
-
-!Cart methodsFor: 'assertions' stamp: 'HernanWilkinson 6/17/2013 18:06'!
+!Cart methodsFor: 'assertions' stamp: 'jml 11/25/2018 23:46:03'!
 assertIsValidItem: anItem
 
-	(catalog includesKey: anItem) ifFalse: [ self error: self invalidItemErrorMessage ]! !
+	(catalog includesKey: anItem) ifFalse: [ self error: self class invalidItemErrorMessage ]! !
 
-!Cart methodsFor: 'assertions' stamp: 'HernanWilkinson 6/17/2013 17:51'!
+!Cart methodsFor: 'assertions' stamp: 'jml 11/25/2018 23:46:13'!
 assertIsValidQuantity: aQuantity
 
-	aQuantity strictlyPositive ifFalse: [ self error: self invalidQuantityErrorMessage ]! !
+	aQuantity strictlyPositive ifFalse: [ self error: self class invalidQuantityErrorMessage ]! !
 
 
 !Cart methodsFor: 'initialization' stamp: 'LA 11/22/2018 21:32:37'!
@@ -449,6 +474,17 @@ Cart class
 acceptingItemsOf: aCatalog
 
 	^self new initializeAcceptingItemsOf: aCatalog ! !
+
+
+!Cart class methodsFor: 'error messages' stamp: 'jml 11/25/2018 23:43:50'!
+invalidItemErrorMessage
+	
+	^'Item is not in catalog'! !
+
+!Cart class methodsFor: 'error messages' stamp: 'jml 11/25/2018 23:44:01'!
+invalidQuantityErrorMessage
+	
+	^'Invalid number of items'! !
 
 
 !classDefinition: #Cashier category: #TusLibros!
@@ -724,7 +760,7 @@ newId
 	! !
 
 
-!TusLibrosInterface methodsFor: 'protocol' stamp: 'jml 11/25/2018 23:16:31'!
+!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/25/2018 23:42:00'!
 add: aQuantity of: anItem toCartWithId: aCartId 
 	
 	| cart |
@@ -733,7 +769,7 @@ add: aQuantity of: anItem toCartWithId: aCartId
 	
 	cart add: aQuantity of: anItem.! !
 
-!TusLibrosInterface methodsFor: 'protocol' stamp: 'LA 11/22/2018 21:19:37'!
+!TusLibrosInterface methodsFor: 'resources' stamp: 'LA 11/22/2018 21:19:37'!
 createCartFor: anUserName andPassword: aPassword
 	
 	| cartId cart |
@@ -749,7 +785,7 @@ createCartFor: anUserName andPassword: aPassword
 	
 	^ cartId! !
 
-!TusLibrosInterface methodsFor: 'protocol' stamp: 'LA 11/22/2018 21:29:24'!
+!TusLibrosInterface methodsFor: 'resources' stamp: 'LA 11/22/2018 21:29:24'!
 listCart: aCartId
 	
 	| cart |
