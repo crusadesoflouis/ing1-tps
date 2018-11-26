@@ -382,6 +382,39 @@ test09CannotAddItemsThatDoNotBelongToStore
 		]
 	.! !
 
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 00:35:24'!
+test10CannotCheckoutAnInvalidCart
+	
+	| interface |
+	
+	interface _ testObjectsFactory tusLibrosInterface.
+	
+	self
+		should: [ interface checkOutCartWithId: 766 ccn: '0' expiratingOn: 1 of: 2040 owner: 'manolo'. ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :exception |
+			self assert: TusLibrosInterface cartNotFoundErrorMessage equals: exception messageText.
+		]
+	.
+	! !
+
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 00:37:04'!
+test11CannotCheckoutAnEmptyCart
+	
+	| interface cartId |
+	
+	interface _ testObjectsFactory tusLibrosInterface.
+	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
+	
+	self
+		should: [ interface checkOutCartWithId: cartId ccn: '0' expiratingOn: 1 of: 2040 owner: 'manolo'. ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :exception |
+			self assert: Cashier cartCanNotBeEmptyErrorMessage equals: exception messageText.
+		]
+	.
+	! !
+
 
 !TuslibrosInterfaceTest methodsFor: 'setUp' stamp: 'LA 11/22/2018 20:19:29'!
 setUp
@@ -768,6 +801,25 @@ add: aQuantity of: anItem toCartWithId: aCartId
 	cart _ self findCart: aCartId.
 	
 	cart add: aQuantity of: anItem.! !
+
+!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/26/2018 00:43:24'!
+checkOutCartWithId: aCartId ccn: aCreditCardNumber expiratingOn: expirationMonth of: expirationYear owner: aName 
+	
+	| cart cashier total |
+	
+	cart _ self findCart: aCartId.
+	
+	cashier _ Cashier
+		toCheckout: cart
+		charging: nil
+		throught: nil
+		on: nil
+		registeringOn: nil
+	.
+	
+	total _ cashier checkOut.
+	
+	^ total! !
 
 !TusLibrosInterface methodsFor: 'resources' stamp: 'LA 11/22/2018 21:19:37'!
 createCartFor: anUserName andPassword: aPassword
