@@ -306,8 +306,8 @@ test04NewCartsHaveDifferentIds
 	self deny: firstId  = secondId.
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/22/2018 20:39:21'!
-test05NewCartIsEmpty
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:20:18'!
+test05NewCartIsListedAsEmpty
 	
 	| interface cartId |
 	
@@ -328,21 +328,23 @@ test06CannotAddItemToAnInvalidCart
 		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:16:48'!
-test07CanAddItemToCart
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:21:58'!
+test07ItemAddedToCartIsListed
 	
-	| cartList interface cartId isbn quantity |
+	| cartList interface cartId item quantity |
 	
 	quantity _ 3.
-	isbn _ testObjectsFactory itemSellByTheStore.
+	item _ testObjectsFactory itemSellByTheStore.
 	interface _ testObjectsFactory tusLibrosInterface. 
+	
 	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
-	interface add: quantity of: isbn toCartWithId: cartId.
+	interface add: quantity of: item toCartWithId: cartId.
 	cartList _ interface listCart: cartId.
 	
 	self deny: cartList isEmpty.
-	self assert: (cartList includesKey: isbn).
-	self assert: quantity equals: (cartList at: isbn).! !
+	self assert: 1 equals: cartList size.
+	self assert: (cartList includesKey: item).
+	self assert: quantity equals: (cartList at: item).! !
 
 
 !TuslibrosInterfaceTest methodsFor: 'setUp' stamp: 'LA 11/22/2018 20:19:29'!
