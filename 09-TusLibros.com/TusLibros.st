@@ -242,96 +242,87 @@ setUp
 
 !classDefinition: #TuslibrosInterfaceTest category: #TusLibros!
 TestCase subclass: #TuslibrosInterfaceTest
-	instanceVariableNames: 'testObjectsFactory'
+	instanceVariableNames: 'testObjects'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 00:57:24'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:53:55'!
 test01CannotListAnInvalidCart
 
 	self
-		should: [ testObjectsFactory tusLibrosInterface listCartWithId: 666 ]
+		should: [ testObjects tusLibrosInterface listCartWithId: 666 ]
 		raise: Error - MessageNotUnderstood
-		withExceptionDo:[ :exception |
+		withExceptionDo: [ :exception |
 			self assert: TusLibrosInterface cartNotFoundErrorMessage equals: exception messageText.
 		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:18:55'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:55:09'!
 test02CannotCreatCartForNonRegisteredUser
 	
-	| interface |
-	
-	interface _ testObjectsFactory tusLibrosInterface.
-	
 	self
-		should: [ interface createCartFor: testObjectsFactory wrongUser andPassword: '123' ]
+		should: [ testObjects tusLibrosInterface createCartFor: testObjects wrongUser andPassword: '123' ]
 		raise: Error - MessageNotUnderstood
-		withExceptionDo:[ :exception |
+		withExceptionDo: [ :exception |
 			self assert: TusLibrosInterface userNotFoundErrorMessage equals: exception messageText.
 		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:18:50'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:54:58'!
 test03CannotCreatCartWithWrongPassword
 	
-	| interface |
-	
-	interface _ testObjectsFactory tusLibrosInterface.
-	
 	self
-		should: [ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory wrongPassword ]
+		should: [ testObjects tusLibrosInterface createCartFor: testObjects defaultUser andPassword: testObjects wrongPassword ]
 		raise: Error - MessageNotUnderstood
-		withExceptionDo:[ :exception |
+		withExceptionDo: [ :exception |
 			self assert: TusLibrosInterface invalidPasswordErrorMessage equals: exception messageText.
 		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/22/2018 20:32:56'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:55:26'!
 test04NewCartsHaveDifferentIds
 
 	| interface firstId secondId |
 
-	interface _ testObjectsFactory tusLibrosInterface. 
-	firstId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
-	secondId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
+	interface _ testObjects tusLibrosInterface. 
+	firstId _ interface createCartFor: testObjects defaultUser andPassword: testObjects defaultPassword.
+	secondId _ interface createCartFor: testObjects defaultUser andPassword: testObjects defaultPassword.
 	
-	self deny: firstId  = secondId.
+	self deny: firstId = secondId.
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 00:57:24'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:21:16'!
 test05NewCartIsListedAsEmpty
 	
 	| interface cartId |
 	
-	interface _ testObjectsFactory tusLibrosInterface. 
-	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
+	interface _ testObjects tusLibrosInterface. 
+	cartId _ interface createCartFor: testObjects defaultUser andPassword: testObjects defaultPassword.
 	
 	self assert: (interface listCartWithId: cartId) isEmpty.! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/25/2018 23:18:39'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:58:21'!
 test06CannotAddItemToAnInvalidCart
 
-
 	self
-		should: [ testObjectsFactory tusLibrosInterface add: 3 of: testObjectsFactory itemSellByTheStore toCartWithId: 0.]
+		should: [ testObjects tusLibrosInterface add: 3 of: testObjects itemSellByTheStore toCartWithId: 0.]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo:[ :exception |
 			self assert: TusLibrosInterface cartNotFoundErrorMessage equals: exception messageText.
 		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 00:57:24'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:21:16'!
 test07ItemAddedToCartIsListed
 	
 	| cartList interface cartId item quantity |
 	
 	quantity _ 3.
-	item _ testObjectsFactory itemSellByTheStore.
-	interface _ testObjectsFactory tusLibrosInterface. 
+	item _ testObjects itemSellByTheStore.
+	interface _ testObjects tusLibrosInterface. 
 	
-	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
+	cartId _ interface createCartFor: testObjects defaultUser andPassword: testObjects defaultPassword.
 	interface add: quantity of: item toCartWithId: cartId.
 	cartList _ interface listCartWithId: cartId.
 	
@@ -340,17 +331,17 @@ test07ItemAddedToCartIsListed
 	self assert: (cartList includesKey: item).
 	self assert: quantity equals: (cartList at: item).! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 11:52:01'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:21:16'!
 test08CannotAddNonPositiveNumberOfItems
 	
 	| interface cartId |
 	
-	interface _ testObjectsFactory tusLibrosInterface.
+	interface _ testObjects tusLibrosInterface.
 	
-	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
+	cartId _ interface createCartFor: testObjects defaultUser andPassword: testObjects defaultPassword.
 	
 	self
-		should: [ interface add: 0 of: testObjectsFactory itemSellByTheStore toCartWithId: cartId. ]
+		should: [ interface add: 0 of: testObjects itemSellByTheStore toCartWithId: cartId. ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :exception |
 			self assert: TusLibrosInterface invalidQuantityErrorMessage equals: exception messageText.
@@ -358,17 +349,17 @@ test08CannotAddNonPositiveNumberOfItems
 		]
 	.! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 11:52:42'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:21:16'!
 test09CannotAddItemsThatDoNotBelongToStore
 	
 	| interface cartId |
 	
-	interface _ testObjectsFactory tusLibrosInterface.
+	interface _ testObjects tusLibrosInterface.
 	
-	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
+	cartId _ interface createCartFor: testObjects defaultUser andPassword: testObjects defaultPassword.
 	
 	self
-		should: [ interface add: 10 of: testObjectsFactory itemNotSellByTheStore toCartWithId: cartId. ]
+		should: [ interface add: 10 of: testObjects itemNotSellByTheStore toCartWithId: cartId. ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :exception |
 			self assert: TusLibrosInterface invalidItemErrorMessage equals: exception messageText.
@@ -376,36 +367,47 @@ test09CannotAddItemsThatDoNotBelongToStore
 		]
 	.! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:19:43'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 13:01:56'!
 test10CannotCheckoutAnInvalidCart
 	
-	| interface expiredCreditCard|
+	| interface creditCard |
 	
-	interface _ testObjectsFactory tusLibrosInterface.
+	interface _ testObjects tusLibrosInterface.
 	
-	expiredCreditCard  _ testObjectsFactory expiredCreditCard.
+	creditCard  _ testObjects notExpiredCreditCard.
 	
 	self
-		should: [ interface checkoutCartWithId: 666 withCreditCard: expiredCreditCard number expiringOn: expiredCreditCard  expiration withOwner: expiredCreditCard  owner. ]
+		should: [
+			interface
+				checkoutCartWithId: 666
+				withCreditCard: creditCard number
+				expiringOn: creditCard expiration
+				withOwner: creditCard owner.
+		]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :exception |
 			self assert: TusLibrosInterface cartNotFoundErrorMessage equals: exception messageText.
-		]
-	.
+		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:19:43'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 13:02:15'!
 test11CannotCheckoutAnEmptyCart
 	
-	| interface cartId notExpiredCreditCard |
+	| interface cartId creditCard |
 	
-	interface _ testObjectsFactory tusLibrosInterface.
-	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
+	interface _ testObjects tusLibrosInterface.
+	cartId _ interface createCartFor: testObjects defaultUser andPassword: testObjects defaultPassword.
 	
-	notExpiredCreditCard  _ testObjectsFactory notExpiredCreditCard .
+	creditCard  _ testObjects notExpiredCreditCard.
 	
 	self
-		should: [ interface checkoutCartWithId: cartId withCreditCard: notExpiredCreditCard number expiringOn: notExpiredCreditCard  expiration withOwner: notExpiredCreditCard  owner. ]
+		should: [
+			interface
+				checkoutCartWithId: cartId
+				withCreditCard: creditCard number
+				expiringOn: creditCard expiration
+				withOwner: creditCard owner.
+		]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :exception |
 			self assert: TusLibrosInterface cartCanNotBeEmptyErrorMessage equals: exception messageText.
@@ -413,17 +415,17 @@ test11CannotCheckoutAnEmptyCart
 	.
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:19:43'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:21:16'!
 test12CannotCheckoutWithAnExpiredCreditCart
 	
 	| interface cartId item quantity creditCard |
 	
 	quantity _ 3.
-	item _ testObjectsFactory itemSellByTheStore.
-	creditCard  _ testObjectsFactory expiredCreditCard.
+	item _ testObjects itemSellByTheStore.
+	creditCard  _ testObjects expiredCreditCard.
 	
-	interface _ testObjectsFactory tusLibrosInterface. 
-	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
+	interface _ testObjects tusLibrosInterface. 
+	cartId _ interface createCartFor: testObjects defaultUser andPassword: testObjects defaultPassword.
 	interface add: quantity of: item toCartWithId: cartId.
 	
 	self
@@ -439,20 +441,20 @@ test12CannotCheckoutWithAnExpiredCreditCart
 			self assert: TusLibrosInterface canNotChargeAnExpiredCreditCardErrorMessage equals: exception messageText.
 		].! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:19:43'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:21:16'!
 test13CannotCheckoutWhenTheCreditCardHasNoCredit
 
 	| interface cartId item quantity creditCard |
 	
 	quantity _ 3.
-	item _ testObjectsFactory itemSellByTheStore.
-	interface _ testObjectsFactory tusLibrosInterfaceWithDebitBehavior: [ :anAmount :aCreditCard |
+	item _ testObjects itemSellByTheStore.
+	interface _ testObjects tusLibrosInterfaceWithDebitBehavior: [ :anAmount :aCreditCard |
 		self error: TusLibrosInterface creditCardHasNoCreditErrorMessage
 	].
 	
-	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
+	cartId _ interface createCartFor: testObjects defaultUser andPassword: testObjects defaultPassword.
 	interface add: quantity of: item toCartWithId: cartId.
-	creditCard _ testObjectsFactory notExpiredCreditCard.
+	creditCard _ testObjects notExpiredCreditCard.
 	
 	self
 		should: [
@@ -468,23 +470,23 @@ test13CannotCheckoutWhenTheCreditCardHasNoCredit
 			self assert: TusLibrosInterface creditCardHasNoCreditErrorMessage equals: exception messageText.
 		].! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:19:43'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:21:16'!
 test14CheckoutChargesCreditCardUsingMerchantProcessor
 
 	| interface cartId item numberOfItems creditCard debitedAmount price debitedCreditCard |
 	
 	numberOfItems _ 3.
-	item _ testObjectsFactory itemSellByTheStore.
-	price _ testObjectsFactory itemSellByTheStorePrice.
+	item _ testObjects itemSellByTheStore.
+	price _ testObjects itemSellByTheStorePrice.
 	
-	interface _ testObjectsFactory tusLibrosInterfaceWithDebitBehavior: [ :anAmount :aCreditCard |
+	interface _ testObjects tusLibrosInterfaceWithDebitBehavior: [ :anAmount :aCreditCard |
 		debitedAmount _ anAmount.
 		debitedCreditCard _ aCreditCard.
 	].
 	
-	cartId _ interface createCartFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
+	cartId _ interface createCartFor: testObjects defaultUser andPassword: testObjects defaultPassword.
 	interface add: numberOfItems of: item toCartWithId: cartId.
-	creditCard _ testObjectsFactory notExpiredCreditCard.
+	creditCard _ testObjects notExpiredCreditCard.
 	
 	interface
 		checkoutCartWithId: cartId
@@ -495,63 +497,63 @@ test14CheckoutChargesCreditCardUsingMerchantProcessor
 	self assert: numberOfItems * price equals: debitedAmount.
 	self assert: creditCard equals: debitedCreditCard.! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 17:51:31'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:21:16'!
 test15CannotListPurchasesForNonRegisteredUser
 	
 	| interface |
 	
-	interface _ testObjectsFactory tusLibrosInterface.
+	interface _ testObjects tusLibrosInterface.
 	
 	self
-		should: [ interface listPurchasesFor: testObjectsFactory wrongUser andPassword: '123' ]
+		should: [ interface listPurchasesFor: testObjects wrongUser andPassword: '123' ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo:[ :exception |
 			self assert: TusLibrosInterface userNotFoundErrorMessage equals: exception messageText.
 		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 17:51:43'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:21:16'!
 test16CannotListPurchasesWithWrongPassword
 
 	| interface |
 	
-	interface _ testObjectsFactory tusLibrosInterface.
+	interface _ testObjects tusLibrosInterface.
 	
 	self
-		should: [ interface listPurchasesFor: testObjectsFactory defaultUser andPassword: '123' ]
+		should: [ interface listPurchasesFor: testObjects defaultUser andPassword: '123' ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo:[ :exception |
 			self assert: TusLibrosInterface invalidPasswordErrorMessage equals: exception messageText.
 		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 18:31:05'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:21:16'!
 test17PurchaseListForNewUserIsEmpty
 
 	| interface purchases |
 	
-	interface _ testObjectsFactory tusLibrosInterface.
+	interface _ testObjects tusLibrosInterface.
 	
-	purchases _ interface listPurchasesFor: testObjectsFactory defaultUser andPassword: testObjectsFactory defaultPassword.
+	purchases _ interface listPurchasesFor: testObjects defaultUser andPassword: testObjects defaultPassword.
 	
 	self assert: purchases contents isEmpty.
 	self assert: 0 equals: purchases total.! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:19:43'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:21:16'!
 test18PurchaseIsListed
 
 	| interface purchaseList cartId creditCard item numberOfItems password user purchases |
 	
-	user _ testObjectsFactory defaultUser.
-	password _ testObjectsFactory defaultPassword.
+	user _ testObjects defaultUser.
+	password _ testObjects defaultPassword.
 	numberOfItems _ 3.
-	item _ testObjectsFactory itemSellByTheStore.
+	item _ testObjects itemSellByTheStore.
 	
-	interface _ testObjectsFactory tusLibrosInterface.
+	interface _ testObjects tusLibrosInterface.
 	
 	cartId _ interface createCartFor: user andPassword: password.
 	interface add: numberOfItems of: item toCartWithId: cartId.
-	creditCard _ testObjectsFactory notExpiredCreditCard.
+	creditCard _ testObjects notExpiredCreditCard.
 	
 	interface
 		checkoutCartWithId: cartId
@@ -568,23 +570,23 @@ test18PurchaseIsListed
 	self assert: numberOfItems equals: (purchaseList at: item).
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:19:43'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:21:16'!
 test19PurchasesOfAnotherUserAreNotListed
 
 	| listingUser purchasingUser interface cartId creditCard item numberOfItems purchases |
 	
-	listingUser _ testObjectsFactory defaultUser.
-	purchasingUser _ testObjectsFactory secondUser.
+	listingUser _ testObjects defaultUser.
+	purchasingUser _ testObjects secondUser.
 	
 	numberOfItems _ 3.
-	item _ testObjectsFactory itemSellByTheStore.
+	item _ testObjects itemSellByTheStore.
 	
-	interface _ testObjectsFactory tusLibrosInterface.
+	interface _ testObjects tusLibrosInterface.
 	
-	cartId _ interface createCartFor: purchasingUser andPassword: testObjectsFactory secondUserPassword.
+	cartId _ interface createCartFor: purchasingUser andPassword: testObjects secondUserPassword.
 	
 	interface add: numberOfItems of: item toCartWithId: cartId.
-	creditCard _ testObjectsFactory notExpiredCreditCard.
+	creditCard _ testObjects notExpiredCreditCard.
 	
 	interface
 		checkoutCartWithId: cartId
@@ -592,24 +594,24 @@ test19PurchasesOfAnotherUserAreNotListed
 		expiringOn: creditCard expiration
 		withOwner: creditCard owner.
 		
-	purchases _ interface listPurchasesFor: listingUser andPassword: testObjectsFactory defaultPassword.
+	purchases _ interface listPurchasesFor: listingUser andPassword: testObjects defaultPassword.
 	
 	self assert: purchases contents isEmpty.
 	self assert: 0 equals: purchases total.! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:19:43'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:21:16'!
 test20SeveralPurchasesAreAddedInList
 
 	| interface purchaseList creditCard item password user purchases cartId1 cartId2 quantity1 quantity2 |
 	
-	user _ testObjectsFactory defaultUser.
-	password _ testObjectsFactory defaultPassword.
+	user _ testObjects defaultUser.
+	password _ testObjects defaultPassword.
 	quantity1 _ 3.
 	quantity2 _ 5.
-	creditCard _ testObjectsFactory notExpiredCreditCard.
-	item _ testObjectsFactory itemSellByTheStore.
+	creditCard _ testObjects notExpiredCreditCard.
+	item _ testObjects itemSellByTheStore.
 	
-	interface _ testObjectsFactory tusLibrosInterface.
+	interface _ testObjects tusLibrosInterface.
 	cartId1 _ interface createCartFor: user andPassword: password.
 	
 	interface add: quantity1 of: item toCartWithId: cartId1.
@@ -638,10 +640,10 @@ test20SeveralPurchasesAreAddedInList
 	! !
 
 
-!TuslibrosInterfaceTest methodsFor: 'setup' stamp: 'LA 11/22/2018 20:19:29'!
+!TuslibrosInterfaceTest methodsFor: 'setup' stamp: 'jml 11/27/2018 12:21:16'!
 setUp
 
-	testObjectsFactory := StoreTestObjectsFactory new.
+	testObjects := StoreTestObjectsFactory new.
 	! !
 
 
