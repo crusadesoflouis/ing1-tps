@@ -100,12 +100,12 @@ setUp
 
 !classDefinition: #CashierTest category: #TusLibros!
 TestCase subclass: #CashierTest
-	instanceVariableNames: 'testObjectsFactory debitBehavior'
+	instanceVariableNames: 'testObjectsFactory'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!CashierTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:00:58'!
+!CashierTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:07:36'!
 test01CanNotCheckoutAnEmptyCart
 
 	| salesBook |
@@ -115,7 +115,7 @@ test01CanNotCheckoutAnEmptyCart
 		should: [ Cashier 
 			toCheckout: testObjectsFactory createCart 
 			charging: testObjectsFactory notExpiredCreditCard 
-			through: self
+			through: testObjectsFactory defaultMerchantProcessor
 			on: testObjectsFactory today
 			registeringOn:  salesBook ]
 		raise: Error - MessageNotUnderstood
@@ -123,7 +123,7 @@ test01CanNotCheckoutAnEmptyCart
 			self assert: anError messageText = Cashier cartCanNotBeEmptyErrorMessage.
 			self assert: salesBook isEmpty ]! !
 
-!CashierTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:00:59'!
+!CashierTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:08:21'!
 test02CalculatedTotalIsCorrect
 
 	| cart cashier |
@@ -134,13 +134,13 @@ test02CalculatedTotalIsCorrect
 	cashier :=  Cashier
 		toCheckout: cart 
 		charging: testObjectsFactory notExpiredCreditCard 
-		through: self
+		through: testObjectsFactory defaultMerchantProcessor
 		on: testObjectsFactory today 
 		registeringOn: OrderedCollection new.
 		
 	self assert: cashier checkOut = (testObjectsFactory itemSellByTheStorePrice * 2)! !
 
-!CashierTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:00:59'!
+!CashierTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:08:36'!
 test03CanNotCheckoutWithAnExpiredCreditCart
 
 	| cart salesBook |
@@ -153,7 +153,7 @@ test03CanNotCheckoutWithAnExpiredCreditCart
 		should: [ Cashier 
 				toCheckout: cart 
 				charging: testObjectsFactory expiredCreditCard 
-				through: self
+				through: testObjectsFactory defaultMerchantProcessor
 				on: testObjectsFactory today
 				registeringOn: salesBook ]
 		raise: Error - MessageNotUnderstood
@@ -161,7 +161,7 @@ test03CanNotCheckoutWithAnExpiredCreditCart
 			self assert: anError messageText = Cashier canNotChargeAnExpiredCreditCardErrorMessage.
 			self assert: salesBook isEmpty ]! !
 
-!CashierTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:00:59'!
+!CashierTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:08:46'!
 test04CheckoutRegistersASale
 
 	| cart cashier salesBook total |
@@ -173,7 +173,7 @@ test04CheckoutRegistersASale
 	cashier:= Cashier 
 		toCheckout: cart 
 		charging: testObjectsFactory notExpiredCreditCard
-		through: self
+		through: testObjectsFactory defaultMerchantProcessor
 		on: testObjectsFactory today
 		registeringOn: salesBook.
 		
@@ -182,46 +182,47 @@ test04CheckoutRegistersASale
 	self assert: salesBook size = 1.
 	self assert: salesBook first total = total.! !
 
-!CashierTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:00:58'!
+!CashierTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:10:16'!
 test05CashierChargesCreditCardUsingMerchantProcessor
 
-	| cart cashier salesBook total creditCard debitedAmout debitedCreditCard  |
+	| cart cashier salesBook total creditCard debitedAmout debitedCreditCard debitBehavior |
 
 	cart := testObjectsFactory createCart.
 	cart add: testObjectsFactory itemSellByTheStore.
 	creditCard := testObjectsFactory notExpiredCreditCard.
 	salesBook := OrderedCollection new.
- 
-	cashier:= Cashier 
+	debitBehavior := [ :anAmount :aCreditCard | 
+		debitedAmout := anAmount.
+		debitedCreditCard := aCreditCard.
+	].
+	
+	cashier := Cashier 
 		toCheckout: cart 
 		charging: creditCard
-		through: self
+		through: (testObjectsFactory merchantProcessorWithDebitBehavior: debitBehavior)
 		on: testObjectsFactory today
 		registeringOn: salesBook.
 		
-	debitBehavior := [ :anAmount :aCreditCard | 
-		debitedAmout := anAmount.
-		debitedCreditCard := aCreditCard ].
 	total := cashier checkOut.
 					
 	self assert: debitedCreditCard = creditCard.
 	self assert: debitedAmout = total.! !
 
-!CashierTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:00:59'!
+!CashierTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:10:59'!
 test06CashierDoesNotSaleWhenTheCreditCardHasNoCredit
 
-	| cart cashier salesBook creditCard |
+	| cart cashier salesBook creditCard debitBehavior |
 
 	cart := testObjectsFactory createCart.
 	cart add: testObjectsFactory itemSellByTheStore.
 	creditCard := testObjectsFactory notExpiredCreditCard.
 	salesBook := OrderedCollection new.
- 	debitBehavior := [ :anAmount :aCreditCard | self error: Cashier creditCardHasNoCreditErrorMessage].
+ 	debitBehavior := [ :anAmount :aCreditCard | self error: Cashier creditCardHasNoCreditErrorMessage ].
 	
 	cashier:= Cashier 
 		toCheckout: cart 
 		charging: creditCard
-		through: self
+		through: (testObjectsFactory merchantProcessorWithDebitBehavior: debitBehavior)
 		on: testObjectsFactory today
 		registeringOn: salesBook.
 		
@@ -233,17 +234,10 @@ test06CashierDoesNotSaleWhenTheCreditCardHasNoCredit
 			self assert: salesBook isEmpty ]! !
 
 
-!CashierTest methodsFor: 'setup' stamp: 'HernanWilkinson 6/17/2013 19:03'!
+!CashierTest methodsFor: 'setup' stamp: 'jml 11/27/2018 12:03:01'!
 setUp 
 
-	testObjectsFactory := StoreTestObjectsFactory new.
-	debitBehavior := [ :anAmount :aCreditCard | ]! !
-
-
-!CashierTest methodsFor: 'merchant processor protocol' stamp: 'HernanWilkinson 6/17/2013 19:02'!
-debit: anAmount from: aCreditCard 
-
-	^debitBehavior value: anAmount value: aCreditCard ! !
+	testObjectsFactory := StoreTestObjectsFactory new.! !
 
 
 !classDefinition: #TuslibrosInterfaceTest category: #TusLibros!
@@ -1115,19 +1109,30 @@ wrongUser
 	^ 'pepe'! !
 
 
-!StoreTestObjectsFactory methodsFor: 'interface' stamp: 'jml 11/26/2018 17:28:22'!
+!StoreTestObjectsFactory methodsFor: 'interface' stamp: 'jml 11/27/2018 12:13:31'!
 tusLibrosInterface
 	
-	^ self tusLibrosInterfaceWithDebitBehavior: [ :anAmount :aCredit | ]! !
+	^ self tusLibrosInterfaceWithDebitBehavior: [ :anAmount :aCreditCard | ]! !
 
-!StoreTestObjectsFactory methodsFor: 'interface' stamp: 'jml 11/26/2018 17:24:41'!
+!StoreTestObjectsFactory methodsFor: 'interface' stamp: 'jml 11/27/2018 12:12:59'!
 tusLibrosInterfaceWithDebitBehavior: aBehavior
 	
 	| mp |
 	
-	mp _ SimulatedMerchantProcessorInterface withDebitBehavior: aBehavior.
+	mp _ self merchantProcessorWithDebitBehavior: aBehavior.
 	
 	^ TusLibrosInterface newWithUsers: self registeredUsers catalog: self defaultCatalog merchantProcessor: mp.! !
+
+
+!StoreTestObjectsFactory methodsFor: 'merchant processor' stamp: 'jml 11/27/2018 12:06:50'!
+defaultMerchantProcessor
+	
+	^ SimulatedMerchantProcessorInterface withDebitBehavior: [ :anAmount :aCreditCart | ]! !
+
+!StoreTestObjectsFactory methodsFor: 'merchant processor' stamp: 'jml 11/27/2018 12:06:05'!
+merchantProcessorWithDebitBehavior: aBehavior
+	
+	^ SimulatedMerchantProcessorInterface withDebitBehavior: aBehavior! !
 
 
 !classDefinition: #TusLibrosInterface category: #TusLibros!
