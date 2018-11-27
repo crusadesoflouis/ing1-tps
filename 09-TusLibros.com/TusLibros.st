@@ -376,7 +376,7 @@ test09CannotAddItemsThatDoNotBelongToStore
 		]
 	.! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/26/2018 05:51:40'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:19:43'!
 test10CannotCheckoutAnInvalidCart
 	
 	| interface expiredCreditCard|
@@ -386,7 +386,7 @@ test10CannotCheckoutAnInvalidCart
 	expiredCreditCard  _ testObjectsFactory expiredCreditCard.
 	
 	self
-		should: [ interface checkoutCartWithId: 666 ccn: expiredCreditCard number expiratingOn: expiredCreditCard  expiration owner: expiredCreditCard  owner. ]
+		should: [ interface checkoutCartWithId: 666 withCreditCard: expiredCreditCard number expiringOn: expiredCreditCard  expiration withOwner: expiredCreditCard  owner. ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :exception |
 			self assert: TusLibrosInterface cartNotFoundErrorMessage equals: exception messageText.
@@ -394,7 +394,7 @@ test10CannotCheckoutAnInvalidCart
 	.
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 11:53:26'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:19:43'!
 test11CannotCheckoutAnEmptyCart
 	
 	| interface cartId notExpiredCreditCard |
@@ -405,7 +405,7 @@ test11CannotCheckoutAnEmptyCart
 	notExpiredCreditCard  _ testObjectsFactory notExpiredCreditCard .
 	
 	self
-		should: [ interface checkoutCartWithId: cartId ccn: notExpiredCreditCard number expiratingOn: notExpiredCreditCard  expiration owner: notExpiredCreditCard  owner. ]
+		should: [ interface checkoutCartWithId: cartId withCreditCard: notExpiredCreditCard number expiringOn: notExpiredCreditCard  expiration withOwner: notExpiredCreditCard  owner. ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :exception |
 			self assert: TusLibrosInterface cartCanNotBeEmptyErrorMessage equals: exception messageText.
@@ -413,7 +413,7 @@ test11CannotCheckoutAnEmptyCart
 	.
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 11:53:54'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:19:43'!
 test12CannotCheckoutWithAnExpiredCreditCart
 	
 	| interface cartId item quantity creditCard |
@@ -430,16 +430,16 @@ test12CannotCheckoutWithAnExpiredCreditCart
 		should: [
 			interface
 				checkoutCartWithId: cartId
-				ccn: creditCard number
-				expiratingOn: creditCard expiration
-				owner: creditCard owner.
+				withCreditCard: creditCard number
+				expiringOn: creditCard expiration
+				withOwner: creditCard owner.
 		]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :exception |
 			self assert: TusLibrosInterface canNotChargeAnExpiredCreditCardErrorMessage equals: exception messageText.
 		].! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 11:54:40'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:19:43'!
 test13CannotCheckoutWhenTheCreditCardHasNoCredit
 
 	| interface cartId item quantity creditCard |
@@ -458,9 +458,9 @@ test13CannotCheckoutWhenTheCreditCardHasNoCredit
 		should: [
 			interface
 				checkoutCartWithId: cartId
-				ccn: creditCard number
-				expiratingOn: creditCard expiration
-				owner: creditCard owner
+				withCreditCard: creditCard number
+				expiringOn: creditCard expiration
+				withOwner: creditCard owner
 			.
 		]
 		raise: Error - MessageNotUnderstood
@@ -468,7 +468,7 @@ test13CannotCheckoutWhenTheCreditCardHasNoCredit
 			self assert: TusLibrosInterface creditCardHasNoCreditErrorMessage equals: exception messageText.
 		].! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 18:03:28'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:19:43'!
 test14CheckoutChargesCreditCardUsingMerchantProcessor
 
 	| interface cartId item numberOfItems creditCard debitedAmount price debitedCreditCard |
@@ -488,9 +488,9 @@ test14CheckoutChargesCreditCardUsingMerchantProcessor
 	
 	interface
 		checkoutCartWithId: cartId
-		ccn: creditCard number
-		expiratingOn: creditCard expiration
-		owner: creditCard owner.
+		withCreditCard: creditCard number
+		expiringOn: creditCard expiration
+		withOwner: creditCard owner.
 	
 	self assert: numberOfItems * price equals: debitedAmount.
 	self assert: creditCard equals: debitedCreditCard.! !
@@ -537,7 +537,7 @@ test17PurchaseListForNewUserIsEmpty
 	self assert: purchases contents isEmpty.
 	self assert: 0 equals: purchases total.! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 18:33:41'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:19:43'!
 test18PurchaseIsListed
 
 	| interface purchaseList cartId creditCard item numberOfItems password user purchases |
@@ -555,9 +555,9 @@ test18PurchaseIsListed
 	
 	interface
 		checkoutCartWithId: cartId
-		ccn: creditCard number
-		expiratingOn: creditCard expiration
-		owner: creditCard owner.
+		withCreditCard: creditCard number
+		expiringOn: creditCard expiration
+		withOwner: creditCard owner.
 		
 	purchases _ interface listPurchasesFor: user andPassword: password.
 	purchaseList _ purchases contents.
@@ -568,7 +568,7 @@ test18PurchaseIsListed
 	self assert: numberOfItems equals: (purchaseList at: item).
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 18:43:33'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:19:43'!
 test19PurchasesOfAnotherUserAreNotListed
 
 	| listingUser purchasingUser interface cartId creditCard item numberOfItems purchases |
@@ -588,16 +588,16 @@ test19PurchasesOfAnotherUserAreNotListed
 	
 	interface
 		checkoutCartWithId: cartId
-		ccn: creditCard number
-		expiratingOn: creditCard expiration
-		owner: creditCard owner.
+		withCreditCard: creditCard number
+		expiringOn: creditCard expiration
+		withOwner: creditCard owner.
 		
 	purchases _ interface listPurchasesFor: listingUser andPassword: testObjectsFactory defaultPassword.
 	
 	self assert: purchases contents isEmpty.
 	self assert: 0 equals: purchases total.! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/26/2018 19:04:11'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:19:43'!
 test20SeveralPurchasesAreAddedInList
 
 	| interface purchaseList creditCard item password user purchases cartId1 cartId2 quantity1 quantity2 |
@@ -615,18 +615,18 @@ test20SeveralPurchasesAreAddedInList
 	interface add: quantity1 of: item toCartWithId: cartId1.
 	interface
 		checkoutCartWithId: cartId1
-		ccn: creditCard number
-		expiratingOn: creditCard expiration
-		owner: creditCard owner.
+		withCreditCard: creditCard number
+		expiringOn: creditCard expiration
+		withOwner: creditCard owner.
 	
 	cartId2 _ interface createCartFor: user andPassword: password.
 	
 	interface add: quantity2 of: item toCartWithId: cartId2.
 	interface
 		checkoutCartWithId: cartId2
-		ccn: creditCard number
-		expiratingOn: creditCard expiration
-		owner: creditCard owner.
+		withCreditCard: creditCard number
+		expiringOn: creditCard expiration
+		withOwner: creditCard owner.
 		
 	purchases _ interface listPurchasesFor: user andPassword: password.
 	purchaseList _ purchases contents.
@@ -1167,8 +1167,8 @@ add: aQuantity of: anItem toCartWithId: aCartId
 	
 	cart add: aQuantity of: anItem.! !
 
-!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/27/2018 12:00:59'!
-checkoutCartWithId: aCartId ccn: aCreditCardNumber expiratingOn: expirationMonthOfYear owner: aName 
+!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/27/2018 12:19:43'!
+checkoutCartWithId: aCartId withCreditCard: aCreditCardNumber expiringOn: expirationMonthOfYear withOwner: aName 
 	
 	| cart cashier total creditCard |
 	
