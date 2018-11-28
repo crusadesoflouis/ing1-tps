@@ -113,7 +113,7 @@ TestCase subclass: #CashierTest
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!CashierTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:07:36'!
+!CashierTest methodsFor: 'tests' stamp: 'jml 11/28/2018 18:50:14'!
 test01CanNotCheckoutAnEmptyCart
 
 	| salesBook |
@@ -124,14 +124,14 @@ test01CanNotCheckoutAnEmptyCart
 			toCheckout: testObjectsFactory createCart 
 			charging: testObjectsFactory notExpiredCreditCard 
 			through: testObjectsFactory defaultMerchantProcessor
-			on: testObjectsFactory today
-			registeringOn:  salesBook ]
+			measuringTimeWith: testObjectsFactory clock
+			registeringOn: salesBook ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
 			self assert: anError messageText = Cashier cartCanNotBeEmptyErrorMessage.
 			self assert: salesBook isEmpty ]! !
 
-!CashierTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:08:21'!
+!CashierTest methodsFor: 'tests' stamp: 'jml 11/28/2018 18:50:20'!
 test02CalculatedTotalIsCorrect
 
 	| cart cashier |
@@ -143,12 +143,12 @@ test02CalculatedTotalIsCorrect
 		toCheckout: cart 
 		charging: testObjectsFactory notExpiredCreditCard 
 		through: testObjectsFactory defaultMerchantProcessor
-		on: testObjectsFactory today 
+		measuringTimeWith: testObjectsFactory clock 
 		registeringOn: OrderedCollection new.
 		
 	self assert: cashier checkOut = (testObjectsFactory itemSellByTheStorePrice * 2)! !
 
-!CashierTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:08:36'!
+!CashierTest methodsFor: 'tests' stamp: 'jml 11/28/2018 18:51:10'!
 test03CanNotCheckoutWithAnExpiredCreditCart
 
 	| cart salesBook |
@@ -162,14 +162,14 @@ test03CanNotCheckoutWithAnExpiredCreditCart
 				toCheckout: cart 
 				charging: testObjectsFactory expiredCreditCard 
 				through: testObjectsFactory defaultMerchantProcessor
-				on: testObjectsFactory today
+				measuringTimeWith: testObjectsFactory clock
 				registeringOn: salesBook ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError | 
 			self assert: anError messageText = Cashier canNotChargeAnExpiredCreditCardErrorMessage.
 			self assert: salesBook isEmpty ]! !
 
-!CashierTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:08:46'!
+!CashierTest methodsFor: 'tests' stamp: 'jml 11/28/2018 18:54:23'!
 test04CheckoutRegistersASale
 
 	| cart cashier salesBook total |
@@ -182,7 +182,7 @@ test04CheckoutRegistersASale
 		toCheckout: cart 
 		charging: testObjectsFactory notExpiredCreditCard
 		through: testObjectsFactory defaultMerchantProcessor
-		on: testObjectsFactory today
+		measuringTimeWith: testObjectsFactory clock
 		registeringOn: salesBook.
 		
 	total := cashier checkOut.
@@ -190,7 +190,7 @@ test04CheckoutRegistersASale
 	self assert: salesBook size = 1.
 	self assert: salesBook first total = total.! !
 
-!CashierTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:10:16'!
+!CashierTest methodsFor: 'tests' stamp: 'jml 11/28/2018 18:54:27'!
 test05CashierChargesCreditCardUsingMerchantProcessor
 
 	| cart cashier salesBook total creditCard debitedAmout debitedCreditCard debitBehavior |
@@ -208,7 +208,7 @@ test05CashierChargesCreditCardUsingMerchantProcessor
 		toCheckout: cart 
 		charging: creditCard
 		through: (testObjectsFactory merchantProcessorWithDebitBehavior: debitBehavior)
-		on: testObjectsFactory today
+		measuringTimeWith: testObjectsFactory clock
 		registeringOn: salesBook.
 		
 	total := cashier checkOut.
@@ -216,7 +216,7 @@ test05CashierChargesCreditCardUsingMerchantProcessor
 	self assert: debitedCreditCard = creditCard.
 	self assert: debitedAmout = total.! !
 
-!CashierTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:10:59'!
+!CashierTest methodsFor: 'tests' stamp: 'jml 11/28/2018 18:54:31'!
 test06CashierDoesNotSaleWhenTheCreditCardHasNoCredit
 
 	| cart cashier salesBook creditCard debitBehavior |
@@ -231,7 +231,7 @@ test06CashierDoesNotSaleWhenTheCreditCardHasNoCredit
 		toCheckout: cart 
 		charging: creditCard
 		through: (testObjectsFactory merchantProcessorWithDebitBehavior: debitBehavior)
-		on: testObjectsFactory today
+		measuringTimeWith: testObjectsFactory clock
 		registeringOn: salesBook.
 		
 	self 
@@ -250,12 +250,12 @@ setUp
 
 !classDefinition: #TuslibrosInterfaceTest category: #TusLibros!
 TestCase subclass: #TuslibrosInterfaceTest
-	instanceVariableNames: 'testObjects interface user password item creditCard price clock'
+	instanceVariableNames: 'testObjects interface clock user password item creditCard price'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!TuslibrosInterfaceTest methodsFor: 'assertions' stamp: 'jml 11/28/2018 16:11:17'!
+!TuslibrosInterfaceTest methodsFor: 'assertions' stamp: 'jml 11/28/2018 18:58:29'!
 assertInvalidCreditCardNumber: aNumber usingCartId: cartId
 	
 	self
@@ -263,7 +263,7 @@ assertInvalidCreditCardNumber: aNumber usingCartId: cartId
 			interface
 				checkoutCartWithId: cartId
 				withCreditCard: aNumber
-				expiringOn: DateAndTime now month
+				expiringOn: testObjects currentMonth previous
 				withOwner: 'owner'.
 		]
 		raise: Error - MessageNotUnderstood
@@ -440,14 +440,14 @@ test12_01CannotCheckoutWithAnInvalidCreditCardNumber
 	self assertInvalidCreditCardNumber: '123412341234123' usingCartId: cartId.
 	self assertInvalidCreditCardNumber: 'ABC4123412341234' usingCartId: cartId.! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 17:18:45'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 18:54:09'!
 test13CannotCheckoutWhenTheCreditCardHasNoCredit
 
 	| cartId |
 	
 	interface _ testObjects tusLibrosInterfaceWithDebitBehavior: [ :anAmount :aCreditCard |
 		self error: TusLibrosInterface creditCardHasNoCreditErrorMessage
-	] andClock: clock.
+	].
 	
 	cartId _ self createCart.
 	interface add: 10 of: item toCartWithId: cartId.
@@ -459,7 +459,7 @@ test13CannotCheckoutWhenTheCreditCardHasNoCredit
 			self assert: TusLibrosInterface creditCardHasNoCreditErrorMessage equals: exception messageText.
 		].! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 17:18:54'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 18:54:13'!
 test14CheckoutChargesCreditCardUsingMerchantProcessor
 
 	| cartId quantity debitedAmount debitedCreditCard |
@@ -469,7 +469,7 @@ test14CheckoutChargesCreditCardUsingMerchantProcessor
 	interface _ testObjects tusLibrosInterfaceWithDebitBehavior: [ :anAmount :aCreditCard |
 		debitedAmount _ anAmount.
 		debitedCreditCard _ aCreditCard.
-	] andClock: clock.
+	].
 	
 	cartId _ self createCart.
 	interface add: quantity of: item toCartWithId: cartId.
@@ -625,13 +625,13 @@ test23CannotCheckoutAnExpiredCart
 	! !
 
 
-!TuslibrosInterfaceTest methodsFor: 'setup' stamp: 'jml 11/28/2018 17:17:45'!
+!TuslibrosInterfaceTest methodsFor: 'setup' stamp: 'jml 11/28/2018 18:54:01'!
 setUp
 
 	testObjects _ StoreTestObjectsFactory new.
-	clock _ FixedClock pointingTo: DateAndTime now.
 	
-	interface _ testObjects tusLibrosInterfaceMeasuringTimeWith: clock.
+	clock _ testObjects clock.
+	interface _ testObjects tusLibrosInterface.
 	
 	item _ testObjects itemSellByTheStore.
 	price _ testObjects itemSellByTheStorePrice.
@@ -828,11 +828,11 @@ assertIsNotExpired: aCreditCard on: aDate
 	(aCreditCard isExpiredOn: aDate) ifTrue: [ self error: self canNotChargeAnExpiredCreditCardErrorMessage ]! !
 
 
-!Cashier class methodsFor: 'instance creation' stamp: 'jml 11/27/2018 12:00:58'!
-toCheckout: aCart charging: aCreditCard through: aMerchantProcessor on: aDate registeringOn: aSalesBook
+!Cashier class methodsFor: 'instance creation' stamp: 'jml 11/28/2018 18:49:20'!
+toCheckout: aCart charging: aCreditCard through: aMerchantProcessor measuringTimeWith: aClock registeringOn: aSalesBook
 	
 	self assertIsNotEmpty: aCart.
-	self assertIsNotExpired: aCreditCard on: aDate.
+	self assertIsNotExpired: aCreditCard on: aClock now.
 	
 	^self new initializeToCheckout: aCart charging: aCreditCard through: aMerchantProcessor registeringOn: aSalesBook! !
 
@@ -1125,7 +1125,7 @@ of: aUser withContents: aContent andTotal: anAmount
 
 !classDefinition: #StoreTestObjectsFactory category: #TusLibros!
 Object subclass: #StoreTestObjectsFactory
-	instanceVariableNames: 'today'
+	instanceVariableNames: 'clock'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
@@ -1159,27 +1159,21 @@ defaultCatalog
 		yourself ! !
 
 
-!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'LA 11/26/2018 04:59:19'!
+!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'jml 11/28/2018 19:01:00'!
 expiredCreditCard
 	
-	^CreditCard expiringOn:  (Month month: today monthIndex year: today yearNumber - 1) withNumber: '1111222244445555' andOwner: 'manolo'! !
+	^ CreditCard expiringOn: self currentMonth previous withNumber: '1111222244445555' andOwner: 'manolo'! !
 
-!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'LA 11/26/2018 04:59:08'!
+!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'jml 11/28/2018 18:59:35'!
 notExpiredCreditCard
 	
-	^CreditCard expiringOn:  (Month month: today monthIndex year: today yearNumber + 1) withNumber: '1111222244445555' andOwner: 'manolo'! !
+	^ CreditCard expiringOn: self currentMonth next withNumber: '1111222244445555' andOwner: 'manolo'! !
 
 
-!StoreTestObjectsFactory methodsFor: 'initialization' stamp: 'HernanWilkinson 6/17/2013 18:37'!
+!StoreTestObjectsFactory methodsFor: 'initialization' stamp: 'jml 11/28/2018 18:36:09'!
 initialize
 
-	today := DateAndTime now! !
-
-
-!StoreTestObjectsFactory methodsFor: 'date' stamp: 'HernanWilkinson 6/17/2013 18:37'!
-today
-	
-	^ today! !
+	clock _ FixedClock pointingTo: DateAndTime now.! !
 
 
 !StoreTestObjectsFactory methodsFor: 'users' stamp: 'LA 11/22/2018 20:14:30'!
@@ -1226,19 +1220,19 @@ wrongUser
 	^ 'pepe'! !
 
 
-!StoreTestObjectsFactory methodsFor: 'interface' stamp: 'jml 11/28/2018 17:09:10'!
-tusLibrosInterfaceMeasuringTimeWith: aClock
+!StoreTestObjectsFactory methodsFor: 'interface' stamp: 'jml 11/28/2018 18:53:25'!
+tusLibrosInterface
 	
-	^ self tusLibrosInterfaceWithDebitBehavior: [ :anAmount :aCreditCard | ] andClock: aClock! !
+	^ self tusLibrosInterfaceWithDebitBehavior: [ :anAmount :aCreditCard | ]! !
 
-!StoreTestObjectsFactory methodsFor: 'interface' stamp: 'jml 11/28/2018 17:10:38'!
-tusLibrosInterfaceWithDebitBehavior: aBehavior andClock: aClock
+!StoreTestObjectsFactory methodsFor: 'interface' stamp: 'jml 11/28/2018 18:53:37'!
+tusLibrosInterfaceWithDebitBehavior: aBehavior
 	
 	| mpInterface |
 	
 	mpInterface _ self merchantProcessorWithDebitBehavior: aBehavior.
 	
-	^ TusLibrosInterface newMeasuringTimeWith: aClock users: self registeredUsers catalog: self defaultCatalog merchantProcessor: mpInterface.! !
+	^ TusLibrosInterface newMeasuringTimeWith: clock users: self registeredUsers catalog: self defaultCatalog merchantProcessor: mpInterface.! !
 
 
 !StoreTestObjectsFactory methodsFor: 'merchant processor' stamp: 'jml 11/28/2018 15:46:37'!
@@ -1250,6 +1244,22 @@ defaultMerchantProcessor
 merchantProcessorWithDebitBehavior: aBehavior
 	
 	^ SimulatedMerchantProcessorInterface withDebitBehavior: aBehavior! !
+
+
+!StoreTestObjectsFactory methodsFor: 'time' stamp: 'jml 11/28/2018 18:50:58'!
+clock
+	
+	^ clock! !
+
+!StoreTestObjectsFactory methodsFor: 'time' stamp: 'jml 11/28/2018 18:58:43'!
+currentMonth
+	
+	^ clock now month! !
+
+!StoreTestObjectsFactory methodsFor: 'time' stamp: 'jml 11/28/2018 18:42:27'!
+now
+	
+	^ clock now! !
 
 
 !classDefinition: #TusLibrosInterface category: #TusLibros!
@@ -1298,7 +1308,7 @@ add: aQuantity of: anItem toCartWithId: aCartId
 	
 	cart add: aQuantity of: anItem.! !
 
-!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/27/2018 12:19:43'!
+!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/28/2018 18:49:56'!
 checkoutCartWithId: aCartId withCreditCard: aCreditCardNumber expiringOn: expirationMonthOfYear withOwner: aName 
 	
 	| cart cashier total creditCard |
@@ -1310,7 +1320,7 @@ checkoutCartWithId: aCartId withCreditCard: aCreditCardNumber expiringOn: expira
 		toCheckout: cart
 		charging: creditCard
 		through: merchantProcessor
-		on: DateAndTime now
+		measuringTimeWith: clock
 		registeringOn: sales.
 	
 	total _ cashier checkOut.
