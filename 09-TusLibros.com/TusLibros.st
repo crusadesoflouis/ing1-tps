@@ -330,7 +330,7 @@ test06CannotAddItemToAnInvalidCart
 		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:21:16'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 02:48:36'!
 test07ItemAddedToCartIsListed
 	
 	| cartList interface cartId item quantity |
@@ -344,9 +344,9 @@ test07ItemAddedToCartIsListed
 	cartList _ interface listCartWithId: cartId.
 	
 	self deny: cartList isEmpty.
-	self assert: 1 equals: cartList size.
-	self assert: (cartList includesKey: item).
-	self assert: quantity equals: (cartList at: item).! !
+	self assert: 1 equals: cartList contents size.
+	self assert: (cartList includes: item).
+	self assert: quantity equals: (cartList occurrencesOf: item).! !
 
 !TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:21:16'!
 test08CannotAddNonPositiveNumberOfItems
@@ -560,7 +560,7 @@ test16CannotListPurchasesWithWrongPassword
 		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:21:16'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 02:59:14'!
 test17PurchaseListForNewUserIsEmpty
 
 	| interface purchases |
@@ -572,10 +572,10 @@ test17PurchaseListForNewUserIsEmpty
 	self assert: purchases contents isEmpty.
 	self assert: 0 equals: purchases total.! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:21:16'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 03:02:02'!
 test18PurchaseIsListed
 
-	| interface purchaseList cartId creditCard item numberOfItems password user purchases |
+	| interface purchaseItems cartId creditCard item numberOfItems password user purchases |
 	
 	user _ testObjects defaultUser.
 	password _ testObjects defaultPassword.
@@ -595,12 +595,14 @@ test18PurchaseIsListed
 		withOwner: creditCard owner.
 		
 	purchases _ interface listPurchasesFor: user andPassword: password.
-	purchaseList _ purchases contents.
+	purchaseItems _ purchases contents.
 	
-	self deny: purchaseList isEmpty.
-	self assert: 1 equals: purchaseList size.
-	self assert: (purchaseList includesKey: item).
-	self assert: numberOfItems equals: (purchaseList at: item).
+	self assert: numberOfItems * testObjects itemSellByTheStorePrice equals: purchases total.
+	self deny: purchaseItems isEmpty.
+	self assert: 1 equals: purchaseItems contents size.
+	self assert: (purchaseItems includes: item).
+	self assert: numberOfItems equals: (purchaseItems occurrencesOf: item).
+	
 	! !
 
 !TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:21:16'!
@@ -632,15 +634,17 @@ test19PurchasesOfAnotherUserAreNotListed
 	self assert: purchases contents isEmpty.
 	self assert: 0 equals: purchases total.! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:21:16'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 03:03:53'!
 test20SeveralPurchasesAreAddedInList
 
-	| interface purchaseList creditCard item password user purchases cartId1 cartId2 quantity1 quantity2 |
+	| interface purchaseList creditCard item password user purchases cartId1 cartId2 quantity1 quantity2 totalQuantity |
 	
 	user _ testObjects defaultUser.
 	password _ testObjects defaultPassword.
 	quantity1 _ 3.
 	quantity2 _ 5.
+	totalQuantity _ quantity1 + quantity2.
+	
 	creditCard _ testObjects notExpiredCreditCard.
 	item _ testObjects itemSellByTheStore.
 	
@@ -666,10 +670,11 @@ test20SeveralPurchasesAreAddedInList
 	purchases _ interface listPurchasesFor: user andPassword: password.
 	purchaseList _ purchases contents.
 	
+	self assert: totalQuantity * testObjects itemSellByTheStorePrice equals: purchases total.
 	self deny: purchaseList isEmpty.
-	self assert: 1 equals: purchaseList size.
-	self assert: (purchaseList includesKey: item).
-	self assert: quantity1 + quantity2 equals: (purchaseList at: item).
+	self assert: 1 equals: purchaseList contents size.
+	self assert: (purchaseList includes: item).
+	self assert: totalQuantity equals: (purchaseList occurrencesOf: item).
 	! !
 
 
@@ -698,42 +703,35 @@ assertIsValidQuantity: aQuantity
 	aQuantity strictlyPositive ifFalse: [ self error: self class invalidQuantityErrorMessage ]! !
 
 
-!Cart methodsFor: 'initialization' stamp: 'jml 11/26/2018 18:52:55'!
+!Cart methodsFor: 'initialization' stamp: 'jml 11/28/2018 02:36:04'!
 initializeFor: aUser acceptingItemsOf: aCatalog
 	
 	user _ aUser.
 	catalog _ aCatalog.
-	contents _ Dictionary new.! !
+	contents _ Bag new.! !
 
 
-!Cart methodsFor: 'queries' stamp: 'LA 11/22/2018 21:35:59'!
+!Cart methodsFor: 'queries' stamp: 'jml 11/28/2018 02:36:43'!
 occurrencesOf: anItem
 
-	^ contents at: anItem ifAbsent: 0! !
+	^ contents occurrencesOf: anItem! !
 
 
-!Cart methodsFor: 'testing' stamp: 'LA 11/22/2018 21:34:35'!
+!Cart methodsFor: 'testing' stamp: 'jml 11/28/2018 02:37:04'!
 includes: anItem
 
-	^ contents includesKey: anItem ! !
+	^ contents includes: anItem ! !
 
-!Cart methodsFor: 'testing' stamp: 'LA 11/22/2018 21:34:47'!
+!Cart methodsFor: 'testing' stamp: 'jml 11/28/2018 02:37:12'!
 isEmpty
 	
-	^contents isEmpty ! !
+	^ contents isEmpty ! !
 
 
-!Cart methodsFor: 'total' stamp: 'LA 11/22/2018 21:45:07'!
+!Cart methodsFor: 'total' stamp: 'jml 11/28/2018 02:41:09'!
 total
 	
-	^ contents keys inject: 0 into: [ :subtotal :item |
-		| price quantity |
-		
-		price _ catalog at: item.
-		quantity _ contents at: item.
-		
-		subtotal + (price * quantity).
-	].! !
+	^ contents sum: [ :item | catalog at: item ]! !
 
 
 !Cart methodsFor: 'adding' stamp: 'HernanWilkinson 6/17/2013 17:44'!
@@ -741,13 +739,13 @@ add: anItem
 
 	^ self add: 1 of: anItem ! !
 
-!Cart methodsFor: 'adding' stamp: 'LA 11/22/2018 21:36:36'!
+!Cart methodsFor: 'adding' stamp: 'jml 11/28/2018 02:41:51'!
 add: aQuantity of: anItem
 
 	self assertIsValidQuantity: aQuantity.
 	self assertIsValidItem: anItem.
 	
-	contents at: anItem put: (self occurrencesOf: anItem) + aQuantity.! !
+	contents add: anItem withOccurrences: aQuantity.! !
 
 
 !Cart methodsFor: 'accessing' stamp: 'LA 11/22/2018 21:34:21'!
@@ -1261,7 +1259,7 @@ listCartWithId: aCartId
 	
 	^ cart contents! !
 
-!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/26/2018 18:58:22'!
+!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/28/2018 03:05:26'!
 listPurchasesFor: aUserName andPassword: aPassword 
 
 	| userSales purchasedItems total |
@@ -1269,21 +1267,10 @@ listPurchasesFor: aUserName andPassword: aPassword
 	(users includesKey: aUserName ) ifFalse: [self error: self class userNotFoundErrorMessage ].
 	((users at: aUserName) = aPassword) ifFalse: [self error: self class invalidPasswordErrorMessage ].
 	
-	total _ 0.
-	
-	purchasedItems _ Dictionary new.
-	
 	userSales _ sales select: [ :sale | sale user = aUserName ].
 	
-	userSales do: [ :sale |
-		total _ total + sale total.
-		sale contents associationsDo: [ :assoc | | currentQuantity item quantity |
-			item _ assoc key.
-			quantity _ assoc value.
-			currentQuantity _ purchasedItems at: item ifAbsent: 0.
-			purchasedItems at: item put: currentQuantity + quantity.
-		].
-	].
+	total _ userSales inject: 0 into: [ :subtotal :sale | subtotal + sale total ].
+	purchasedItems _ userSales inject: Bag new into: [ :items :sale | items addAll: sale contents; yourself ].
 	
 	^ Sale of: aUserName withContents: purchasedItems andTotal: total! !
 
