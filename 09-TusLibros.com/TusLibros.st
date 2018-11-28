@@ -1,3 +1,11 @@
+!classDefinition: #ExpiredObjectError category: #TusLibros!
+Error subclass: #ExpiredObjectError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
+
+
 !classDefinition: #CartTest category: #TusLibros!
 TestCase subclass: #CartTest
 	instanceVariableNames: 'testObjectsFactory'
@@ -242,7 +250,7 @@ setUp
 
 !classDefinition: #TuslibrosInterfaceTest category: #TusLibros!
 TestCase subclass: #TuslibrosInterfaceTest
-	instanceVariableNames: 'testObjects interface user password item creditCard price'
+	instanceVariableNames: 'testObjects interface user password item creditCard price clock'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
@@ -432,14 +440,14 @@ test12_01CannotCheckoutWithAnInvalidCreditCardNumber
 	self assertInvalidCreditCardNumber: '123412341234123' usingCartId: cartId.
 	self assertInvalidCreditCardNumber: 'ABC4123412341234' usingCartId: cartId.! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 16:28:10'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 17:18:45'!
 test13CannotCheckoutWhenTheCreditCardHasNoCredit
 
 	| cartId |
 	
 	interface _ testObjects tusLibrosInterfaceWithDebitBehavior: [ :anAmount :aCreditCard |
 		self error: TusLibrosInterface creditCardHasNoCreditErrorMessage
-	].
+	] andClock: clock.
 	
 	cartId _ self createCart.
 	interface add: 10 of: item toCartWithId: cartId.
@@ -451,7 +459,7 @@ test13CannotCheckoutWhenTheCreditCardHasNoCredit
 			self assert: TusLibrosInterface creditCardHasNoCreditErrorMessage equals: exception messageText.
 		].! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 16:28:27'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 17:18:54'!
 test14CheckoutChargesCreditCardUsingMerchantProcessor
 
 	| cartId quantity debitedAmount debitedCreditCard |
@@ -461,7 +469,7 @@ test14CheckoutChargesCreditCardUsingMerchantProcessor
 	interface _ testObjects tusLibrosInterfaceWithDebitBehavior: [ :anAmount :aCreditCard |
 		debitedAmount _ anAmount.
 		debitedCreditCard _ aCreditCard.
-	].
+	] andClock: clock.
 	
 	cartId _ self createCart.
 	interface add: quantity of: item toCartWithId: cartId.
@@ -564,13 +572,66 @@ test20SeveralPurchasesAreAddedInList
 	self assert: totalQuantity equals: (purchaseList occurrencesOf: item).
 	! !
 
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 17:50:42'!
+test21CannotAddItemsToAnExpiredCart
+	
+	| cartId |
+	
+	cartId _ self createCart.
+	
+	clock advance: interface sessionDuration + 1 minutes.
+	
+	self
+		should: [ interface add: 10 of: item toCartWithId: cartId ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :exception |
+			self assert: TusLibrosInterface cartNotFoundErrorMessage equals: exception messageText.
+		].
+	! !
 
-!TuslibrosInterfaceTest methodsFor: 'setup' stamp: 'jml 11/28/2018 16:02:45'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 17:52:31'!
+test22CannotListAnExpiredCart
+	
+	| cartId |
+	
+	cartId _ self createCart.
+	
+	clock advance: interface sessionDuration + 1 minutes.
+	
+	self
+		should: [ interface listCartWithId: cartId ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :exception |
+			self assert: TusLibrosInterface cartNotFoundErrorMessage equals: exception messageText.
+		].
+	! !
+
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 17:54:04'!
+test23CannotCheckoutAnExpiredCart
+	
+	| cartId |
+	
+	cartId _ self createCart.
+	interface add: 10 of: item toCartWithId: cartId.
+	
+	clock advance: interface sessionDuration + 1 minutes.
+	
+	self
+		should: [ self checkoutCartWithId: cartId ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :exception |
+			self assert: TusLibrosInterface cartNotFoundErrorMessage equals: exception messageText.
+		].
+	! !
+
+
+!TuslibrosInterfaceTest methodsFor: 'setup' stamp: 'jml 11/28/2018 17:17:45'!
 setUp
 
 	testObjects _ StoreTestObjectsFactory new.
+	clock _ FixedClock pointingTo: DateAndTime now.
 	
-	interface _ testObjects tusLibrosInterfaceWithDebitBehavior: [ :anAmount :aCreditCard | ].
+	interface _ testObjects tusLibrosInterfaceMeasuringTimeWith: clock.
 	
 	item _ testObjects itemSellByTheStore.
 	price _ testObjects itemSellByTheStorePrice.
@@ -792,6 +853,55 @@ creditCardHasNoCreditErrorMessage
 	^'Credit card has no credit'! !
 
 
+!classDefinition: #Clock category: #TusLibros!
+Object subclass: #Clock
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
+
+!Clock methodsFor: 'accessing' stamp: 'jml 11/28/2018 17:15:46'!
+now
+	
+	self subclassResponsibility! !
+
+
+!classDefinition: #FixedClock category: #TusLibros!
+Clock subclass: #FixedClock
+	instanceVariableNames: 'now'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
+
+!FixedClock methodsFor: 'initialization' stamp: 'jml 11/28/2018 17:18:31'!
+initializePointingTo: aDateAndTime
+	
+	now _ aDateAndTime.! !
+
+
+!FixedClock methodsFor: 'changing time' stamp: 'jml 11/28/2018 17:16:29'!
+advance: aDuration
+	
+	now _ now + aDuration! !
+
+
+!FixedClock methodsFor: 'accessing' stamp: 'jml 11/28/2018 17:15:58'!
+now
+	
+	^ now! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'FixedClock class' category: #TusLibros!
+FixedClock class
+	instanceVariableNames: ''!
+
+!FixedClock class methodsFor: 'instance creation' stamp: 'jml 11/28/2018 17:18:22'!
+pointingTo: aDateAndTime
+	
+	^ self new initializePointingTo: aDateAndTime! !
+
+
 !classDefinition: #CreditCard category: #TusLibros!
 Object subclass: #CreditCard
 	instanceVariableNames: 'expiration number owner'
@@ -925,6 +1035,45 @@ SimulatedMerchantProcessorInterface class
 withDebitBehavior: aBehavior
 	
 	^ self new initializeWithDebitBehavior: aBehavior ! !
+
+
+!classDefinition: #PerishableObject category: #TusLibros!
+Object subclass: #PerishableObject
+	instanceVariableNames: 'value duration clock lastUseTime'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
+
+!PerishableObject methodsFor: 'accessing' stamp: 'jml 11/28/2018 18:27:09'!
+value
+	
+	| now |
+	
+	now _ clock now.
+	now - lastUseTime > duration ifTrue: [ ExpiredObjectError new signal: 'Object has expired' ].
+	lastUseTime _ now.
+	
+	^ value! !
+
+
+!PerishableObject methodsFor: 'initialization' stamp: 'jml 11/28/2018 18:08:21'!
+initializeWith: anObject during: aDuration measuringTimeWith: aClock
+	
+	value _ anObject.
+	duration _ aDuration.
+	clock _ aClock.
+	lastUseTime _ aClock now.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PerishableObject class' category: #TusLibros!
+PerishableObject class
+	instanceVariableNames: ''!
+
+!PerishableObject class methodsFor: 'instance creation' stamp: 'jml 11/28/2018 18:05:41'!
+with: aCart during: aDuration measuringTimeWith: aClock
+	
+	^ self new initializeWith: aCart during: aDuration measuringTimeWith: aClock! !
 
 
 !classDefinition: #Sale category: #TusLibros!
@@ -1077,19 +1226,19 @@ wrongUser
 	^ 'pepe'! !
 
 
-!StoreTestObjectsFactory methodsFor: 'interface' stamp: 'jml 11/28/2018 15:53:38'!
-tusLibrosInterface
+!StoreTestObjectsFactory methodsFor: 'interface' stamp: 'jml 11/28/2018 17:09:10'!
+tusLibrosInterfaceMeasuringTimeWith: aClock
 	
-	^ self tusLibrosInterfaceWithDebitBehavior: [ :anAmount :aCreditCard | ]! !
+	^ self tusLibrosInterfaceWithDebitBehavior: [ :anAmount :aCreditCard | ] andClock: aClock! !
 
-!StoreTestObjectsFactory methodsFor: 'interface' stamp: 'jml 11/28/2018 15:52:41'!
-tusLibrosInterfaceWithDebitBehavior: aBehavior
+!StoreTestObjectsFactory methodsFor: 'interface' stamp: 'jml 11/28/2018 17:10:38'!
+tusLibrosInterfaceWithDebitBehavior: aBehavior andClock: aClock
 	
 	| mpInterface |
 	
 	mpInterface _ self merchantProcessorWithDebitBehavior: aBehavior.
 	
-	^ TusLibrosInterface newWithUsers: self registeredUsers catalog: self defaultCatalog merchantProcessor: mpInterface.! !
+	^ TusLibrosInterface newMeasuringTimeWith: aClock users: self registeredUsers catalog: self defaultCatalog merchantProcessor: mpInterface.! !
 
 
 !StoreTestObjectsFactory methodsFor: 'merchant processor' stamp: 'jml 11/28/2018 15:46:37'!
@@ -1105,17 +1254,26 @@ merchantProcessorWithDebitBehavior: aBehavior
 
 !classDefinition: #TusLibrosInterface category: #TusLibros!
 Object subclass: #TusLibrosInterface
-	instanceVariableNames: 'users lastId activeCarts catalog sales merchantProcessor'
+	instanceVariableNames: 'users lastId catalog sales merchantProcessor clock activeCartSessions'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!TusLibrosInterface methodsFor: 'carts' stamp: 'jml 11/26/2018 00:58:02'!
+!TusLibrosInterface methodsFor: 'carts' stamp: 'jml 11/28/2018 18:29:09'!
 findCartWithId: aCartId
 	
-	(activeCarts includesKey: aCartId) ifFalse: [ self error: self class cartNotFoundErrorMessage ].
+	| cart |
 	
-	^ activeCarts at: aCartId! !
+	(activeCartSessions includesKey: aCartId) ifFalse: [ self error: self class cartNotFoundErrorMessage ].
+	
+	[ cart _ (activeCartSessions at: aCartId) value ]
+		on: ExpiredObjectError
+		do: [
+			activeCartSessions removeKey: aCartId.
+			self error: self class cartNotFoundErrorMessage 
+		].
+	
+	^ cart! !
 
 !TusLibrosInterface methodsFor: 'carts' stamp: 'LA 11/22/2018 20:46:27'!
 newId
@@ -1124,6 +1282,11 @@ newId
 	
 	^ lastId
 	! !
+
+!TusLibrosInterface methodsFor: 'carts' stamp: 'jml 11/28/2018 17:04:55'!
+sessionDuration
+	
+	^ 30 minutes! !
 
 
 !TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/26/2018 00:58:02'!
@@ -1154,18 +1317,18 @@ checkoutCartWithId: aCartId withCreditCard: aCreditCardNumber expiringOn: expira
 	^ total
 ! !
 
-!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/28/2018 16:34:25'!
+!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/28/2018 18:32:19'!
 createCartFor: aUserName andPassword: aPassword
 	
-	| cartId cart |
+	| cartId cart cartSession |
 	
 	self authenticateUser: aUserName with: aPassword.
 	
 	cartId _ self newId.
-	
 	cart _ Cart for: aUserName acceptingItemsOf: catalog.
 	
-	activeCarts at: cartId put: cart.
+	cartSession _ PerishableObject with: cart during: self sessionDuration measuringTimeWith: clock.
+	activeCartSessions at: cartId put: cartSession.
 	
 	^ cartId! !
 
@@ -1193,16 +1356,17 @@ listPurchasesFor: aUserName andPassword: aPassword
 	^ Sale of: aUserName withContents: purchasedItems andTotal: total! !
 
 
-!TusLibrosInterface methodsFor: 'initialization' stamp: 'jml 11/26/2018 17:14:48'!
-initializeWithUsers: registeredUsers catalog: aCatalog merchantProcessor: aMerchantProcessor
-
+!TusLibrosInterface methodsFor: 'initialization' stamp: 'jml 11/28/2018 18:29:09'!
+initializeMeasuringTimeWith: aClock users: registeredUsers catalog: aCatalog merchantProcessor: aMerchantProcessor
+	
+	clock _ aClock.
 	users _ registeredUsers.
 	catalog _ aCatalog.
 	merchantProcessor _ aMerchantProcessor.
 	sales _ OrderedCollection new.
 	
 	lastId _ 0.
-	activeCarts _ Dictionary new.! !
+	activeCartSessions _ Dictionary new.! !
 
 
 !TusLibrosInterface methodsFor: 'authentication' stamp: 'jml 11/28/2018 16:33:47'!
@@ -1263,7 +1427,7 @@ userNotFoundErrorMessage
 	^'User not found'! !
 
 
-!TusLibrosInterface class methodsFor: 'instance creation' stamp: 'jml 11/26/2018 17:15:31'!
-newWithUsers: users catalog: aCatalog merchantProcessor: aMerchantProcessor
+!TusLibrosInterface class methodsFor: 'instance creation' stamp: 'jml 11/28/2018 17:11:20'!
+newMeasuringTimeWith: aClock users: users catalog: aCatalog merchantProcessor: aMerchantProcessor
 
-	^ self new initializeWithUsers: users catalog: aCatalog merchantProcessor: aMerchantProcessor! !
+	^ self new initializeMeasuringTimeWith: aClock users: users catalog: aCatalog merchantProcessor: aMerchantProcessor! !
