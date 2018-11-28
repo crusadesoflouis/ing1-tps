@@ -1154,17 +1154,16 @@ checkoutCartWithId: aCartId withCreditCard: aCreditCardNumber expiringOn: expira
 	^ total
 ! !
 
-!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/26/2018 18:51:38'!
-createCartFor: anUserName andPassword: aPassword
+!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/28/2018 16:34:25'!
+createCartFor: aUserName andPassword: aPassword
 	
 	| cartId cart |
 	
-	(users includesKey: anUserName ) ifFalse: [self error: self class userNotFoundErrorMessage ].
-	((users at: anUserName) = aPassword) ifFalse: [self error: self class invalidPasswordErrorMessage ].
+	self authenticateUser: aUserName with: aPassword.
 	
 	cartId _ self newId.
 	
-	cart _ Cart for: anUserName acceptingItemsOf: catalog.
+	cart _ Cart for: aUserName acceptingItemsOf: catalog.
 	
 	activeCarts at: cartId put: cart.
 	
@@ -1179,13 +1178,12 @@ listCartWithId: aCartId
 	
 	^ cart contents! !
 
-!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/28/2018 03:05:26'!
+!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/28/2018 16:33:31'!
 listPurchasesFor: aUserName andPassword: aPassword 
 
 	| userSales purchasedItems total |
 	
-	(users includesKey: aUserName ) ifFalse: [self error: self class userNotFoundErrorMessage ].
-	((users at: aUserName) = aPassword) ifFalse: [self error: self class invalidPasswordErrorMessage ].
+	self authenticateUser: aUserName with: aPassword.
 	
 	userSales _ sales select: [ :sale | sale user = aUserName ].
 	
@@ -1205,6 +1203,13 @@ initializeWithUsers: registeredUsers catalog: aCatalog merchantProcessor: aMerch
 	
 	lastId _ 0.
 	activeCarts _ Dictionary new.! !
+
+
+!TusLibrosInterface methodsFor: 'authentication' stamp: 'jml 11/28/2018 16:33:47'!
+authenticateUser: aUserName with: aPassword
+	
+	(users includesKey: aUserName ) ifFalse: [self error: self class userNotFoundErrorMessage ].
+	((users at: aUserName) = aPassword) ifFalse: [self error: self class invalidPasswordErrorMessage ].! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
