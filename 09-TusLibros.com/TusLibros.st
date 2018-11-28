@@ -336,7 +336,7 @@ test06CannotAddItemToAnInvalidCart
 		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 16:07:24'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 19:20:59'!
 test07ItemAddedToCartIsListed
 	
 	| cartList cartId quantity |
@@ -347,9 +347,8 @@ test07ItemAddedToCartIsListed
 	interface add: quantity of: item toCartWithId: cartId.
 	cartList _ interface listCartWithId: cartId.
 	
-	self deny: cartList isEmpty.
-	self assert: 1 equals: cartList contents size.
 	self assert: (cartList includes: item).
+	self assert: quantity equals: cartList size.
 	self assert: quantity equals: (cartList occurrencesOf: item).! !
 
 !TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 16:07:55'!
@@ -511,7 +510,7 @@ test17PurchaseListForNewUserIsEmpty
 	self assert: purchases contents isEmpty.
 	self assert: 0 equals: purchases total.! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 16:28:57'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 19:20:47'!
 test18PurchaseIsListed
 
 	| purchaseItems cartId quantity purchases |
@@ -527,9 +526,8 @@ test18PurchaseIsListed
 	purchaseItems _ purchases contents.
 	
 	self assert: quantity * price equals: purchases total.
-	self deny: purchaseItems isEmpty.
-	self assert: 1 equals: purchaseItems contents size.
 	self assert: (purchaseItems includes: item).
+	self assert: quantity equals: purchaseItems size.
 	self assert: quantity equals: (purchaseItems occurrencesOf: item).
 	
 	! !
@@ -550,7 +548,7 @@ test19PurchasesOfAnotherUserAreNotListed
 	self assert: purchases contents isEmpty.
 	self assert: 0 equals: purchases total.! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 16:19:29'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 19:21:24'!
 test20SeveralPurchasesAreAddedInList
 
 	| quantity1 quantity2 totalQuantity purchaseList purchases |
@@ -566,9 +564,8 @@ test20SeveralPurchasesAreAddedInList
 	purchaseList _ purchases contents.
 	
 	self assert: totalQuantity * price equals: purchases total.
-	self deny: purchaseList isEmpty.
-	self assert: 1 equals: purchaseList contents size.
 	self assert: (purchaseList includes: item).
+	self assert: totalQuantity equals: purchaseList size.
 	self assert: totalQuantity equals: (purchaseList occurrencesOf: item).
 	! !
 
