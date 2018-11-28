@@ -247,6 +247,23 @@ TestCase subclass: #TuslibrosInterfaceTest
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
+!TuslibrosInterfaceTest methodsFor: 'assertions' stamp: 'jml 11/28/2018 02:26:38'!
+assertInvalidCreditCardNumber: aNumber usingInterface: interface andCartId: cartId
+	
+	self
+		should: [
+			interface
+				checkoutCartWithId: cartId
+				withCreditCard: aNumber
+				expiringOn: DateAndTime now month
+				withOwner: 'owner'.
+		]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :exception |
+			self assert: TusLibrosInterface invalidCreditCardNumberErrorMessage equals: exception messageText.
+		].! !
+
+
 !TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:53:55'!
 test01CannotListAnInvalidCart
 
@@ -440,6 +457,22 @@ test12CannotCheckoutWithAnExpiredCreditCart
 		withExceptionDo: [ :exception |
 			self assert: TusLibrosInterface canNotChargeAnExpiredCreditCardErrorMessage equals: exception messageText.
 		].! !
+
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 02:26:56'!
+test12_01CannotCheckoutWithAnInvalidCreditCardNumber
+	
+	| interface cartId item quantity |
+	
+	quantity _ 3.
+	item _ testObjects itemSellByTheStore.
+	interface _ testObjects tusLibrosInterface. 
+	
+	cartId _ interface createCartFor: testObjects defaultUser andPassword: testObjects defaultPassword.
+	interface add: quantity of: item toCartWithId: cartId.
+	
+	self assertInvalidCreditCardNumber: 1234 usingInterface: interface andCartId: cartId.
+	self assertInvalidCreditCardNumber: '123412341234123' usingInterface: interface andCartId: cartId.
+	self assertInvalidCreditCardNumber: 'ABC4123412341234' usingInterface: interface andCartId: cartId.! !
 
 !TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/27/2018 12:21:16'!
 test13CannotCheckoutWhenTheCreditCardHasNoCredit
@@ -854,11 +887,11 @@ isExpiredOn: aDate
 	^expiration start < (Month month: aDate monthIndex year: aDate yearNumber) start ! !
 
 
-!CreditCard methodsFor: 'initialization' stamp: 'LA 11/26/2018 04:57:54'!
-initializeExpiringOn: aMonth withNumber: anNumber andOwner: anOwner 
+!CreditCard methodsFor: 'initialization' stamp: 'jml 11/28/2018 02:03:57'!
+initializeExpiringOn: aMonth withNumber: aNumber andOwner: anOwner 
 	
 	expiration := aMonth.
-	number := anNumber.
+	number := aNumber.
 	owner := anOwner.! !
 
 
@@ -901,10 +934,25 @@ hash
 CreditCard class
 	instanceVariableNames: ''!
 
-!CreditCard class methodsFor: 'instance creation' stamp: 'LA 11/26/2018 04:57:00'!
-expiringOn: aMonth withNumber: anNumber andOwner: anOwner 
+!CreditCard class methodsFor: 'validating' stamp: 'jml 11/28/2018 02:20:15'!
+validateNumber: aNumber
+	
+	((aNumber isKindOf: String) and: [ aNumber size = 16 ] and: [ aNumber allSatisfy: [ :char | char isDigit ]  ])
+		ifFalse: [ self error: self invalidCreditCardNumberErrorMessage ].! !
 
-	^self new initializeExpiringOn: aMonth withNumber: anNumber andOwner: anOwner ! !
+
+!CreditCard class methodsFor: 'instance creation' stamp: 'jml 11/28/2018 02:04:20'!
+expiringOn: aMonth withNumber: aNumber andOwner: anOwner 
+	
+	self validateNumber: aNumber.
+	
+	^self new initializeExpiringOn: aMonth withNumber: aNumber andOwner: anOwner ! !
+
+
+!CreditCard class methodsFor: 'error messages' stamp: 'jml 11/28/2018 02:12:58'!
+invalidCreditCardNumberErrorMessage
+	
+	^ 'Invalid credit card number'! !
 
 
 !classDefinition: #MerchantProcessorInterface category: #TusLibros!
@@ -1276,6 +1324,11 @@ cartNotFoundErrorMessage
 creditCardHasNoCreditErrorMessage
 	
 	^ Cashier creditCardHasNoCreditErrorMessage! !
+
+!TusLibrosInterface class methodsFor: 'error messages' stamp: 'jml 11/28/2018 02:23:04'!
+invalidCreditCardNumberErrorMessage
+	
+	^ CreditCard invalidCreditCardNumberErrorMessage! !
 
 !TusLibrosInterface class methodsFor: 'error messages' stamp: 'jml 11/27/2018 11:52:55'!
 invalidItemErrorMessage
