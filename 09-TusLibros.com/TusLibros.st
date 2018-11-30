@@ -1120,6 +1120,39 @@ of: aUser withContents: aContent andTotal: anAmount
 	^ self new initializeOf: aUser withContents: aContent andTotal: anAmount! !
 
 
+!classDefinition: #SalesBook category: #TusLibros!
+Object subclass: #SalesBook
+	instanceVariableNames: 'sales'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
+
+!SalesBook methodsFor: 'initialization' stamp: 'LA 11/29/2018 15:53:36'!
+add: aSale
+
+	sales add: aSale
+
+! !
+
+!SalesBook methodsFor: 'initialization' stamp: 'LA 11/29/2018 15:52:38'!
+initialize
+
+	sales _ OrderedCollection new! !
+
+
+!SalesBook methodsFor: 'accesing' stamp: 'LA 11/30/2018 00:28:28'!
+listPurcheasesFor: aUserName andPassword: aPassword 
+	
+	| userSales purchasedItems total |
+	
+	userSales _ sales select: [ :sale | sale user = aUserName ].
+	
+	total _ userSales inject: 0 into: [ :subtotal :sale | subtotal + sale total ].
+	purchasedItems _ userSales inject: Bag new into: [ :items :sale | items addAll: sale contents; yourself ].
+	
+	^ Sale of: aUserName withContents: purchasedItems andTotal: total! !
+
+
 !classDefinition: #StoreTestObjectsFactory category: #TusLibros!
 Object subclass: #StoreTestObjectsFactory
 	instanceVariableNames: 'clock'
@@ -1222,14 +1255,14 @@ tusLibrosInterface
 	
 	^ self tusLibrosInterfaceWithDebitBehavior: [ :anAmount :aCreditCard | ]! !
 
-!StoreTestObjectsFactory methodsFor: 'interface' stamp: 'jml 11/28/2018 18:53:37'!
+!StoreTestObjectsFactory methodsFor: 'interface' stamp: 'LA 11/29/2018 15:51:42'!
 tusLibrosInterfaceWithDebitBehavior: aBehavior
 	
-	| mpInterface |
+	| mpInterface salesBook |
 	
 	mpInterface _ self merchantProcessorWithDebitBehavior: aBehavior.
-	
-	^ TusLibrosInterface newMeasuringTimeWith: clock users: self registeredUsers catalog: self defaultCatalog merchantProcessor: mpInterface.! !
+	salesBook  _ SalesBook new.
+	^ TusLibrosInterface newMeasuringTimeWith: clock users: self registeredUsers catalog: self defaultCatalog merchantProcessor: mpInterface salesBook: salesBook! !
 
 
 !StoreTestObjectsFactory methodsFor: 'merchant processor' stamp: 'jml 11/28/2018 15:46:37'!
@@ -1348,29 +1381,22 @@ listCartWithId: aCartId
 	
 	^ cart contents! !
 
-!TusLibrosInterface methodsFor: 'resources' stamp: 'jml 11/28/2018 16:33:31'!
+!TusLibrosInterface methodsFor: 'resources' stamp: 'LA 11/30/2018 00:28:40'!
 listPurchasesFor: aUserName andPassword: aPassword 
 
-	| userSales purchasedItems total |
-	
 	self authenticateUser: aUserName with: aPassword.
-	
-	userSales _ sales select: [ :sale | sale user = aUserName ].
-	
-	total _ userSales inject: 0 into: [ :subtotal :sale | subtotal + sale total ].
-	purchasedItems _ userSales inject: Bag new into: [ :items :sale | items addAll: sale contents; yourself ].
-	
-	^ Sale of: aUserName withContents: purchasedItems andTotal: total! !
+
+	^sales listPurcheasesFor: aUserName andPassword: aPassword! !
 
 
-!TusLibrosInterface methodsFor: 'initialization' stamp: 'jml 11/28/2018 18:29:09'!
-initializeMeasuringTimeWith: aClock users: registeredUsers catalog: aCatalog merchantProcessor: aMerchantProcessor
+!TusLibrosInterface methodsFor: 'initialization' stamp: 'LA 11/29/2018 15:23:28'!
+initializeMeasuringTimeWith: aClock users: registeredUsers catalog: aCatalog merchantProcessor: aMerchantProcessor salesBook: aSalesBook
 	
 	clock _ aClock.
 	users _ registeredUsers.
 	catalog _ aCatalog.
 	merchantProcessor _ aMerchantProcessor.
-	sales _ OrderedCollection new.
+	sales _ aSalesBook.
 	
 	lastId _ 0.
 	activeCartSessions _ Dictionary new.! !
@@ -1434,7 +1460,7 @@ userNotFoundErrorMessage
 	^'User not found'! !
 
 
-!TusLibrosInterface class methodsFor: 'instance creation' stamp: 'jml 11/28/2018 17:11:20'!
-newMeasuringTimeWith: aClock users: users catalog: aCatalog merchantProcessor: aMerchantProcessor
+!TusLibrosInterface class methodsFor: 'instance creation' stamp: 'LA 11/29/2018 15:24:14'!
+newMeasuringTimeWith: aClock users: users catalog: aCatalog merchantProcessor: aMerchantProcessor salesBook: aSalesBook
 
-	^ self new initializeMeasuringTimeWith: aClock users: users catalog: aCatalog merchantProcessor: aMerchantProcessor! !
+	^ self new initializeMeasuringTimeWith: aClock users: users catalog: aCatalog merchantProcessor: aMerchantProcessor salesBook: aSalesBook! !
