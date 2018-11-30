@@ -500,20 +500,21 @@ test16CannotListPurchasesWithWrongPassword
 		].
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 16:14:52'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/30/2018 04:26:01'!
 test17PurchaseListForNewUserIsEmpty
 
-	| purchases |
+	| purchases total|
 	
 	purchases _ interface listPurchasesFor: user andPassword: password.
-	
-	self assert: purchases contents isEmpty.
-	self assert: 0 equals: purchases total.! !
+	total _ interface totalPurchasesFor: user andPassword: password.
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 19:20:47'!
+	self assert: purchases isEmpty.
+	self assert: 0 equals: total.! !
+
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/30/2018 04:30:49'!
 test18PurchaseIsListed
 
-	| purchaseItems cartId quantity purchases |
+	| cartId quantity purchases total |
 	
 	quantity _ 3.
 	
@@ -523,19 +524,20 @@ test18PurchaseIsListed
 	self checkoutCartWithId: cartId.
 		
 	purchases _ interface listPurchasesFor: user andPassword: password.
-	purchaseItems _ purchases contents.
+	total _ interface totalPurchasesFor: user andPassword: password.
+
 	
-	self assert: quantity * price equals: purchases total.
-	self assert: (purchaseItems includes: item).
-	self assert: quantity equals: purchaseItems size.
-	self assert: quantity equals: (purchaseItems occurrencesOf: item).
+	self assert: quantity * price equals: total.
+	self assert: (purchases includes: item).
+	self assert: quantity equals: purchases size.
+	self assert: quantity equals: (purchases occurrencesOf: item).
 	
 	! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 16:29:17'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/30/2018 04:31:34'!
 test19PurchasesOfAnotherUserAreNotListed
 
-	| cartId purchases |
+	| cartId purchases total |
 	
 	cartId _ self createCart.
 	
@@ -544,14 +546,14 @@ test19PurchasesOfAnotherUserAreNotListed
 	self checkoutCartWithId: cartId.
 		
 	purchases _ interface listPurchasesFor: testObjects secondUser andPassword: testObjects secondUserPassword.
-	
-	self assert: purchases contents isEmpty.
-	self assert: 0 equals: purchases total.! !
+	total _ interface totalPurchasesFor: testObjects secondUser andPassword: testObjects secondUserPassword.
+	self assert: purchases isEmpty.
+	self assert: 0 equals: total.! !
 
-!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 19:21:24'!
+!TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'LA 11/30/2018 04:32:45'!
 test20SeveralPurchasesAreAddedInList
 
-	| quantity1 quantity2 totalQuantity purchaseList purchases |
+	| quantity1 quantity2 totalQuantity purchases total |
 	
 	quantity1 _ 3.
 	quantity2 _ 5.
@@ -561,12 +563,12 @@ test20SeveralPurchasesAreAddedInList
 	self performPurchase: quantity2.
 		
 	purchases _ interface listPurchasesFor: user andPassword: password.
-	purchaseList _ purchases contents.
+	total _ interface totalPurchasesFor: user andPassword: password.
 	
-	self assert: totalQuantity * price equals: purchases total.
-	self assert: (purchaseList includes: item).
-	self assert: totalQuantity equals: purchaseList size.
-	self assert: totalQuantity equals: (purchaseList occurrencesOf: item).
+	self assert: totalQuantity * price equals: total.
+	self assert: (purchases includes: item).
+	self assert: totalQuantity equals: purchases size.
+	self assert: totalQuantity equals: (purchases occurrencesOf: item).
 	! !
 
 !TuslibrosInterfaceTest methodsFor: 'tests' stamp: 'jml 11/28/2018 17:50:42'!
@@ -1140,17 +1142,27 @@ initialize
 	sales _ OrderedCollection new! !
 
 
-!SalesBook methodsFor: 'accesing' stamp: 'LA 11/30/2018 00:28:28'!
+!SalesBook methodsFor: 'accesing' stamp: 'LA 11/30/2018 04:23:58'!
 listPurcheasesFor: aUserName andPassword: aPassword 
 	
-	| userSales purchasedItems total |
+	| userSales purchasedItems |
+	
+	userSales _ sales select: [ :sale | sale user = aUserName ].
+	
+	purchasedItems _ userSales inject: Bag new into: [ :items :sale | items addAll: sale contents; yourself ].
+	
+	^ purchasedItems! !
+
+!SalesBook methodsFor: 'accesing' stamp: 'LA 11/30/2018 04:24:25'!
+totalFor: aUserName andPassword: aPassword 
+	
+	| userSales total |
 	
 	userSales _ sales select: [ :sale | sale user = aUserName ].
 	
 	total _ userSales inject: 0 into: [ :subtotal :sale | subtotal + sale total ].
-	purchasedItems _ userSales inject: Bag new into: [ :items :sale | items addAll: sale contents; yourself ].
 	
-	^ Sale of: aUserName withContents: purchasedItems andTotal: total! !
+	^ total! !
 
 
 !classDefinition: #StoreTestObjectsFactory category: #TusLibros!
@@ -1387,6 +1399,13 @@ listPurchasesFor: aUserName andPassword: aPassword
 	self authenticateUser: aUserName with: aPassword.
 
 	^sales listPurcheasesFor: aUserName andPassword: aPassword! !
+
+!TusLibrosInterface methodsFor: 'resources' stamp: 'LA 11/30/2018 04:26:39'!
+totalPurchasesFor: aUserName andPassword: aPassword 
+
+	self authenticateUser: aUserName with: aPassword.
+
+	^sales totalFor: aUserName andPassword: aPassword! !
 
 
 !TusLibrosInterface methodsFor: 'initialization' stamp: 'LA 11/29/2018 15:23:28'!
