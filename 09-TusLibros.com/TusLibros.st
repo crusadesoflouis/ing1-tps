@@ -1129,21 +1129,14 @@ Object subclass: #SalesBook
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!SalesBook methodsFor: 'initialization' stamp: 'LA 11/29/2018 15:53:36'!
-add: aSale
-
-	sales add: aSale
-
-! !
-
 !SalesBook methodsFor: 'initialization' stamp: 'LA 11/29/2018 15:52:38'!
 initialize
 
 	sales _ OrderedCollection new! !
 
 
-!SalesBook methodsFor: 'accesing' stamp: 'LA 11/30/2018 04:23:58'!
-listPurcheasesFor: aUserName andPassword: aPassword 
+!SalesBook methodsFor: 'accesing' stamp: 'LA 12/1/2018 14:23:34'!
+purcheasesFor: aUserName andPassword: aPassword 
 	
 	| userSales purchasedItems |
 	
@@ -1163,6 +1156,14 @@ totalFor: aUserName andPassword: aPassword
 	total _ userSales inject: 0 into: [ :subtotal :sale | subtotal + sale total ].
 	
 	^ total! !
+
+
+!SalesBook methodsFor: 'adding' stamp: 'LA 11/29/2018 15:53:36'!
+add: aSale
+
+	sales add: aSale
+
+! !
 
 
 !classDefinition: #StoreTestObjectsFactory category: #TusLibros!
@@ -1393,12 +1394,12 @@ listCartWithId: aCartId
 	
 	^ cart contents! !
 
-!TusLibrosInterface methodsFor: 'resources' stamp: 'LA 11/30/2018 00:28:40'!
+!TusLibrosInterface methodsFor: 'resources' stamp: 'LA 12/1/2018 14:23:35'!
 listPurchasesFor: aUserName andPassword: aPassword 
 
 	self authenticateUser: aUserName with: aPassword.
 
-	^sales listPurcheasesFor: aUserName andPassword: aPassword! !
+	^sales purcheasesFor: aUserName andPassword: aPassword! !
 
 !TusLibrosInterface methodsFor: 'resources' stamp: 'LA 11/30/2018 04:26:39'!
 totalPurchasesFor: aUserName andPassword: aPassword 
