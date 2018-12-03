@@ -1135,27 +1135,20 @@ initialize
 	sales _ OrderedCollection new! !
 
 
-!SalesBook methodsFor: 'accesing' stamp: 'LA 12/1/2018 14:23:34'!
-purcheasesFor: aUserName andPassword: aPassword 
+!SalesBook methodsFor: 'accesing' stamp: 'LA 12/3/2018 14:15:41'!
+purchasesFor: aUserName  
 	
-	| userSales purchasedItems |
-	
-	userSales _ sales select: [ :sale | sale user = aUserName ].
-	
-	purchasedItems _ userSales inject: Bag new into: [ :items :sale | items addAll: sale contents; yourself ].
-	
-	^ purchasedItems! !
+	^ (self salesForUser: aUserName) inject: Bag new into: [ :items :sale | items addAll: sale contents; yourself ].! !
 
-!SalesBook methodsFor: 'accesing' stamp: 'LA 11/30/2018 04:24:25'!
-totalFor: aUserName andPassword: aPassword 
+!SalesBook methodsFor: 'accesing' stamp: 'LA 12/3/2018 14:14:02'!
+salesForUser: aUserName
 	
-	| userSales total |
+	^sales select: [ :sale | sale user = aUserName ].! !
+
+!SalesBook methodsFor: 'accesing' stamp: 'LA 12/3/2018 14:15:22'!
+totalFor: aUserName  
 	
-	userSales _ sales select: [ :sale | sale user = aUserName ].
-	
-	total _ userSales inject: 0 into: [ :subtotal :sale | subtotal + sale total ].
-	
-	^ total! !
+	^  (self salesForUser: aUserName) inject: 0 into: [ :subtotal :sale | subtotal + sale total ].! !
 
 
 !SalesBook methodsFor: 'adding' stamp: 'LA 11/29/2018 15:53:36'!
@@ -1394,19 +1387,19 @@ listCartWithId: aCartId
 	
 	^ cart contents! !
 
-!TusLibrosInterface methodsFor: 'resources' stamp: 'LA 12/1/2018 14:23:35'!
+!TusLibrosInterface methodsFor: 'resources' stamp: 'LA 12/3/2018 14:12:09'!
 listPurchasesFor: aUserName andPassword: aPassword 
 
 	self authenticateUser: aUserName with: aPassword.
 
-	^sales purcheasesFor: aUserName andPassword: aPassword! !
+	^sales purchasesFor: aUserName ! !
 
-!TusLibrosInterface methodsFor: 'resources' stamp: 'LA 11/30/2018 04:26:39'!
+!TusLibrosInterface methodsFor: 'resources' stamp: 'LA 12/3/2018 14:11:17'!
 totalPurchasesFor: aUserName andPassword: aPassword 
 
 	self authenticateUser: aUserName with: aPassword.
 
-	^sales totalFor: aUserName andPassword: aPassword! !
+	^sales totalFor: aUserName ! !
 
 
 !TusLibrosInterface methodsFor: 'initialization' stamp: 'LA 11/29/2018 15:23:28'!
